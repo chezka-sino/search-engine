@@ -12,6 +12,7 @@ public class Driver {
 	private static Map<String, String> argumentMap;
 	private static final String DEFAULT_INDEX = "index.json";
 	private static String directory;
+	private static ArrayList<String> textFiles;
 	
 	public static boolean isFlag(String arg) {
 		if (arg.startsWith("-")) {
@@ -35,7 +36,6 @@ public class Driver {
         			if (!isFlag(args[i+1])) {
         				argumentMap.replace(args[i], null, args[i+1]);
         			}
-        			
         		}
         	}
     		
@@ -55,23 +55,29 @@ public class Driver {
     public static void main(String[] args) throws IOException {
         // TODO Modify as necessary!
 //        System.out.println(Arrays.toString(args))
-    	
-    	
-
+    	textFiles = new ArrayList<>();
     	argumentMap = new HashMap<>();
+    	
     	parseArguments(args);
     	checkJSONPath();
+    	
+//    	parseArguments(args);
     	
     	try {
     		
     		DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
     		dir.traverse(dir.getDir());
+    		textFiles.addAll(dir.getFileList());
+    		
     	}
     	
     	catch (NullPointerException | NoSuchFileException e) {
-    		System.err.println("Directory error");
+    		System.err.println("ERROR: Directory error");
     	}
     	
+    	for (String item:textFiles) {
+    		System.out.println(item);
+    	}
     	
     }
 }

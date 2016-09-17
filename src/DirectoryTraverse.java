@@ -42,6 +42,8 @@ public class DirectoryTraverse {
 		
 	}
 	
+	
+	
 	public Path getDir() {
 		return dir;
 	}
