@@ -15,7 +15,7 @@ public class Driver {
 		return false;
 	}
 	
-	public static void parseArguments(String[] args) {
+	private static void parseArguments(String[] args) {
     	for (int i = 0; i<args.length; i++) {
           	
         	if (isFlag(args[i])) {
@@ -35,10 +35,10 @@ public class Driver {
         	}
     		
         }
-		
+    	
 	}
 	
-	public static void checkJSONPath() {
+	private static void checkJSONPath() {
 		if (argumentMap.get("-index") == null) {
 			argumentMap.put("-index", DEFAULT_INDEX);
 		}
@@ -49,11 +49,14 @@ public class Driver {
 //        System.out.println(Arrays.toString(args))
 
     	argumentMap = new HashMap<>();
-    	parseArguments(args);
-    	if (argumentMap.containsKey("-index")) {
-    		checkJSONPath();
-    	}
-    	    	
+    	
+    	ArgumentParser parse = new ArgumentParser(args);
+    	parse.parseArguments(args);
+    	parse.checkJSONPath();
+//    	parseArguments(args);
+//    	checkJSONPath();
+    	
+
 //    	System.out.println(argumentMap.get("-index"));
     	
     }
