@@ -1,10 +1,12 @@
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 public class Driver { 
 	
-	private static Map<String, String> argMap;
+	private static Map<String, String> argumentMap;
+	private static final String DEFAULT_INDEX = "index.json";
 	
 	public static boolean isFlag(String arg) {
 		if (arg.startsWith("-")) {
@@ -13,13 +15,32 @@ public class Driver {
 		return false;
 	}
 	
-	public void parseArguments(String[] args) {
-		for (String i: args) {
-			if (isFlag(i)) {
-				if(!argMap.containsKey(i)) {
-					
-				}
-			}
+	public static void parseArguments(String[] args) {
+    	for (int i = 0; i<args.length; i++) {
+          	
+        	if (isFlag(args[i])) {
+        		
+        		if(!argumentMap.containsKey(args[i])) {
+        			argumentMap.put(args[i], null);
+        			
+        			if (i+1 == args.length) {
+        				return;
+        			}
+        			
+        			if (!isFlag(args[i+1])) {
+        				argumentMap.replace(args[i], null, args[i+1]);
+        			}
+        			
+        		}
+        	}
+    		
+        }
+		
+	}
+	
+	public static void checkJSONPath() {
+		if (argumentMap.get("-index") == null) {
+			argumentMap.put("-index", DEFAULT_INDEX);
 		}
 	}
 	
@@ -27,24 +48,13 @@ public class Driver {
         // TODO Modify as necessary!
 //        System.out.println(Arrays.toString(args))
 
-    	Map <String,String> argumentMap = new HashMap<>();
+    	argumentMap = new HashMap<>();
+    	parseArguments(args);
+    	if (argumentMap.containsKey("-index")) {
+    		checkJSONPath();
+    	}
+    	    	
+//    	System.out.println(argumentMap.get("-index"));
     	
-    	for (int i = 0; i<4; i++) {
-        	if (isFlag(args[i])) {
-        		
-        	}
-        	
-        }
-
-        		// TODO if dir then the next one is the directory to be traversed
-        		// no dir = error
-        		// if index the it's the json file name.
-        		// no filename then default index-simple.json
-        		// no -index, still execute but no output file
-        		
-//        	}
-//        }
-        
-        IndexTest test = new IndexTest();
     }
 }
