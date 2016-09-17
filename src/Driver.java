@@ -62,16 +62,7 @@ public class Driver {
     	parseArguments(args);
     	checkJSONPath();
     	
-//    	if (!argumentMap.containsKey("-dir")) {
-//    		System.err.println("No directory provided");
-//    	}
-//    	
-//    	else {
-//    		DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
-//    	}
-    	
     	try {
-//    		File file = new File(argumentMap.get("-dir"));
     		
     		DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
     		dir.traverse(dir.getDir());
@@ -81,25 +72,6 @@ public class Driver {
     		System.err.println("Directory error");
     	}
     	
-//    	ArgumentParser parse = new ArgumentParser(args);
-//    	parse.parseArguments(args);
-//    	parse.checkJSONPath();
-//    	
-//    	if (!parse.hasDirectory()) {
-//    		System.err.println("No directory path was found");
-//    		System.exit(0);
-//    	}
-    	
-//    	DirectoryTraverse dir = new DirectoryTraverse(parse.getMap());
-//    	dir.traverse(dir.getDir());
-//    	
-//    	ArrayList<String> txt = dir.getFileList();
-//    	System.out.println(txt.toString());
-//    	parseArguments(args);
-//    	checkJSONPath();
-    	
-
-//    	System.out.println(argumentMap.get("-index"));
     	
     }
 }
