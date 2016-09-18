@@ -1,10 +1,18 @@
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.nio.file.WatchEvent.Kind;
+import java.nio.file.WatchEvent.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -53,6 +61,7 @@ public class Driver {
 			argumentMap.put("-index", "index.json");
 			System.out.println(argumentMap);
 		}
+
 	}
 	
 	// TODO what if no directory
@@ -60,7 +69,7 @@ public class Driver {
 	
     public static void main(String[] args) throws IOException {
         // TODO Modify as necessary!
-//        System.out.println(Arrays.toString(args))
+
     	textFiles = new ArrayList<>();
     	argumentMap = new HashMap<>();
     	allWords = new HashMap<>();
@@ -70,9 +79,14 @@ public class Driver {
     	
     	try {
     		
-    		DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
+    		DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"),
+    				argumentMap.get("-index"));
     		dir.traverse(dir.getDir());
     		textFiles.addAll(dir.getFileList());
+    		
+    		WordDataStructure indexing = new WordDataStructure(argumentMap.get("-index"));
+    		indexing.readArray(textFiles);
+//    		indexing.printMap();
     		
     	}
     	
@@ -80,11 +94,14 @@ public class Driver {
     		System.err.println("ERROR: Directory error");
     	}
     	
-    	for (String item:textFiles) {
+//    	for (String item:textFiles) {
 //    		System.out.println(item);
-    		WordDataStructure indexing = new WordDataStructure(item);
-    		indexing.openFile();
-    	}
+//    		WordDataStructure indexing = new WordDataStructure(item);
+//    		
+//    		indexing.openFile();
+//    	}
+    	
+
     	
     }
 }

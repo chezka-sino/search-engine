@@ -9,16 +9,16 @@ public class DirectoryTraverse {
 	
 	private final ArrayList<String> textFiles;
 //	private Map<String, String> argMap;
-	public Path dir;
+	public Path dir, ind;
 	
-	public DirectoryTraverse(String directory) {
+	public DirectoryTraverse(String directory, String index) {
 		// TODO Auto-generated constructor stub
 
 		dir = Paths.get(directory);
+		ind = Paths.get(index);
 		textFiles = new ArrayList<>();
 //		Path path = Paths.get(directory);
 		
-	
 	}
 	
 	public void traverse(Path path) throws IOException {
@@ -33,7 +33,7 @@ public class DirectoryTraverse {
 				
 				else {
 					if (file.toString().endsWith(".txt")) {
-						textFiles.add(file.toAbsolutePath().normalize().toString());
+						textFiles.add(file.normalize().toString());
 					}
 				}
 			}
@@ -42,7 +42,9 @@ public class DirectoryTraverse {
 		
 	}
 	
-	
+	public Path getIndex() {
+		return ind;
+	}
 	
 	public Path getDir() {
 		return dir;
