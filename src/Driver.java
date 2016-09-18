@@ -13,6 +13,7 @@ public class Driver {
 	
 	private static Map<String, String> argumentMap;
 	private static ArrayList<String> textFiles;
+	private static Map <String, HashMap <String, ArrayList <Integer>>> allWords;
 	
 	public static boolean isFlag(String arg) {
 		if (arg.startsWith("-")) {
@@ -44,10 +45,13 @@ public class Driver {
 	}
 	
 	private static void checkJSONPath() {
-		Path defaultPath = Paths.get("index.json");
 		
-		if (argumentMap.get("-index") == null) {
-			argumentMap.put("-index", defaultPath.toString());
+		System.out.println(argumentMap);
+		if (argumentMap.get("-index") == null && argumentMap.containsKey("-index")) {
+
+//			argumentMap.remove("-index",null);
+			argumentMap.put("-index", "index.json");
+			System.out.println(argumentMap);
 		}
 	}
 	
@@ -59,11 +63,10 @@ public class Driver {
 //        System.out.println(Arrays.toString(args))
     	textFiles = new ArrayList<>();
     	argumentMap = new HashMap<>();
+    	allWords = new HashMap<>();
     	
     	parseArguments(args);
     	checkJSONPath();
-    	
-//    	parseArguments(args);
     	
     	try {
     		
@@ -78,7 +81,9 @@ public class Driver {
     	}
     	
     	for (String item:textFiles) {
-    		System.out.println(item);
+//    		System.out.println(item);
+    		WordDataStructure indexing = new WordDataStructure(item);
+    		indexing.openFile();
     	}
     	
     }
