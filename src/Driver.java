@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,8 +12,6 @@ import java.util.Map;
 public class Driver { 
 	
 	private static Map<String, String> argumentMap;
-	private static final String DEFAULT_INDEX = "index.json";
-	private static String directory;
 	private static ArrayList<String> textFiles;
 	
 	public static boolean isFlag(String arg) {
@@ -44,8 +44,10 @@ public class Driver {
 	}
 	
 	private static void checkJSONPath() {
+		Path defaultPath = Paths.get("index.json");
+		
 		if (argumentMap.get("-index") == null) {
-			argumentMap.put("-index", DEFAULT_INDEX);
+			argumentMap.put("-index", defaultPath.toString());
 		}
 	}
 	

@@ -16,7 +16,7 @@ public class DirectoryTraverse {
 
 		dir = Paths.get(directory);
 		textFiles = new ArrayList<>();
-		Path path = Paths.get(directory);
+//		Path path = Paths.get(directory);
 		
 	
 	}
@@ -32,7 +32,7 @@ public class DirectoryTraverse {
 				}
 				
 				else {
-					if (file.endsWith(".txt")) {
+					if (file.toString().endsWith(".txt")) {
 						textFiles.add(file.toAbsolutePath().normalize().toString());
 					}
 				}
