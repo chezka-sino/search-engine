@@ -4,25 +4,23 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class JSONWriter {
 	
 	public static final char TAB = '\t';
 	public static final char END = '\n';
-	private static TreeMap <String, TreeMap <String, HashSet<Integer>>> fileMap;
+	private static TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap;
 	private static Path outputFile;
 
 	
-	public JSONWriter(Path outputFile, TreeMap <String, TreeMap <String, HashSet<Integer>
+	public JSONWriter(Path outputFile, TreeMap <String, TreeMap <String, TreeSet<Integer>
 		>> fileMap) {
-		// TODO Auto-generated constructor stub
-		this.outputFile = outputFile;
-		this.fileMap = fileMap;
+		JSONWriter.outputFile = outputFile;
+		JSONWriter.fileMap = fileMap;
 	}
 	
 	public static String quote(String text) {
@@ -77,7 +75,6 @@ public class JSONWriter {
 					while (itr3.hasNext()) {
 						
 						Integer current3 = itr3.next();
-						
 						writer.write(writeIntegers(current3, 3));
 						
 						if (itr3.hasNext()) {

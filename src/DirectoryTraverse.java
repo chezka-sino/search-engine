@@ -8,16 +8,13 @@ import java.util.ArrayList;
 public class DirectoryTraverse {
 	
 	private final ArrayList<String> textFiles;
-//	private Map<String, String> argMap;
 	public Path dir, ind;
 	
 	public DirectoryTraverse(String directory, String index) {
-		// TODO Auto-generated constructor stub
 
 		dir = Paths.get(directory);
 		ind = Paths.get(index);
 		textFiles = new ArrayList<>();
-//		Path path = Paths.get(directory);
 		
 	}
 	
@@ -32,7 +29,7 @@ public class DirectoryTraverse {
 				}
 				
 				else {
-					if (file.toString().endsWith(".txt")) {
+					if (file.toString().toLowerCase().endsWith(".txt")) {
 						textFiles.add(file.normalize().toString());
 					}
 				}

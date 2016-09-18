@@ -1,34 +1,23 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class WordDataStructure {
 	
-	private static TreeMap <String, TreeMap <String, HashSet<Integer>>> fileMap;
-	private static String txtFile;
+	private static TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap;
 	private static Path outputFile;
-	
-//	public WordDataStructure(String txtFile) {
-//		// TODO Auto-generated constructor stub
-//		fileMap = new HashMap<>();
-//		this.inputFile = Paths.get(txtFile);
-//		this.txtFile = txtFile;
-//	}
 	
 	public WordDataStructure(String index) {
 		fileMap = new TreeMap<>();
-//		this.inputFile = Paths.get(txtFile);
-//		this.txtFiles = txtFiles;
-		this.outputFile = Paths.get(index);
+		WordDataStructure.outputFile = Paths.get(index);
 		
 	}
 	
@@ -41,11 +30,13 @@ public class WordDataStructure {
 
 	public void openFile(Path inputFile) throws IOException{
 		
+		int count = 1;
 		
-		try (BufferedReader reader = Files.newBufferedReader(inputFile)) {
+		try (BufferedReader reader = Files.newBufferedReader(inputFile, 
+				Charset.forName("UTF-8"))) {
 			
-			String line = null;
-
+			String line;
+			
 			while ((line = reader.readLine()) != null) {
 
 				String [] words = line.toLowerCase().split(" ");
@@ -60,13 +51,12 @@ public class WordDataStructure {
 				}
 				
 				words = wordArray.toArray(new String[wordArray.size()]);
-//				System.out.println("Word Array SIZE: " + words.length);
 				String iFile = inputFile.toString();
-				wordMap(words, iFile);
+				count = wordMap(words, iFile, count);
+				
 				
 			}
 			
-//			printMap();
 			JSONWriter writer = new JSONWriter(outputFile, fileMap);
 			writer.writeJSON();
 		}
@@ -74,45 +64,43 @@ public class WordDataStructure {
 	
 	public String stripWords(String word) {
 		
-		word = word.replaceAll("[^\\p{Alpha}\\p{Digit}]+","");
-		return word;
+		StringBuilder builder = new StringBuilder();
+		
+		for (char c: word.toCharArray()) {
+			if(Character.isLetterOrDigit(c)) {
+				builder.append(c);
+			}
+		}
+		
+		return builder.toString();
 	}
 	
-	public void wordMap (String[] words, String inputFile) {
-		
-//		System.out.println("Word Array SIZE: " + words.length);
-//		System.out.println("Initial Map EMPTY: " + fileMap.isEmpty());	
-//		
-		int i = 1;
+	public int wordMap (String[] words, String inputFile, Integer count) {
 		
 		for (String w: words) {
-			System.out.println(w);
 			if (!fileMap.containsKey(w)) {
-				System.out.println("doesn't contain " + w);
-				fileMap.put(w, new TreeMap<String, HashSet<Integer>>());
+				fileMap.put(w, new TreeMap<String, TreeSet<Integer>>());
 			}
 			
 			if (!fileMap.get(w).containsKey(inputFile.toString())) {
-				fileMap.get(w).put(inputFile.toString(), new HashSet<Integer>());
+				fileMap.get(w).put(inputFile.toString(), new TreeSet<Integer>());
 			}
-			fileMap.get(w).get(inputFile.toString()).add(i);
-			System.out.println("COUNT: " + i);
-			i++;
+			fileMap.get(w).get(inputFile.toString()).add(count);
+			count++;
 		}
 		
-//		System.out.println("New Map EMPTY: " + fileMap.isEmpty());
-		System.out.println();
+		return count;
 
 	}
 	
 	public void printMap() {
 		System.out.println("Current Map"); 
 			
-		for (Map.Entry<String, TreeMap<String, HashSet<Integer>>> wordEntry: fileMap.entrySet()) {
+		for (Map.Entry<String, TreeMap<String, TreeSet<Integer>>> wordEntry: fileMap.entrySet()) {
 			String word = wordEntry.getKey();
 			System.out.println("WORD: " + word);
 			
-			for (Map.Entry<String, HashSet<Integer>> fileEntry: wordEntry.getValue().entrySet()) {
+			for (Map.Entry<String, TreeSet<Integer>> fileEntry: wordEntry.getValue().entrySet()) {
 				String file = fileEntry.getKey();
 				System.out.println(".TXT FILE: " + file);
 				System.out.println("POSITIONS: " );
@@ -125,7 +113,7 @@ public class WordDataStructure {
 		
 	}
 	
-	public static Map<String, TreeMap<String, HashSet<Integer>>> getFileMap() {
+	public static Map<String, TreeMap<String, TreeSet<Integer>>> getFileMap() {
 		return fileMap;
 	}
 
