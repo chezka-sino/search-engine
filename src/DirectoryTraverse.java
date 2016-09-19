@@ -5,6 +5,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author shinheera
+ *
+ */
 public class DirectoryTraverse {
 	
 	private final ArrayList<String> textFiles;

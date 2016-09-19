@@ -1,14 +1,30 @@
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/** 
+ * This class demonstrates traversing through a directory, looking for .txt files,
+ * organizing words into an array and writing them in a JSON File
+ * 
+ * @author Chezka Sino
+ */
+
 public class Driver { 
 	
+	/**  
+	 * 
+	 */
 	private static Map<String, String> argumentMap;
 	private static ArrayList<String> textFiles;
 	
+	/**
+	 * Checks if the string in the argument array is a flag
+	 * 
+	 * @param arg
+	 * 			string to be checked
+	 * @return boolean value
+	 */
 	public static boolean isFlag(String arg) {
 		if (arg.startsWith("-")) {
 			return true;
@@ -16,6 +32,13 @@ public class Driver {
 		return false;
 	}
 	
+	/**
+	 * Creates the mapping of the flag arguments to their values
+	 * 
+	 * @param args
+	 * 			array of arguments
+	 * 
+	 */
 	private static void parseArguments(String[] args) {
     	for (int i = 0; i<args.length; i++) {
           	
@@ -38,6 +61,10 @@ public class Driver {
     	
 	}
 	
+	/**
+	 * Checks where the value of the -index flag is empty then assigns the default 
+	 * JSON file to be used
+	 */
 	private static void checkJSONPath() {
 
 		if (argumentMap.get("-index") == null && argumentMap.containsKey("-index")) {
@@ -46,6 +73,13 @@ public class Driver {
 
 	}	
 	
+	/**
+	 * Main method
+	 * 		Initializes the program
+	 * 
+	 * @param args
+	 * 		argument array
+	 */
     public static void main(String[] args) {
 
     	textFiles = new ArrayList<>();
