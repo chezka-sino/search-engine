@@ -9,30 +9,73 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+/**
+ * This class writes the word index of the files in a directory in a "pretty" JSON format 
+ * 
+ * @author Chezka Sino
+ *
+ */
 public class JSONWriter {
 	
-	public static final char TAB = '\t';
-	public static final char END = '\n';
+	/**
+	 * 
+	 */
+	private static final char TAB = '\t';
+	private static final char END = '\n';
 	private static TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap;
 	private static Path outputFile;
 
-	
+	/**
+	 * Constructor for the JSONWriter class
+	 * 
+	 * @param outputFile
+	 * 			the JSON file to be written
+	 * @param fileMap
+	 * 			the TreeMap of the words
+	 */
 	public JSONWriter(Path outputFile, TreeMap <String, TreeMap <String, TreeSet<Integer>
 		>> fileMap) {
 		JSONWriter.outputFile = outputFile;
 		JSONWriter.fileMap = fileMap;
 	}
 	
+	/**
+	 * Formats String text to "text"
+	 * 
+	 * @param text
+	 * 		String to be formatted
+	 * 			
+	 * @return
+	 * 		String in "text" format
+	 */
 	public static String quote(String text) {
         return String.format("\"%s\"", text);
     }
 	
+	/**
+	 * 
+	 * @param n
+	 * 		the number of \t
+	 * @return
+	 * 		String of the number of tabs
+	 */
 	public static String tab(int n) {
         char[] tabs = new char[n];
         Arrays.fill(tabs, TAB);
         return String.valueOf(tabs);
     }
 	
+	/**
+	 * Formats the String with the number of tabs
+	 * 
+	 * @param s
+	 * 		String to be formatted
+	 * @param n
+	 * 		number of tabs
+	 * @return
+	 * 		String in \t"txt" format 
+	 * 
+	 */
 	public static String writeStrings (String s, int n) {
     	
     	String tabStr = tab(n) + quote(s);
@@ -40,6 +83,17 @@ public class JSONWriter {
     	
     }
 	
+	/**
+	 * Formats the integer with the number of tabs
+	 * 
+	 * @param i
+	 * 		integer to be formatted
+	 * @param n
+	 * 		number of tabs
+	 * @return
+	 * 		String in \t integer format
+	 * 
+	 */
 	public static String writeIntegers(Integer i, int n) {
     	
     	String tabInt = tab(n) + i.toString();
@@ -47,6 +101,12 @@ public class JSONWriter {
     	
     }
 	
+	/**
+	 * Writes the wordindex into a JSON file
+	 * 
+	 * @throws IOException
+	 * 
+	 */
 	public void writeJSON() throws IOException {
 		
 		try (BufferedWriter writer = Files.newBufferedWriter(outputFile,

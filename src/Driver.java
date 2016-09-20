@@ -8,6 +8,7 @@ import java.util.Map;
  * organizing words into an array and writing them in a JSON File
  * 
  * @author Chezka Sino
+ * 
  */
 
 public class Driver { 

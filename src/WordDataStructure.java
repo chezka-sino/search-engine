@@ -10,17 +10,41 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+/**
+ * This class indexes the words in the .txt files in the Treemap
+ * 
+ * @author Chezka Sino
+ *
+ */
 public class WordDataStructure {
 	
+	/**
+	 * 
+	 */
 	private static TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap;
 	private static Path outputFile;
 	
+	/**
+	 * Constructor for the WordDataStructureClass
+	 * 
+	 * @param index
+	 * 		the JSON file where the index would be written
+	 * 
+	 */
 	public WordDataStructure(String index) {
 		fileMap = new TreeMap<>();
 		WordDataStructure.outputFile = Paths.get(index);
 		
 	}
 	
+	/**
+	 * Reads the array of the text files 
+	 * 
+	 * @param files
+	 * 		ArrayList of the .txt files
+	 * @throws IOException
+	 * 
+	 */
 	public void readArray(ArrayList<String> files) throws IOException {
 		for (String name: files) {
 			Path inputFile = Paths.get(name);
@@ -28,6 +52,15 @@ public class WordDataStructure {
 		}
 	}
 
+	/**
+	 * Reads through the files, puts the words in the treemap then calls the JSON
+	 * class to write it into the file
+	 * 
+	 * @param inputFile
+	 * 		the file to be checked
+	 * @throws IOException
+	 * 
+	 */
 	public void openFile(Path inputFile) throws IOException{
 		
 		int count = 1;
@@ -62,6 +95,15 @@ public class WordDataStructure {
 		}
 	}
 	
+	/**
+	 * Removes characters other than letters and digits
+	 * 
+	 * @param word
+	 * 		word to be stripped
+	 * @return
+	 * 		word without the other characters
+	 * 
+	 */
 	public String stripWords(String word) {
 		
 		StringBuilder builder = new StringBuilder();
@@ -75,6 +117,19 @@ public class WordDataStructure {
 		return builder.toString();
 	}
 	
+	/**
+	 * Put the words mapped to their corresponding .txt files and position in
+	 * the file
+	 * 
+	 * @param words
+	 * 		the word
+	 * @param inputFile
+	 * 		txt file where the word is from
+	 * @param count
+	 * 		position of the word
+	 * @return
+	 * 		the position of the current word in the .txt file
+	 */
 	public int wordMap (String[] words, String inputFile, Integer count) {
 		
 		for (String w: words) {
@@ -93,6 +148,10 @@ public class WordDataStructure {
 
 	}
 	
+	/**
+	 * Prints the TreeMap of the wordindex
+	 * 
+	 */
 	public void printMap() {
 		System.out.println("Current Map"); 
 			
@@ -113,6 +172,12 @@ public class WordDataStructure {
 		
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * 		the TreeMap of the wordindex
+	 * 
+	 */
 	public static Map<String, TreeMap<String, TreeSet<Integer>>> getFileMap() {
 		return fileMap;
 	}
