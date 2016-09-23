@@ -16,12 +16,19 @@ import java.util.TreeSet;
  * @author Chezka Sino
  *
  */
-public class WordDataStructure {
+public class InvertedIndex { 
+	// TODO Should really only have data-structure like methods in here
+	// TODO add(String word, String path, int position), toString(), size(), containsWord(), etc.
+	
+	// TODO The file parsing methods should be in a different class; InvertedIndexBuilder
 	
 	/**
 	 * 
 	 */
+	// TODO final, not static
 	private static TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap;
+	
+	// TODO This can be a method parameter?
 	private static Path outputFile;
 	
 	/**
@@ -31,9 +38,9 @@ public class WordDataStructure {
 	 * 		the JSON file where the index would be written
 	 * 
 	 */
-	public WordDataStructure(String index) {
+	public InvertedIndex(String index) {
 		fileMap = new TreeMap<>();
-		WordDataStructure.outputFile = Paths.get(index);
+		InvertedIndex.outputFile = Paths.get(index);
 		
 	}
 	
@@ -90,6 +97,9 @@ public class WordDataStructure {
 				
 			}
 			
+			// TODO This ends up being called several times for each file
+			// TODO Only want to do this if the flag is present
+			// TODO Move this into a toJSON(Path output) method instead
 			JSONWriter writer = new JSONWriter(outputFile, fileMap);
 			writer.writeJSON();
 		}
@@ -172,6 +182,7 @@ public class WordDataStructure {
 		
 	}
 	
+	// TODO Remove this; breaking encapsulation
 	/**
 	 * 
 	 * @return

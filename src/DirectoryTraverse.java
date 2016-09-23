@@ -14,10 +14,10 @@ import java.util.ArrayList;
  */
 public class DirectoryTraverse {
 	
-	/**
-	 * 
-	 */
+	/** TODO Add description */
 	private final ArrayList<String> textFiles;
+	
+	// TODO These aren't good....
 	public Path dir, ind;
 	
 	/**
@@ -66,6 +66,23 @@ public class DirectoryTraverse {
 		
 	}
 	
+	/* TODO
+	public static List<String> traverse(Path path) {
+		List<String> paths = new ArrayList<>();
+		traverse(path, paths);
+		return paths;
+	}
+	
+	private static void traverse(Path path, List<String> paths) {
+		loop through every path
+			if subdir
+				traverse(subdir, paths)
+			else if text file
+				add path to paths
+	}
+	*/
+	
+	
 	/**
 	 * 
 	 * @return
@@ -85,6 +102,7 @@ public class DirectoryTraverse {
 		return dir;
 	}
 	
+	// TODO Breaking encapsulation
 	/**
 	 * 
 	 * @return
