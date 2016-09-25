@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class traverses through the directory provided and looks for all the .txt
@@ -15,10 +16,10 @@ import java.util.ArrayList;
 public class DirectoryTraverse {
 	
 	/** TODO Add description */
-	private final ArrayList<String> textFiles;
+	private static ArrayList<String> textFiles;
 	
 	// TODO These aren't good....
-	public Path dir, ind;
+	private static Path dir;
 	
 	/**
 	 * Constructor of the class
@@ -28,11 +29,10 @@ public class DirectoryTraverse {
 	 * @param index
 	 * 			the JSON file to where the index would be stored
 	 */
-	public DirectoryTraverse(String directory, String index) {
-
-		dir = Paths.get(directory);
-		ind = Paths.get(index);
+	public DirectoryTraverse(String directory) {
+		
 		textFiles = new ArrayList<>();
+		dir = Paths.get(directory);
 		
 	}
 	
@@ -45,26 +45,6 @@ public class DirectoryTraverse {
 	 * @throws IOException
 	 * 
 	 */
-	public void traverse(Path path) throws IOException {
-		
-		try (DirectoryStream<Path> listing = Files.newDirectoryStream(path)) {
-			
-			for (Path file: listing) {
-				
-				if (Files.isDirectory(file)) {
-					traverse(file);
-				}
-				
-				else {
-					if (file.toString().toLowerCase().endsWith(".txt")) {
-						textFiles.add(file.normalize().toString());
-					}
-				}
-			}
-			
-		}
-		
-	}
 	
 	/* TODO
 	public static List<String> traverse(Path path) {
@@ -82,15 +62,25 @@ public class DirectoryTraverse {
 	}
 	*/
 	
+	public static List<String> traverse(Path path) throws IOException {
+		traverse(path,textFiles);
+		return textFiles;
+	}
 	
-	/**
-	 * 
-	 * @return
-	 * 		the path for the index
-	 * 
-	 */
-	public Path getIndex() {
-		return ind;
+	private static void traverse(Path path, List<String> paths) throws IOException {
+		DirectoryStream<Path> listing = Files.newDirectoryStream(path);
+		
+		for (Path file: listing) {
+			if (Files.isDirectory(file)) {
+				traverse(file, paths);
+			}
+			else {
+				if (file.toString().toLowerCase().endsWith(".txt")) {
+					paths.add(file.normalize().toString());
+				}
+			}
+		}
+		
 	}
 	
 	/**
@@ -100,17 +90,6 @@ public class DirectoryTraverse {
 	 */
 	public Path getDir() {
 		return dir;
-	}
-	
-	// TODO Breaking encapsulation
-	/**
-	 * 
-	 * @return
-	 * 		the ArrayList of the .txt files
-	 * 
-	 */
-	public ArrayList<String> getFileList () {
-		return textFiles;
 	}
 
 }

@@ -71,13 +71,14 @@ public class Driver {
 				
 				try {
 	
-					DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"),
-							argumentMap.get("-index"));
-					dir.traverse(dir.getDir());
-					textFiles.addAll(dir.getFileList());
+					DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
+					textFiles.addAll(DirectoryTraverse.traverse(dir.getDir()));
+					
+					InvertedIndexBuilder indexing2 = new InvertedIndexBuilder(textFiles);
+					indexing2.readArray(argumentMap.get("-index"));
 	
-					InvertedIndex indexing = new InvertedIndex(argumentMap.get("-index"));
-					indexing.readArray(textFiles);
+//					InvertedIndex indexing = new InvertedIndex(argumentMap.get("-index"));
+//					indexing.readArray(textFiles);
 	
 				}
 	

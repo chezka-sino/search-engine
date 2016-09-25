@@ -40,9 +40,6 @@ public class ArgumentParser {
 		}
 
 	}
-	
-	// TODO Make these local variables instead of members
-
 	/**
 	 * Checks if the string in the argument array is a flag
 	 * 
