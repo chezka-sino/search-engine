@@ -16,70 +16,31 @@ import java.util.Map;
 
 public class Driver { 
 
-	/**  
-	 * 
-	 */
-	
-	// TODO Make these local variables instead of members
-	private static Map<String, String> argumentMap;
-	private static ArrayList<String> textFiles;
-
-	/**
-	 * Checks if the string in the argument array is a flag
-	 * 
-	 * @param arg
-	 * 			string to be checked
-	 * @return boolean value
-	 */
-	public static boolean isFlag(String arg) {
-		if (arg.startsWith("-")) {
-			return true;
-		}
-		return false;
-	}
-
-	// TODO Pull this back out into an ArgumentParser class
-	/**
-	 * Creates the mapping of the flag arguments to their values
-	 * 
-	 * @param args
-	 * 			array of arguments
-	 * 
-	 */
-	private static void parseArguments(String[] args) {
-		for (int i = 0; i<args.length; i++) {
-
-			if (isFlag(args[i])) {
-
-				if(!argumentMap.containsKey(args[i])) {
-					argumentMap.put(args[i], null);
-
-					if (i+1 == args.length) {
-						return;
-					}
-
-					if (!isFlag(args[i+1])) {
-						argumentMap.replace(args[i], null, args[i+1]);
-					}
-				}
-			}
-
-		}
-
-	}
-
 	/**
 	 * Checks where the value of the -index flag is empty then assigns the default 
 	 * JSON file to be used
 	 */
-	private static void checkJSONPath() {
+	private static void checkJSONPath(Map<String, String> argumentMap) {
 
 		if (argumentMap.get("-index") == null && argumentMap.containsKey("-index")) {
-			argumentMap.put("-index", "index.json");
+			argumentMap.replace("-index", argumentMap.get("-index"), "index.json");
 		}
 
 	}	
-
+	
+	/**
+	 * 
+	 * @param argumentMap
+	 * @return
+	 */
+	private static boolean checkDir(Map<String, String> argumentMap) {
+		
+		if (argumentMap.get("-dir") == null || !argumentMap.containsKey("-dir")) {
+			return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Main method
 	 * 		Initializes the program
@@ -89,29 +50,43 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 
-		textFiles = new ArrayList<>();
-		argumentMap = new HashMap<>();
-
-		parseArguments(args);
-		checkJSONPath();
-
-		try {
-
-			DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"),
-					argumentMap.get("-index"));
-			dir.traverse(dir.getDir());
-			textFiles.addAll(dir.getFileList());
-
-			InvertedIndex indexing = new InvertedIndex(argumentMap.get("-index"));
-			indexing.readArray(textFiles);
-
+		ArrayList <String> textFiles = new ArrayList<>();
+		Map <String, String> argumentMap = new HashMap<>();
+		
+		ArgumentParser argP = new ArgumentParser();
+		
+		argP.parseArguments(args);
+		argumentMap = argP.getArgs();
+		
+		if (args.length == 0 || argumentMap.isEmpty()) {
+			System.err.println("No arguments");
 		}
-
-		catch (NullPointerException | IOException e) {
-			// TODO Not informative enough, try to be more specific
-			// TODO Worried about the null pointer!
-			System.err.println("System Error");
-		} 
-
+		
+		else if (!checkDir(argumentMap) || !argumentMap.containsKey("-index")) {
+			System.err.println("Invalid directory. Check directory and index input");
+		}
+		
+		else {
+			checkJSONPath(argumentMap);
+				
+				try {
+	
+					DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"),
+							argumentMap.get("-index"));
+					dir.traverse(dir.getDir());
+					textFiles.addAll(dir.getFileList());
+	
+					InvertedIndex indexing = new InvertedIndex(argumentMap.get("-index"));
+					indexing.readArray(textFiles);
+	
+				}
+	
+				catch (IOException e) {
+					// TODO Not informative enough, try to be more specific
+					// TODO Worried about the null pointer!
+					System.err.println("System Error");
+				}
+				
+		}
 	}
 }
