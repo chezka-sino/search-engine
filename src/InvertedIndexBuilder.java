@@ -5,35 +5,65 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+
+/**
+ * This class looks into the .txt files, calls the InvertedIndex class to add the words
+ * in a TreeMap then calls the JSONWriter to write the Inverted Index to a "pretty"
+ * JSON format
+ * 
+ * @see JSONWriter
+ * @see InvertedIndex
+ * 
+ * @author Chezka Sino
+ *
+ */
 public class InvertedIndexBuilder {
 	
+	//The ArrayList of the textFiles
 	private final ArrayList<String> textFiles;
-	private final TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap;
-//	private static Path outputFile;
-//	private static InvertedIndexV2 toIndex;
 	
+	/**
+	 * Class constructor
+	 * 
+	 * @param files
+	 * 				Array list of .txt files
+	 * 
+	 */
 	public InvertedIndexBuilder(ArrayList<String> files) {
-		// TODO Auto-generated constructor stub
 		textFiles = files;
-//		outputFile = Paths.get(index);
-		fileMap = new TreeMap<>();
-//		toIndex = new InvertedIndexV2(index);
 	}
 	
+	/**
+	 * Goes through the list of .txt files
+	 * 
+	 * @param index
+	 * 				The output file for the JSONfile
+	 * 
+	 * @see InvertedIndex
+	 * 
+	 * @throws IOException
+	 * 
+	 */
 	public void readArray(String index) throws IOException {
-		InvertedIndex toIndexV2 = new InvertedIndex(index);
+		InvertedIndex toIndex = new InvertedIndex(index);
 		
 		for (String name: textFiles) {
 			Path inputFile = Paths.get(name);
-			openFile(inputFile, toIndexV2);
-//			toIndexV2.toJSON();
+			openFile(inputFile, toIndex);
 		}
-		toIndexV2.toJSON();
+		toIndex.toJSON(index);
 	}
 	
+	/**
+	 * Removes characters other than letters and digits
+	 * 
+	 * @param word
+	 * 				word to be stripped
+	 * @return
+	 * 				word without the other characters
+	 * 
+	 */
 	public String stripWords(String word) {
 		
 		StringBuilder builder = new StringBuilder();
@@ -47,8 +77,18 @@ public class InvertedIndexBuilder {
 		return builder.toString();
 	}
 	
-	public void openFile(Path inputFile, InvertedIndex toIndexV2) throws IOException {
-//		InvertedIndexV2 toIndex = new InvertedIndexV2(outputFile.toString());
+	/**
+	 * Reads through the files, puts the words in the treemap then calls the JSON
+	 * class to write it into the file
+	 * 
+	 * @param inputFile
+	 * 				the file to be checked
+	 * @param toIndex
+	 * 				InvertedIndex object
+	 * @throws IOException
+	 * 
+	 */
+	public void openFile(Path inputFile, InvertedIndex toIndex) throws IOException {
 		
 		int count = 1;
 		
@@ -60,36 +100,18 @@ public class InvertedIndexBuilder {
 		while ((line = reader.readLine()) != null) {
 			
 			String [] words = line.toLowerCase().split(" ");
-//			List<String> wordArray = new ArrayList<>();
 			
 			for (String i:words) {
 				i = stripWords(i);
 				
 				if (i != null && i.length()>0) {
-//					wordArray.add(i);
-					toIndexV2.add(i, inputFile.toString(), count);
+
+					toIndex.add(i, inputFile.toString(), count);
 					count++;
 				}
-				
-//				toIndex.add(i, inputFile.toString(), count);
-//				count++;
-				
 			}
 		}
-
 	}
-	
-//	public void toInvertedIndex() {
-//		InvertedIndex invIndex = new InvertedIndex(index);
-//		
-//	}
-	
-	public void toJSON(Path output) throws IOException {
-		JSONWriter writer = new JSONWriter(output,fileMap);
-		writer.writeJSON();
-	}
-	
-//	public void toTreeMap ()
 	
 
 }

@@ -15,10 +15,7 @@ import java.util.List;
  */
 public class DirectoryTraverse {
 	
-	/** TODO Add description */
 	private static ArrayList<String> textFiles;
-	
-	// TODO These aren't good....
 	private static Path dir;
 	
 	/**
@@ -37,36 +34,31 @@ public class DirectoryTraverse {
 	}
 	
 	/**
-	 * This method recursively traverses through the directory and it adds all
-	 * the .txt files into an ArrayList
+	 * Calls the recursive traverse method to get the .txt files
 	 * 
 	 * @param path
 	 * 			the directory to be traversed
+	 * @return
+	 * 			the list of .txt files
 	 * @throws IOException
 	 * 
 	 */
-	
-	/* TODO
-	public static List<String> traverse(Path path) {
-		List<String> paths = new ArrayList<>();
-		traverse(path, paths);
-		return paths;
-	}
-	
-	private static void traverse(Path path, List<String> paths) {
-		loop through every path
-			if subdir
-				traverse(subdir, paths)
-			else if text file
-				add path to paths
-	}
-	*/
-	
 	public static List<String> traverse(Path path) throws IOException {
 		traverse(path,textFiles);
 		return textFiles;
 	}
 	
+	/**
+	 * This method recursively traverses through the directory and it adds all
+	 * the .txt files into an ArrayList
+	 * 
+	 * @param path
+	 * 			the directory to be traversed
+	 * @param paths
+	 * 			list of .txt files found in the directory
+	 * @throws IOException
+	 * 
+	 */
 	private static void traverse(Path path, List<String> paths) throws IOException {
 		DirectoryStream<Path> listing = Files.newDirectoryStream(path);
 		

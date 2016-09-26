@@ -74,18 +74,13 @@ public class Driver {
 					DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
 					textFiles.addAll(DirectoryTraverse.traverse(dir.getDir()));
 					
-					InvertedIndexBuilder indexing2 = new InvertedIndexBuilder(textFiles);
-					indexing2.readArray(argumentMap.get("-index"));
-	
-//					InvertedIndex indexing = new InvertedIndex(argumentMap.get("-index"));
-//					indexing.readArray(textFiles);
+					InvertedIndexBuilder indexing = new InvertedIndexBuilder(textFiles);
+					indexing.readArray(argumentMap.get("-index"));
 	
 				}
 	
 				catch (IOException e) {
-					// TODO Not informative enough, try to be more specific
-					// TODO Worried about the null pointer!
-					System.err.println("System Error");
+					System.err.println("IOException caught: " + e.getMessage());
 				}
 				
 		}
