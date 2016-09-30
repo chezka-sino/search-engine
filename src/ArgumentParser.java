@@ -1,15 +1,15 @@
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO Make this closer to the homework so you aren't breaking encapsulation
+
 public class ArgumentParser {
 	
 	private final Map<String, String> argumentMap;
 
 	
 	public ArgumentParser() {
-		// TODO Auto-generated constructor stub
 		argumentMap = new HashMap<>();
-		
 	}
 	
 	/**
@@ -20,19 +20,19 @@ public class ArgumentParser {
 	 * 
 	 */
 	public void parseArguments(String[] args) {
-		for (int i = 0; i<args.length; i++) {
+		for (int i = 0; i < args.length; i++) {
 	
 			if (isFlag(args[i])) {
 	
 				if(!argumentMap.containsKey(args[i])) {
 					argumentMap.put(args[i], null);
 	
-					if (i+1 == args.length) {
+					if (i + 1 == args.length) {
 						return;
 					}
 	
-					if (!isFlag(args[i+1])) {
-						argumentMap.replace(args[i], null, args[i+1]);
+					if (!isFlag(args[i + 1])) {
+						argumentMap.replace(args[i], null, args[i + 1]);
 					}
 				}
 			}
@@ -54,6 +54,7 @@ public class ArgumentParser {
 		return false;
 	}
 	
+	// TODO This breaks encapsulation, which is key for object-oriented programming
 	public Map<String, String> getArgs() {
 		return argumentMap;
 	}

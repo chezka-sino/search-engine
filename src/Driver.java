@@ -5,6 +5,7 @@ import java.util.Map;
 
 // TODO Configure Eclipse to re-indent on save 
 // TODO Fill in your missing Javadoc comments
+// TODO Remove old TODO comments
 
 /** 
  * This class demonstrates traversing through a directory, looking for .txt files,
