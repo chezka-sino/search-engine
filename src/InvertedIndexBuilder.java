@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+// TODO This should be a class that "does" stuff and doesn't have members and only static methods
 
 /**
  * This class looks into the .txt files, calls the InvertedIndex class to add the words

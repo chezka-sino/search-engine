@@ -7,7 +7,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * This class indexes the words in the to the Treemap
+ * This class indexes the words.
  * 
  * @author Chezka Sino
  *
@@ -17,7 +17,7 @@ public class InvertedIndex {
 	/**
 	 * The TreeMap of the words
 	 */
-	private final TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap;
+	private final TreeMap<String, TreeMap <String, TreeSet<Integer>>> fileMap; // TODO Refactor to map
 
 	/**
 	 * Class constructor
@@ -25,7 +25,7 @@ public class InvertedIndex {
 	 * @param index
 	 * 				the JSON file where the index would be written
 	 */
-	public InvertedIndex(String index) {
+	public InvertedIndex(String index) { // TODO Remove the index parameter
 		fileMap = new TreeMap<>();
 	}
 	
@@ -42,10 +42,8 @@ public class InvertedIndex {
 	 * 
 	 */
 	public void add(String word, String path, int position) {
-		
-		TreeMap<String, TreeSet<Integer>> textPosition = new TreeMap<>();
-		
 		if (!fileMap.containsKey(word)) {
+			TreeMap<String, TreeSet<Integer>> textPosition = new TreeMap<>();
 			fileMap.put(word, textPosition);
 		}
 		
@@ -55,7 +53,6 @@ public class InvertedIndex {
 		}
 		
 		fileMap.get(word).get(path).add(position);
-		
 	}
 	
 	/**
@@ -69,7 +66,9 @@ public class InvertedIndex {
 	 */
 	public void toJSON(String index) throws IOException {
 		Path outputFile = Paths.get(index);
-		JSONWriter writer = new JSONWriter(outputFile,fileMap);
+		
+		// TODO JSONWriter.writeJSON(outputFile, fileMap)
+		JSONWriter writer = new JSONWriter(outputFile, fileMap);
 		writer.writeJSON();
 	}
 	
@@ -92,10 +91,14 @@ public class InvertedIndex {
 		
 		return wordMap;
 		
+		// TODO return fileMap.toString();
 	}
 	
+	// TODO Adding a numWords() method, numLocations(String word), etc.
+	// TODO Adding a containsWord(), containsLocation(String word), etc.
+	
 	/**
-	 * 
+	 * TODO 
 	 * @return
 	 * 			The list of the words in the Map
 	 */

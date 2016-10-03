@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO Different design for classes that store stuff vs do stuff
+
 /**
  * This class traverses through the directory provided and looks for all the .txt
  * files in the directory.
@@ -15,6 +17,10 @@ import java.util.List;
  */
 public class DirectoryTraverse {
 	
+	// TODO Avoid members in classes that "do stuff"
+	// TODO If you use static for members, we start sharing memory
+	
+	// TODO Remove the members
 	private static ArrayList<String> textFiles;
 	private static Path dir;
 	
@@ -44,13 +50,14 @@ public class DirectoryTraverse {
 	 * 
 	 */
 	public static List<String> traverse(Path path) throws IOException {
+		// TODO ArrayList<String> textFiles = new ArrayList<>();
 		traverse(path,textFiles);
 		return textFiles;
 	}
 	
 	/**
 	 * This method recursively traverses through the directory and it adds all
-	 * the .txt files into an ArrayList
+	 * the .txt files into an list
 	 * 
 	 * @param path
 	 * 			the directory to be traversed
@@ -60,6 +67,7 @@ public class DirectoryTraverse {
 	 * 
 	 */
 	private static void traverse(Path path, List<String> paths) throws IOException {
+		// TODO Use try-with-resources
 		DirectoryStream<Path> listing = Files.newDirectoryStream(path);
 		
 		for (Path file: listing) {
@@ -74,7 +82,8 @@ public class DirectoryTraverse {
 		}
 		
 	}
-	
+
+	// TODO Remove
 	/**
 	 * 
 	 * @return
