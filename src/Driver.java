@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,11 +74,16 @@ public class Driver {
 				
 				try {
 	
-					DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
-					textFiles.addAll(DirectoryTraverse.traverse(dir.getDir()));
+//					DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
+					Path dir = Paths.get(argumentMap.get("-dir"));
+//					DirectoryTraverse.traverse(dir);
+					textFiles.addAll(DirectoryTraverse.traverse(dir));
 					
-					InvertedIndexBuilder indexing = new InvertedIndexBuilder(textFiles);
-					indexing.readArray(argumentMap.get("-index"));
+					InvertedIndexBuilder.readArray(textFiles, argumentMap.get("-index"));
+					
+					
+//					InvertedIndexBuilder indexing = new InvertedIndexBuilder(textFiles);
+//					indexing.readArray(argumentMap.get("-index"));
 	
 				}
 	

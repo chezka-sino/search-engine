@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class InvertedIndexBuilder {
 	
 	//The ArrayList of the textFiles
-	private final ArrayList<String> textFiles;
+//	private final ArrayList<String> textFiles;
 	
 	/**
 	 * Class constructor
@@ -31,9 +31,9 @@ public class InvertedIndexBuilder {
 	 * 				Array list of .txt files
 	 * 
 	 */
-	public InvertedIndexBuilder(ArrayList<String> files) {
-		textFiles = files;
-	}
+//	public InvertedIndexBuilder(ArrayList<String> files) {
+//		textFiles = files;
+//	}
 	
 	/**
 	 * Goes through the list of .txt files
@@ -46,14 +46,14 @@ public class InvertedIndexBuilder {
 	 * @throws IOException
 	 * 
 	 */
-	public void readArray(String index) throws IOException {
-		InvertedIndex toIndex = new InvertedIndex(index);
+	public static void readArray(ArrayList<String> textFiles, String index) throws IOException {
+		InvertedIndex toIndex = new InvertedIndex();
 		
 		for (String name: textFiles) {
 			Path inputFile = Paths.get(name);
-			openFile(inputFile, toIndex);
+			openFile(inputFile);
 		}
-		toIndex.toJSON(index);
+		InvertedIndex.toJSON(index);
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class InvertedIndexBuilder {
 	 * 				word without the other characters
 	 * 
 	 */
-	public String stripWords(String word) {
+	public static String stripWords(String word) {
 		
 		StringBuilder builder = new StringBuilder();
 		
@@ -89,7 +89,9 @@ public class InvertedIndexBuilder {
 	 * @throws IOException
 	 * 
 	 */
-	public void openFile(Path inputFile, InvertedIndex toIndex) throws IOException {
+	public static void openFile(Path inputFile) throws IOException {
+		
+		InvertedIndex toIndex = new InvertedIndex();
 		
 		int count = 1;
 		

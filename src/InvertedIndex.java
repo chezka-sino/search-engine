@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.swing.OverlayLayout;
+
 /**
  * This class indexes the words.
  * 
@@ -17,7 +19,7 @@ public class InvertedIndex {
 	/**
 	 * The TreeMap of the words
 	 */
-	private final TreeMap<String, TreeMap <String, TreeSet<Integer>>> fileMap; // TODO Refactor to map
+	private final TreeMap<String, TreeMap <String, TreeSet<Integer>>> map; // TODO Refactor to map
 
 	/**
 	 * Class constructor
@@ -25,10 +27,10 @@ public class InvertedIndex {
 	 * @param index
 	 * 				the JSON file where the index would be written
 	 */
-	public InvertedIndex(String index) { // TODO Remove the index parameter
-		fileMap = new TreeMap<>();
+	public InvertedIndex() { // TODO Remove the index parameter
+		map = new TreeMap<>();
 	}
-	
+//	
 	/**
 	 * Put the words mapped to their corresponding .txt files and position in
 	 * the TreeMap
@@ -42,17 +44,17 @@ public class InvertedIndex {
 	 * 
 	 */
 	public void add(String word, String path, int position) {
-		if (!fileMap.containsKey(word)) {
+		if (!map.containsKey(word)) {
 			TreeMap<String, TreeSet<Integer>> textPosition = new TreeMap<>();
-			fileMap.put(word, textPosition);
+			map.put(word, textPosition);
 		}
 		
-		if (!fileMap.get(word).containsKey(path)) {
+		if (!map.get(word).containsKey(path)) {
 			TreeSet<Integer> posSet = new TreeSet<>();
-			fileMap.get(word).put(path, posSet);
+			map.get(word).put(path, posSet);
 		}
 		
-		fileMap.get(word).get(path).add(position);
+		map.get(word).get(path).add(position);
 	}
 	
 	/**
@@ -67,29 +69,31 @@ public class InvertedIndex {
 	public void toJSON(String index) throws IOException {
 		Path outputFile = Paths.get(index);
 		
+		
 		// TODO JSONWriter.writeJSON(outputFile, fileMap)
-		JSONWriter writer = new JSONWriter(outputFile, fileMap);
-		writer.writeJSON();
+//		JSONWriter writer = new JSONWriter(outputFile, map);
+//		JSONWriter.writeJSON(outputFile, fileMap);
+		JSONWriter.writeJSON(outputFile, map);
 	}
 	
 	@Override
 	public String toString() {
-		String wordMap = "";
-		
-		for (String word: fileMap.keySet()) {
-			wordMap += "WORD: " + word + '\n';
-			
-			for (String fileName: fileMap.get(word).keySet()) {
-				wordMap += '\t' + ".TXT FILE: " + fileName + '\n';
-				
-				for (Integer pos: fileMap.get(word).get(fileName)) {
-					wordMap+= '\t' + '\t' + pos.toString() + 'n';
-					
-				}
-			}
-		}
-		
-		return wordMap;
+//		String wordMap = "";
+//		
+//		for (String word: map.keySet()) {
+//			wordMap += "WORD: " + word + '\n';
+//			
+//			for (String fileName: map.get(word).keySet()) {
+//				wordMap += '\t' + ".TXT FILE: " + fileName + '\n';
+//				
+//				for (Integer pos: map.get(word).get(fileName)) {
+//					wordMap+= '\t' + '\t' + pos.toString() + 'n';
+//					
+//				}
+//			}
+//		}
+//		
+		return map.toString();
 		
 		// TODO return fileMap.toString();
 	}
@@ -104,7 +108,7 @@ public class InvertedIndex {
 	 */
 	public List<String> getWords() {
 		List <String> wordList = new ArrayList<>();
-		wordList.addAll(fileMap.keySet());
+		wordList.addAll(map.keySet());
 		return wordList;
 	}
 

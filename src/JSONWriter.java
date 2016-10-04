@@ -19,8 +19,8 @@ public class JSONWriter {
 
 	private static final char TAB = '\t';
 	private static final char END = '\n';
-	private static TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap;
-	private static Path outputFile;
+//	private static TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap;
+//	private static Path outputFile;
 
 	/**
 	 * Constructor for the JSONWriter class
@@ -30,10 +30,10 @@ public class JSONWriter {
 	 * @param fileMap
 	 * 			the TreeMap of the words
 	 */
-	public JSONWriter(Path outputFile, TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap) {
-		JSONWriter.outputFile = outputFile;
-		JSONWriter.fileMap = fileMap;
-	}
+//	public JSONWriter(Path outputFile, TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap) {
+//		JSONWriter.outputFile = outputFile;
+//		JSONWriter.fileMap = fileMap;
+//	}
 
 	/**
 	 * Formats String text to "text"
@@ -103,7 +103,7 @@ public class JSONWriter {
 	 * @throws IOException
 	 * 
 	 */
-	public void writeJSON() throws IOException {
+	public static void writeJSON(Path outputFile, TreeMap <String, TreeMap <String, TreeSet<Integer>>> fileMap) throws IOException {
 
 		try (BufferedWriter writer = Files.newBufferedWriter(outputFile,
 				Charset.forName("UTF-8"))) {
