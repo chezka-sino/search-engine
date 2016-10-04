@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,19 +66,26 @@ public class DirectoryTraverse {
 	 * @throws IOException
 	 * 
 	 */
-	private static void traverse(Path path, List<String> paths) throws IOException {
+	private static void traverse(Path path, List<String> paths) {
 		// TODO Use try-with-resources
-		DirectoryStream<Path> listing = Files.newDirectoryStream(path);
 		
-		for (Path file: listing) {
-			if (Files.isDirectory(file)) {
-				traverse(file, paths);
-			}
-			else {
-				if (file.toString().toLowerCase().endsWith(".txt")) {
-					paths.add(file.normalize().toString());
+		try {
+			DirectoryStream<Path> listing = Files.newDirectoryStream(path);
+			
+			for (Path file: listing) {
+				if (Files.isDirectory(file)) {
+					traverse(file, paths);
+				}
+				else {
+					if (file.toString().toLowerCase().endsWith(".txt")) {
+						paths.add(file.normalize().toString());
+					}
 				}
 			}
+		}
+		
+		catch (IOException e) {
+			System.err.println("IOException caught: " + e.getMessage());
 		}
 		
 	}

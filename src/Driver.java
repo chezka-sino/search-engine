@@ -23,26 +23,15 @@ public class Driver {
 	 * Checks where the value of the -index flag is empty then assigns the default 
 	 * JSON file to be used
 	 */
-	private static void checkJSONPath(Map<String, String> argumentMap) {
-
-		if (argumentMap.get("-index") == null && argumentMap.containsKey("-index")) {
-			argumentMap.replace("-index", argumentMap.get("-index"), "index.json");
+	private static String checkJSONPath(ArgumentParser argP) {
+		
+		if (argP.getValue("-index") == null && argP.hasFlag("-index")) {
+			return "index.json";
 		}
+		
+		return "";
 
 	}	
-	
-	/**
-	 * 
-	 * @param argumentMap
-	 * @return
-	 */
-	private static boolean checkDir(Map<String, String> argumentMap) {
-		
-		if (argumentMap.get("-dir") == null || !argumentMap.containsKey("-dir")) {
-			return false;
-		}
-		return true;
-	}
 	
 	/**
 	 * Main method
@@ -54,32 +43,40 @@ public class Driver {
 	public static void main(String[] args) {
 
 		ArrayList <String> textFiles = new ArrayList<>();
-		Map <String, String> argumentMap = new HashMap<>();
 		
-		ArgumentParser argP = new ArgumentParser();
+		ArgumentParser argP = new ArgumentParser(args);
 		
-		argP.parseArguments(args);
-		argumentMap = argP.getArgs();
+//		argP.parseArguments(args);
+//		argumentMap = argP.getArgs();
+		System.out.println(argP.hasValue("-dir"));
+		String dirPath = argP.getValue("-dir");
+		String indexPath = argP.getValue("-index");
 		
-		if (args.length == 0 || argumentMap.isEmpty()) {
+		if (argP.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
-		
-		else if (!checkDir(argumentMap) || !argumentMap.containsKey("-index")) {
+//		!argumentMap.containsKey("-index")
+		else if (argP.getValue("-dir") == null || !argP.hasFlag("-index"))
+		{
 			System.err.println("Invalid directory. Check directory and index input");
 		}
 		
 		else {
-			checkJSONPath(argumentMap);
+			if (!checkJSONPath(argP).equals("")) {
+				indexPath = checkJSONPath(argP);
+			}
 				
 				try {
 	
 //					DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
-					Path dir = Paths.get(argumentMap.get("-dir"));
+					
+//					Path dir = Paths.get(argumentMap.get("-dir"));
 //					DirectoryTraverse.traverse(dir);
+					
+					Path dir = Paths.get(dirPath);
 					textFiles.addAll(DirectoryTraverse.traverse(dir));
 					
-					InvertedIndexBuilder.readArray(textFiles, argumentMap.get("-index"));
+					InvertedIndexBuilder.readArray(textFiles, indexPath);
 					
 					
 //					InvertedIndexBuilder indexing = new InvertedIndexBuilder(textFiles);

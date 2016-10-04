@@ -21,20 +21,6 @@ import java.util.ArrayList;
  */
 public class InvertedIndexBuilder {
 	
-	//The ArrayList of the textFiles
-//	private final ArrayList<String> textFiles;
-	
-	/**
-	 * Class constructor
-	 * 
-	 * @param files
-	 * 				Array list of .txt files
-	 * 
-	 */
-//	public InvertedIndexBuilder(ArrayList<String> files) {
-//		textFiles = files;
-//	}
-	
 	/**
 	 * Goes through the list of .txt files
 	 * 
@@ -51,9 +37,9 @@ public class InvertedIndexBuilder {
 		
 		for (String name: textFiles) {
 			Path inputFile = Paths.get(name);
-			openFile(inputFile);
+			openFile(inputFile, toIndex);
 		}
-		InvertedIndex.toJSON(index);
+		toIndex.toJSON(index);
 	}
 	
 	/**
@@ -89,9 +75,8 @@ public class InvertedIndexBuilder {
 	 * @throws IOException
 	 * 
 	 */
-	public static void openFile(Path inputFile) throws IOException {
+	public static void openFile(Path inputFile, InvertedIndex toIndex) throws IOException {
 		
-		InvertedIndex toIndex = new InvertedIndex();
 		
 		int count = 1;
 		
