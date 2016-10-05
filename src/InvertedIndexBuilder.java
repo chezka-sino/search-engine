@@ -97,9 +97,11 @@ public class InvertedIndexBuilder {
 					toIndex.add(i, inputFile.toString(), count);
 					count++;
 				}
+				
 			}
+			
 		}
+		
 	}
 	
-
 }

@@ -2,8 +2,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 // TODO Configure Eclipse to re-indent on save 
 // TODO Fill in your missing Javadoc comments
@@ -42,12 +40,10 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 
-		ArrayList <String> textFiles = new ArrayList<>();
+		ArrayList<String> textFiles = new ArrayList<>();
 		
 		ArgumentParser argP = new ArgumentParser(args);
 		
-//		argP.parseArguments(args);
-//		argumentMap = argP.getArgs();
 		System.out.println(argP.hasValue("-dir"));
 		String dirPath = argP.getValue("-dir");
 		String indexPath = argP.getValue("-index");
@@ -55,39 +51,32 @@ public class Driver {
 		if (argP.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
-//		!argumentMap.containsKey("-index")
-		else if (argP.getValue("-dir") == null || !argP.hasFlag("-index"))
-		{
+
+		else if (argP.getValue("-dir") == null || !argP.hasFlag("-index")) {
 			System.err.println("Invalid directory. Check directory and index input");
 		}
 		
 		else {
+			
 			if (!checkJSONPath(argP).equals("")) {
 				indexPath = checkJSONPath(argP);
 			}
 				
-				try {
+			try {
+					
+				Path dir = Paths.get(dirPath);
+				textFiles.addAll(DirectoryTraverse.traverse(dir));
+					
+				InvertedIndexBuilder.readArray(textFiles, indexPath);
 	
-//					DirectoryTraverse dir = new DirectoryTraverse(argumentMap.get("-dir"));
-					
-//					Path dir = Paths.get(argumentMap.get("-dir"));
-//					DirectoryTraverse.traverse(dir);
-					
-					Path dir = Paths.get(dirPath);
-					textFiles.addAll(DirectoryTraverse.traverse(dir));
-					
-					InvertedIndexBuilder.readArray(textFiles, indexPath);
-					
-					
-//					InvertedIndexBuilder indexing = new InvertedIndexBuilder(textFiles);
-//					indexing.readArray(argumentMap.get("-index"));
+			}
 	
-				}
-	
-				catch (IOException e) {
-					System.err.println("IOException caught: " + e.getMessage());
-				}
+			catch (IOException e) {
+				System.err.println("IOException caught: " + e.getMessage());
+			}
 				
 		}
+		
 	}
+	
 }

@@ -16,28 +16,6 @@ import java.util.List;
  */
 public class DirectoryTraverse {
 	
-	// TODO Avoid members in classes that "do stuff"
-	// TODO If you use static for members, we start sharing memory
-	
-	// TODO Remove the members
-//	private static ArrayList<String> textFiles;
-//	private static Path dir;
-	
-	/**
-	 * Constructor of the class
-	 * 
-	 * @param directory
-	 * 			the directory to be traversed
-	 * @param index
-	 * 			the JSON file to where the index would be stored
-	 */
-//	public DirectoryTraverse(String directory) {
-//		
-//		ArrayList<String> textFiles = new ArrayList<>();
-//		Path dir = Paths.get(directory);
-//		
-//	}
-	
 	/**
 	 * Calls the recursive traverse method to get the .txt files
 	 * 
@@ -49,7 +27,6 @@ public class DirectoryTraverse {
 	 * 
 	 */
 	public static List<String> traverse(Path path) throws IOException {
-		// TODO ArrayList<String> textFiles = new ArrayList<>();
 		ArrayList<String> textFiles = new ArrayList<>();
 		traverse(path,textFiles);
 		return textFiles;
@@ -63,11 +40,9 @@ public class DirectoryTraverse {
 	 * 			the directory to be traversed
 	 * @param paths
 	 * 			list of .txt files found in the directory
-	 * @throws IOException
 	 * 
 	 */
 	private static void traverse(Path path, List<String> paths) {
-		// TODO Use try-with-resources
 		
 		try {
 			DirectoryStream<Path> listing = Files.newDirectoryStream(path);
@@ -89,15 +64,5 @@ public class DirectoryTraverse {
 		}
 		
 	}
-
-	// TODO Remove
-	/**
-	 * 
-	 * @return
-	 * 		the directory that was traversed
-	 */
-//	public Path getDir() {
-//		return dir;
-//	}
 
 }

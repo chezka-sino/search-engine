@@ -77,8 +77,14 @@ public class InvertedIndex {
 	// TODO Adding a numWords() method, numLocations(String word), etc.
 	// TODO Adding a containsWord(), containsLocation(String word), etc.
 	
+	public int numWords() {
+		
+		return 1;
+	}
+	
 	/**
-	 * TODO 
+	 * Returns the list of the words in the map
+	 *  
 	 * @return
 	 * 			The list of the words in the Map
 	 */
