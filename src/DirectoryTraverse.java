@@ -5,8 +5,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO Different design for classes that store stuff vs do stuff
-
 /**
  * This class traverses through the directory provided and looks for all the .txt
  * files in the directory.

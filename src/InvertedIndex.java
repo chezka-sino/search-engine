@@ -74,13 +74,61 @@ public class InvertedIndex {
 		return map.toString();
 	}
 	
-	// TODO Adding a numWords() method, numLocations(String word), etc.
-	// TODO Adding a containsWord(), containsLocation(String word), etc.
-	
+	/**
+	 * Returns the number of words in the map
+	 * 
+	 * @return
+	 * 			the number of words in the map
+	 * 
+	 */
 	public int numWords() {
-		
-		return 1;
+		return map.size();
 	}
+	
+	/**
+	 * Returns the number of files where word can be found
+	 * 
+	 * @param word
+	 * 			the word to be checked for the number of locations
+	 * @return
+	 * 			the number of files where word can be found
+	 */
+	public int numLocations(String word) {
+		if (!map.containsKey(word)) {
+			return 0;
+		}
+		return map.get(word).size();
+	}
+	
+	/**
+	 * Checks if the map contains the word
+	 * 
+	 * @param word
+	 * 			the word to be searched
+	 * @return
+	 * 			true if the word is in the map, false otherwise
+	 */
+	public boolean containsWord(String word) {
+		return map.containsKey(word);
+	}
+	
+	/**
+	 * Checks if the word can be found in the text file
+	 * 
+	 * @param word
+	 * 			the word to be searched
+	 * @param textFile
+	 * 			the .txt file to be checked
+	 * @return
+	 * 			true if the word can be found in the text file, false otherwise
+	 */
+	public boolean containsLocation(String word, String textFile) {
+		if (map.containsKey(word)) {
+			return map.get(word).containsKey(textFile);
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * Returns the list of the words in the map

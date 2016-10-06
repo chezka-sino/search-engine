@@ -3,10 +3,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-// TODO Configure Eclipse to re-indent on save 
-// TODO Fill in your missing Javadoc comments
-// TODO Remove old TODO comments
-
 /** 
  * This class demonstrates traversing through a directory, looking for .txt files,
  * organizing words into an array and writing them in a JSON File
@@ -74,7 +70,7 @@ public class Driver {
 			catch (IOException e) {
 				System.err.println("IOException caught: " + e.getMessage());
 			}
-				
+			
 		}
 		
 	}
