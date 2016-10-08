@@ -12,7 +12,7 @@ import java.util.List;
  * @author Chezka Sino
  *
  */
-public class DirectoryTraverse {
+public class DirectoryTraverser {
 	
 	/**
 	 * Calls the recursive traverse method to get the .txt files
@@ -43,6 +43,7 @@ public class DirectoryTraverse {
 	private static void traverse(Path path, List<String> paths) {
 		
 		try {
+			// TODO try-with-resources
 			DirectoryStream<Path> listing = Files.newDirectoryStream(path);
 			
 			for (Path file: listing) {
@@ -58,6 +59,7 @@ public class DirectoryTraverse {
 		}
 		
 		catch (IOException e) {
+			// TODO Unable to traverse the directory + path + "."
 			System.err.println("IOException caught: " + e.getMessage());
 		}
 		
