@@ -34,18 +34,16 @@ public class ArgumentParser {
 
 			if (isFlag(args[i])) {
 
-				if (!argumentMap.containsKey(args[i])) { // TODO Could remove this block
-					argumentMap.put(args[i], null);
+				argumentMap.put(args[i], null);
 
-					if (i + 1 == args.length) {
-						return;
-					}
-
-					if (!isFlag(args[i + 1])) {
-						// TODO Could jsut do put again to replace or update
-						argumentMap.replace(args[i], null, args[i + 1]);
-					}
+				if (i + 1 == args.length) {
+					return;
 				}
+
+				if (!isFlag(args[i + 1])) {
+					argumentMap.put(args[i], args[i + 1]);
+				}
+
 			}
 
 		}

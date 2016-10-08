@@ -6,63 +6,58 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class traverses through the directory provided and looks for all the .txt
- * files in the directory.
+ * This class traverses through the directory provided and looks for all the
+ * .txt files in the directory.
  * 
  * @author Chezka Sino
  *
  */
 public class DirectoryTraverser {
-	
+
 	/**
 	 * Calls the recursive traverse method to get the .txt files
 	 * 
 	 * @param path
-	 * 			the directory to be traversed
-	 * @return
-	 * 			the list of .txt files
+	 *            the directory to be traversed
+	 * @return the list of .txt files
 	 * @throws IOException
 	 * 
 	 */
 	public static List<String> traverse(Path path) throws IOException {
 		ArrayList<String> textFiles = new ArrayList<>();
-		traverse(path,textFiles);
+		traverse(path, textFiles);
 		return textFiles;
 	}
-	
+
 	/**
 	 * This method recursively traverses through the directory and it adds all
 	 * the .txt files into an list
 	 * 
 	 * @param path
-	 * 			the directory to be traversed
+	 *            the directory to be traversed
 	 * @param paths
-	 * 			list of .txt files found in the directory
+	 *            list of .txt files found in the directory
 	 * 
 	 */
 	private static void traverse(Path path, List<String> paths) {
-		
-		try {
-			// TODO try-with-resources
-			DirectoryStream<Path> listing = Files.newDirectoryStream(path);
-			
-			for (Path file: listing) {
+
+		try (DirectoryStream<Path> listing = Files.newDirectoryStream(path)) {
+
+			for (Path file : listing) {
 				if (Files.isDirectory(file)) {
 					traverse(file, paths);
-				}
-				else {
+				} else {
 					if (file.toString().toLowerCase().endsWith(".txt")) {
 						paths.add(file.normalize().toString());
 					}
 				}
 			}
 		}
-		
+
 		catch (IOException e) {
-			// TODO Unable to traverse the directory + path + "."
-			System.err.println("IOException caught: " + e.getMessage());
+			System.err.println("Unable to traverse the directory: " + path + ".");
 		}
-		
+
 	}
 
 }
