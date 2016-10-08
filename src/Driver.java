@@ -61,17 +61,39 @@ public class Driver {
 			try {
 					
 				Path dir = Paths.get(dirPath);
-				textFiles.addAll(DirectoryTraverse.traverse(dir));
+				textFiles.addAll(DirectoryTraverser.traverse(dir));
 					
 				InvertedIndexBuilder.readArray(textFiles, indexPath);
 	
 			}
 	
 			catch (IOException e) {
+				// TODO 
 				System.err.println("IOException caught: " + e.getMessage());
 			}
 			
 		}
+		
+		// TODO 
+//		InvertedIndex index = new InvertedIndex();
+//		
+//		if (-dir) {
+//			build
+//		}
+//		
+//		if (-index) {
+//			index.toJSON(index);
+//		}
+		
+		/* Project 2
+		 * 
+		 * Create a query parser class to handle the query file and storing and writing of results.
+		 * 
+		 * Create a single search result class that implements Comparable
+		 * 
+		 * Create some search methods in inverted index
+		 * 
+		 */
 		
 	}
 	

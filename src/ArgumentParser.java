@@ -34,7 +34,7 @@ public class ArgumentParser {
 
 			if (isFlag(args[i])) {
 
-				if (!argumentMap.containsKey(args[i])) {
+				if (!argumentMap.containsKey(args[i])) { // TODO Could remove this block
 					argumentMap.put(args[i], null);
 
 					if (i + 1 == args.length) {
@@ -42,6 +42,7 @@ public class ArgumentParser {
 					}
 
 					if (!isFlag(args[i + 1])) {
+						// TODO Could jsut do put again to replace or update
 						argumentMap.replace(args[i], null, args[i + 1]);
 					}
 				}
@@ -112,6 +113,7 @@ public class ArgumentParser {
 	 * @return {@code true} if the flag exists and has a non-null value
 	 */
 	public boolean hasValue(String flag) {
+		// return argumentMap.get(flag) != null;
 		if (argumentMap.get(flag) == null) {
 			return false;
 		}

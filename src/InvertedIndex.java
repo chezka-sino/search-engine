@@ -21,9 +21,6 @@ public class InvertedIndex {
 
 	/**
 	 * Class constructor
-	 * 
-	 * @param index
-	 * 				the JSON file where the index would be written
 	 */
 	public InvertedIndex() { 
 		map = new TreeMap<>();
@@ -141,5 +138,20 @@ public class InvertedIndex {
 		wordList.addAll(map.keySet());
 		return wordList;
 	}
+	
+	/* 
+	 * Project 2
+	 * 
+	 * public List<SearchResult> exactSearch(String[] queryWords) {
+	 * 
+	 * 		loop through the query words
+	 * 			get the matching key and inner map
+	 * 			loop through the files
+	 * 				calculate search results
+	 * 
+	 * 		sort results
+	 * 		return results
+	 * }
+	 */
 
 }

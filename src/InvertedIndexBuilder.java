@@ -6,8 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-// TODO This should be a class that "does" stuff and doesn't have members and only static methods
-
 /**
  * This class looks into the .txt files, calls the InvertedIndex class to add the words
  * in a TreeMap then calls the JSONWriter to write the Inverted Index to a "pretty"
@@ -21,6 +19,7 @@ import java.util.ArrayList;
  */
 public class InvertedIndexBuilder {
 	
+	// TODO public static void readArray(ArrayList<String> textFiles, InvertedIndex index)
 	/**
 	 * Goes through the list of .txt files
 	 * 
@@ -39,7 +38,8 @@ public class InvertedIndexBuilder {
 			Path inputFile = Paths.get(name);
 			openFile(inputFile, toIndex);
 		}
-		toIndex.toJSON(index);
+		
+		toIndex.toJSON(index); // TODO Remove this and the index parameter
 	}
 	
 	/**
@@ -80,6 +80,7 @@ public class InvertedIndexBuilder {
 		
 		int count = 1;
 		
+		// TODO try-with-resources
 		BufferedReader reader = Files.newBufferedReader(inputFile, 
 				Charset.forName("UTF-8"));
 		
@@ -87,12 +88,13 @@ public class InvertedIndexBuilder {
 		
 		while ((line = reader.readLine()) != null) {
 			
-			String [] words = line.toLowerCase().split(" ");
+			String [] words = line.toLowerCase().split(" "); // TODO split("\\s+")
 			
-			for (String i:words) {
+			for (String i : words) {
+				// TODO i = i.replaceAll("\\p{Punct}+", "");
 				i = stripWords(i);
 				
-				if (i != null && i.length()>0) {
+				if (i != null && i.length()>0) { // if (!i.isEmpty())
 
 					toIndex.add(i, inputFile.toString(), count);
 					count++;
