@@ -1,10 +1,14 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import javax.naming.directory.SearchResult;
 
 /**
  * This class indexes the words.
@@ -143,5 +147,35 @@ public class InvertedIndex {
 	 * 
 	 * sort results return results }
 	 */
+	
+//	public List<SearchResult> exactSearch(ArrayList<String> queryWords) {
+//		
+//		
+//		
+//	}
+//	
+//	public Map<String,	Map<String, Map<Integer, Integer>>> partialSearch(ArrayList<String> queryWords) {
+//		
+//		for (String word: queryWords) {
+//			
+//			if (map.contains(word)) {
+//				
+//			}
+//			
+//		}
+//		
+//		
+//		return null;
+//				
+//	}
+	
+	public List<String> partialSearch (ArrayList<String> queryWords) {
+		
+		for (String word: queryWords) {
+			
+		}
+		
+		return null;
+	}
 
 }

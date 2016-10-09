@@ -26,11 +26,20 @@ public class Driver {
 		return "";
 
 	}
+	
+	private static String checkResultsPath(ArgumentParser argP) {
+		
+		if (argP.getValue("-results") == null && argP.hasFlag("-results")) {
+			return "results.json";
+		}
+		
+		return "";
+	}
 
 	/**
 	 * Main method Initializes the program
 	 * 
-	 * @param args
+	 * @param argss
 	 *            argument array
 	 */
 	public static void main(String[] args) {
@@ -41,12 +50,15 @@ public class Driver {
 
 		String dirPath = argP.getValue("-dir");
 		String indexPath = argP.getValue("-index");
+		String resultsPath = argP.getValue("-results");
+		String queryPath = argP.getValue("-query");
+//		String exactPath = argP.getValue("-exact");
 
 		if (argP.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
 
-		else if (argP.getValue("-dir") == null || !argP.hasFlag("-index")) {
+		if (argP.getValue("-dir") == null || !argP.hasFlag("-index")) {
 			System.err.println("Invalid directory. Check directory and index input");
 		}
 
@@ -54,6 +66,14 @@ public class Driver {
 
 			if (!checkJSONPath(argP).equals("")) {
 				indexPath = checkJSONPath(argP);
+			}
+			
+			if (indexPath == null || indexPath.equals("")) {
+				indexPath = checkJSONPath(argP);
+			}
+			
+			if (resultsPath == null || resultsPath.equals("")) {
+				resultsPath = checkResultsPath(argP);
 			}
 
 			try {
@@ -64,14 +84,24 @@ public class Driver {
 				InvertedIndex index = new InvertedIndex();
 				InvertedIndexBuilder.readArray(textFiles, index);
 				index.toJSON(indexPath);
+				
+				if (!(queryPath == null)) {			
+					QueryParser.parseFile(Paths.get(queryPath), "partial", index);
+//					QueryParser.
+				}
 
 			}
 
 			catch (IOException e) {
 				System.err.println("Error in directory: " + dirPath);
 			}
-
+			
 		}
+		
+
+		
+
+		
 
 		//
 		// if (-dir) {
