@@ -1,31 +1,25 @@
+import java.util.Comparator;
 
 public class SearchResult {
 	
-	public static final Comparable<Integer> FREQUENCY_ORDER = new Comparable<Integer>() {
-		
+	public static final Comparator<Integer> FREQUENCY_ORDER = new Comparator<Integer>() {
+
 		@Override
-		public int compareTo(Integer o) {
-			// TODO Auto-generated method stub
-			return 0;
+		public int compare(Integer o1, Integer o2) {
+			return Integer.compare(o1, o2);
+		}
+		
+	};
+	
+	public static final Comparator<Integer> POSITION_ORDER = new Comparator<Integer>() {
+
+		@Override
+		public int compare(Integer o1, Integer o2) {
+			return Integer.compare(o1, o2);
 		}
 	};
 	
-	public static final Comparable<Integer> INITIAL_POSITION = new Comparable<Integer>() {
-		
-		@Override
-		public int compareTo(Integer o) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-	};
-	
-	public static final Comparable<String> PATH_ORDER = new Comparable<String>() {
-		
-		@Override
-		public int compareTo(String o) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-	};
+//	public static final Comparator<String> LOCATION_ORDER = new Comparator<String>() {
+//	};
 
 }
