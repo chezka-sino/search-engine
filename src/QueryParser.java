@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -22,7 +23,7 @@ public class QueryParser {
 	 */
 	public static void parseFile(Path inputFile, String searchType, InvertedIndex index) {
 
-		Map<String, HashMap<String, TreeSet<Integer>>> searchResults = new TreeMap<>();
+		Map<String, HashMap<String, TreeSet<Integer>>> searchResults = new HashMap<>();
 
 		try (BufferedReader reader = Files.newBufferedReader(inputFile)) {
 
