@@ -215,6 +215,8 @@ public class InvertedIndex {
 		//check for frequency
 		Map<String, TreeSet<Integer>> sorted = new HashMap<>();
 		
+//		SearchResult.FREQUENCY_ORDER.compare(o1, o2);
+		
 		
 		
 		
