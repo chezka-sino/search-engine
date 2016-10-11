@@ -3,7 +3,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -144,53 +148,77 @@ public class InvertedIndex {
 	 * 
 	 * sort results return results }
 	 */
-
-	// public List<SearchResult> exactSearch(ArrayList<String> queryWords) {
-	//
-	//
-	//
-	// }
 	
-	public TreeMap<String, TreeSet<Integer>> getWordAttributes(String word) {
-		return map.get(word);
-	}
+	/**
+	 * 
+	 * @param word
+	 * @return
+	 */
+//	public TreeMap<String, TreeSet<Integer>> getWordAttributes(String word) {
+//		return map.get(word);
+//	}
 
-	public List<String> partialSearch(String[] queryWords) {
+	/**
+	 * 
+	 * @param queryWords
+	 * @return
+	 */
+	public HashMap<String, TreeSet<Integer>> partialSearch(String[] queryWords) {
 		//TODO look for same words then put to array
 		List<String> words = new ArrayList<>();
-		List<String> matches = new ArrayList<>();
+		HashMap<String, TreeSet<Integer>> matches = new HashMap<>();
 		words.addAll(map.keySet());
 		Collections.sort(words);
 		
 		for (String word : queryWords) {
 			for (String match: words) {
 				if (match.startsWith(word)) {
-					matches.add(match);
+					matches.putAll(map.get(match));;
 				}
 			}
 		}
 		
+		matches = sortResults(matches);
 		return matches;
 		
 	}
 	
-	public List<String> exactSearch(String[] queryWords) {
+	/**
+	 * 
+	 * @param queryWords
+	 * @return
+	 */
+	public HashMap<String, TreeSet<Integer>> exactSearch(String[] queryWords) {
 		//TODO look for same words then put to array
 		List<String> words = new ArrayList<>();
-		List<String> matches = new ArrayList<>();
+//		List<String> matches = new ArrayList<>();
+		HashMap<String, TreeSet<Integer>> matches = new HashMap<>();
+		
 		words.addAll(map.keySet());
 		Collections.sort(words);
 		
 		for (String word : queryWords) {
 			for (String match: words) {
 				if (match.equalsIgnoreCase(word)) {
-					matches.add(match);
+					matches.putAll(map.get(match));
 				}
 			}
 		}
 		
+		matches = sortResults(matches);		
 		return matches;
 		
+	}
+	
+	public HashMap<String, TreeSet<Integer>> sortResults(HashMap<String, TreeSet<Integer>> matches) {
+		
+		//check for frequency
+		Map<String, TreeSet<Integer>> sorted = new HashMap<>();
+		
+		
+		
+		
+		return null;
 	}
 
 }

@@ -2,15 +2,27 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
+/**
+ * 
+ * @author shinheera
+ *
+ */
 public class QueryParser {
 
+	/**
+	 * 
+	 * @param inputFile
+	 * @param searchType
+	 * @param index
+	 */
 	public static void parseFile(Path inputFile, String searchType, InvertedIndex index) {
 
-		Map<String, List<String>> searchResults = new TreeMap<>();
+		Map<String, HashMap<String, TreeSet<Integer>>> searchResults = new TreeMap<>();
 
 		try (BufferedReader reader = Files.newBufferedReader(inputFile)) {
 
@@ -32,8 +44,7 @@ public class QueryParser {
 					else if (searchType.equals("exact")) {
 						searchResults.put(line,exact(index, line));
 					}
-					
-					
+										
 				}
 
 			}
@@ -46,20 +57,31 @@ public class QueryParser {
 	}
 
 	// TODO Query file, storing and writing of results
-	public static List<String> partial(InvertedIndex index, String queryWord) {
+	
+	/**
+	 * 
+	 * @param index
+	 * @param queryWord
+	 * @return
+	 */
+	public static HashMap<String, TreeSet<Integer>> partial(InvertedIndex index, String queryWord) {
 		
 		String[] words = queryWord.toLowerCase().split("\\s+");
-		List<String> searchResults = index.partialSearch(words);
+		HashMap<String, TreeSet<Integer>> searchResults = new HashMap<>(); 
+		searchResults = (HashMap<String, TreeSet<Integer>>) index.partialSearch(words);
 
 		return searchResults;
 	}
 	
-	public static List<String> exact(InvertedIndex index, String queryWord) {
+	public static HashMap<String, TreeSet<Integer>> exact(InvertedIndex index, String queryWord) {
 			
 		String[] words = queryWord.toLowerCase().split("\\s+");
-		List<String> searchResults = index.exactSearch(words);
+		HashMap<String, TreeSet<Integer>> searchResults = new HashMap<>();
+		searchResults = (HashMap<String, TreeSet<Integer>>) index.exactSearch(words);
 		return searchResults;
 	
 	}
+	
+//	public static void sortResults ()
 	
 }
