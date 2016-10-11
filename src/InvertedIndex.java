@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -149,14 +150,47 @@ public class InvertedIndex {
 	//
 	//
 	// }
+	
+	public TreeMap<String, TreeSet<Integer>> getWordAttributes(String word) {
+		return map.get(word);
+	}
 
-	public List<String> partialSearch(ArrayList<String> queryWords) {
-
+	public List<String> partialSearch(String[] queryWords) {
+		//TODO look for same words then put to array
+		List<String> words = new ArrayList<>();
+		List<String> matches = new ArrayList<>();
+		words.addAll(map.keySet());
+		Collections.sort(words);
+		
 		for (String word : queryWords) {
-
+			for (String match: words) {
+				if (match.startsWith(word)) {
+					matches.add(match);
+				}
+			}
 		}
-
-		return null;
+		
+		return matches;
+		
+	}
+	
+	public List<String> exactSearch(String[] queryWords) {
+		//TODO look for same words then put to array
+		List<String> words = new ArrayList<>();
+		List<String> matches = new ArrayList<>();
+		words.addAll(map.keySet());
+		Collections.sort(words);
+		
+		for (String word : queryWords) {
+			for (String match: words) {
+				if (match.equalsIgnoreCase(word)) {
+					matches.add(match);
+				}
+			}
+		}
+		
+		return matches;
+		
 	}
 
 }

@@ -52,7 +52,7 @@ public class Driver {
 		String indexPath = argP.getValue("-index");
 		String resultsPath = argP.getValue("-results");
 		String queryPath = argP.getValue("-query");
-//		String exactPath = argP.getValue("-exact");
+		String exactPath = argP.getValue("-exact");
 
 		if (argP.numFlags() == 0) {
 			System.err.println("No arguments");
@@ -87,7 +87,10 @@ public class Driver {
 				
 				if (!(queryPath == null)) {			
 					QueryParser.parseFile(Paths.get(queryPath), "partial", index);
-//					QueryParser.
+				}
+				
+				if (!(exactPath == null)) {
+					QueryParser.parseFile(Paths.get(exactPath), "exact", index);
 				}
 
 			}

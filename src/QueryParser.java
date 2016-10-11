@@ -2,15 +2,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class QueryParser {
 
 	public static void parseFile(Path inputFile, String searchType, InvertedIndex index) {
 
-		ArrayList<String> queryWords = new ArrayList<>();
-		// InvertedIndex toIndex = new InvertedIndex();
+		Map<String, List<String>> searchResults = new TreeMap<>();
 
 		try (BufferedReader reader = Files.newBufferedReader(inputFile)) {
 
@@ -22,22 +22,21 @@ public class QueryParser {
 				line = line.replace("\\p{Punct}+", "");
 
 				if (!line.isEmpty()) {
-					queryWords.add(line);
+
+					searchResults.put(line, null);
+					
+					if (searchType.equals("partial")) {
+						searchResults.put(line, partial(index, line));
+					}
+					
+					else if (searchType.equals("exact")) {
+						searchResults.put(line,exact(index, line));
+					}
+					
+					
 				}
 
 			}
-
-			if (searchType.equals("partial")) {
-				partial(index, queryWords);
-			}
-
-			// List<SearchResult> searchResults = new Li
-
-			// if (searchType.equals("partial")) {
-			// List<String> partialResult =
-			// InvertedIndex.partialSearch(queryWords);
-
-			// }
 
 		}
 
@@ -47,13 +46,20 @@ public class QueryParser {
 	}
 
 	// TODO Query file, storing and writing of results
-	public static void partial(InvertedIndex index, ArrayList<String> queryWords) {
+	public static List<String> partial(InvertedIndex index, String queryWord) {
+		
+		String[] words = queryWord.toLowerCase().split("\\s+");
+		List<String> searchResults = index.partialSearch(words);
 
-		// InvertedIndex.partialSearch(queryWords);
-		// Map<String, Map<String, Map<Integer, Integer>>> search = new
-		// HashMap();
-		List<String> searchResults = index.partialSearch(queryWords);
-
-		// search = index.partialSearch(queryWords);
+		return searchResults;
 	}
+	
+	public static List<String> exact(InvertedIndex index, String queryWord) {
+			
+		String[] words = queryWord.toLowerCase().split("\\s+");
+		List<String> searchResults = index.exactSearch(words);
+		return searchResults;
+	
+	}
+	
 }
