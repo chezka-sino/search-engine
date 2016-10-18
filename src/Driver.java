@@ -53,28 +53,30 @@ public class Driver {
 		String resultsPath = argP.getValue("-results");
 		String queryPath = argP.getValue("-query");
 		String exactPath = argP.getValue("-exact");
+		
+//		System.out.println("-dir: " + dirPath + " " + argP.hasFlag("-dir"));
+//		System.out.println("-index: " + indexPath + " " + argP.hasFlag("-index"));
+//		System.out.println("-results: " + resultsPath + " " + argP.hasFlag("-results"));
+//		System.out.println("-query: " + queryPath + " " + argP.hasFlag("-query"));
+//		System.out.println("-exact: " + exactPath + " " + argP.hasFlag("-exact"));
 
 		if (argP.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
 
-		if (argP.getValue("-dir") == null || !argP.hasFlag("-index")) {
-			System.err.println("Invalid directory. Check directory and index input");
+		if (argP.getValue("-dir") == null) {
+			System.out.println(argP.getValue("-dir"));
+			System.out.println(argP.hasFlag("-index"));
+			System.err.println("Invalid directory. Check directory input");
 		}
-
+		
 		else {
-
-			if (!checkJSONPath(argP).equals("")) {
-				indexPath = checkJSONPath(argP);
-			}
 			
-			if (indexPath == null || indexPath.equals("")) {
-				indexPath = checkJSONPath(argP);
-			}
+//			if (!checkJSONPath(argP).equals("")) {
+//				indexPath = checkJSONPath(argP);
+//			}
 			
-			if (resultsPath == null || resultsPath.equals("")) {
-				resultsPath = checkResultsPath(argP);
-			}
+			
 
 			try {
 
@@ -83,27 +85,47 @@ public class Driver {
 
 				InvertedIndex index = new InvertedIndex();
 				InvertedIndexBuilder.readArray(textFiles, index);
-				index.toJSON(indexPath);
 				
-				if (!(queryPath == null)) {			
-					QueryParser.parseFile(Paths.get(queryPath), "partial", index);
+//				if (indexPath == null || indexPath.equals("")) {
+//					indexPath = checkJSONPath(argP);
+//					
+//				}
+//				index.toJSON(indexPath);
+				
+//				System.out.println("Query path: " + queryPath);
+//				System.out.println("Exact path: " + exactPath);
+				
+				if (!(queryPath == null)) {	
+//					System.out.println("parseFile partial");
+					QueryParser.parseFilePartial(Paths.get(queryPath), index);
 				}
 				
 				if (!(exactPath == null)) {
-					QueryParser.parseFile(Paths.get(exactPath), "exact", index);
+					QueryParser.parseFileExact(Paths.get(exactPath), index);
 				}
+				
+				if (indexPath == null || indexPath.equals("")) {
+					indexPath = checkJSONPath(argP);
+				}
+				index.toJSON(indexPath);
+				
+				if (resultsPath == null || resultsPath.equals("")) {
+					resultsPath = checkResultsPath(argP);
+					System.out.println("New results path: " + resultsPath);
+				}
+//				
+				
+				
 
 			}
 
 			catch (IOException e) {
 				System.err.println("Error in directory: " + dirPath);
+//				e.printStackTrace();
 			}
 			
+			
 		}
-		
-
-		
-
 		
 
 		//

@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import javax.print.attribute.standard.MediaPrintableArea;
 
 /**
  * This class indexes the words.
@@ -23,12 +26,16 @@ public class InvertedIndex {
 	 * The TreeMap of the words
 	 */
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> map;
+	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> partialSearchMap;
+	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> exactSearchMap;
 
 	/**
 	 * Class constructor
 	 */
 	public InvertedIndex() {
 		map = new TreeMap<>();
+		partialSearchMap = new TreeMap<>();
+		exactSearchMap = new TreeMap<>();
 	}
 
 	/**
@@ -99,6 +106,16 @@ public class InvertedIndex {
 		}
 		return map.get(word).size();
 	}
+	
+	public int firstIndex(String word, String fileName) {
+		
+		if (map.containsKey(word)) {
+			return map.get(word).get(fileName).first();
+		}
+		
+		return 0;
+		
+	}
 
 	/**
 	 * Checks if the map contains the word
@@ -137,6 +154,12 @@ public class InvertedIndex {
 		wordList.addAll(map.keySet());
 		return wordList;
 	}
+	
+	public List<String> getFileLocations(String word) {
+		List<String> locations = new ArrayList<>();
+		locations.addAll(map.get(word).keySet());
+		return locations;
+	}
 
 	/*
 	 * Project 2
@@ -149,78 +172,100 @@ public class InvertedIndex {
 	 * sort results return results }
 	 */
 	
-	/**
-	 * 
-	 * @param word
-	 * @return
-	 */
-//	public TreeMap<String, TreeSet<Integer>> getWordAttributes(String word) {
-//		return map.get(word);
-//	}
+	public void partial(String queryLine) {
+		
+		queryLine = queryLine.trim();
+		String [] words = queryLine.split("\\s+");
+		partialSearchMap.put(queryLine, partialSearch(words));
+		
+//		for(String line: exactSearchMap.keySet()) {
+//			System.out.println("QUERY LINE PARTIAL: " + line);
+//			for (String filename: partialSearchMap.get(line).keySet()) {
+//				System.out.println("FILE: " + filename);
+//				System.out.println("FREQUENCY: " + partialSearchMap.get(line).get(filename).size());
+//			}
+//		}
+//		
+//		System.out.println();
+//		System.out.println("ENDED PARTIAL SEARCH");
+		
+	}
 
-	/**
-	 * 
-	 * @param queryWords
-	 * @return
-	 */
+	//TODO ERROR WAS HERE!
 	public HashMap<String, TreeSet<Integer>> partialSearch(String[] queryWords) {
-		//TODO look for same words then put to array
+
 		List<String> words = new ArrayList<>();
-		HashMap<String, TreeSet<Integer>> matches = new HashMap<>();
 		words.addAll(map.keySet());
-		Collections.sort(words);
+//		List<String> wordMatches = new ArrayList<>();
+		List<String> fileResult = new ArrayList<>();
+		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
 		
-		for (String word : queryWords) {
-			for (String match: words) {
-				if (match.startsWith(word)) {
-					matches.putAll(map.get(match));;
-				}
+		for (String word: queryWords) {
+
+			for (String match: map.tailMap(word).keySet()) {
+				
+//				System.out.println(map.get(match).keySet().toString());
+				
+			}		
+		}
+		
+		return fileMatches;
+
+	}
+		//TODO Sort
+	
+	public void exact(String queryLine) {
+		
+		System.out.println("STARTED EXACT SEARCH");
+		
+		queryLine = queryLine.trim();
+		String [] words = queryLine.split("\\s+");
+		exactSearchMap.put(queryLine, exactSearch(words));
+		
+		for(String line: exactSearchMap.keySet()) {
+			System.out.println("QUERY LINE EXACT: " + line);
+			for (String filename: exactSearchMap.get(line).keySet()) {
+				System.out.println("FILE: " + filename);
+				System.out.println("FREQUENCY: " + exactSearchMap.get(line).get(filename).size());
 			}
 		}
 		
-		matches = sortResults(matches);
-		return matches;
+		System.out.println();
+		System.out.println("ENDED EXACT SEARCH");
+		
+		sortSearchResult(exactSearchMap);
 		
 	}
 	
-	/**
-	 * 
-	 * @param queryWords
-	 * @return
-	 */
 	public HashMap<String, TreeSet<Integer>> exactSearch(String[] queryWords) {
-		//TODO look for same words then put to array
+
 		List<String> words = new ArrayList<>();
-//		List<String> matches = new ArrayList<>();
-		HashMap<String, TreeSet<Integer>> matches = new HashMap<>();
-		
 		words.addAll(map.keySet());
-		Collections.sort(words);
+		List<String> fileResult = new ArrayList<>();
+		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
 		
-		for (String word : queryWords) {
+		for (String word: queryWords) {
+
 			for (String match: words) {
-				if (match.equalsIgnoreCase(word)) {
-					matches.putAll(map.get(match));
+				
+				if (match.equals(word)) {
+					
+					fileResult.addAll(map.get(match).keySet());
+					for (String filename: fileResult) {
+						fileMatches.put(filename, new TreeSet<>());
+						fileMatches.get(filename).addAll(map.get(match).get(filename));
+					}
+										
 				}
-			}
+			}		
 		}
 		
-		matches = sortResults(matches);		
-		return matches;
-		
+		return fileMatches;
+
 	}
 	
-	public HashMap<String, TreeSet<Integer>> sortResults(HashMap<String, TreeSet<Integer>> matches) {
+	public void sortSearchResult (TreeMap<String, HashMap<String, TreeSet<Integer>>> unsortedMap) {
 		
-		//check for frequency
-		Map<String, TreeSet<Integer>> sorted = new HashMap<>();
-		
-//		SearchResult.FREQUENCY_ORDER.compare(o1, o2);
-		
-		
-		
-		
-		return null;
 	}
 
 }
