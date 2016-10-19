@@ -1,9 +1,12 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyStore.Entry;
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,8 +29,8 @@ public class InvertedIndex {
 	 * The TreeMap of the words
 	 */
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> map;
-	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> partialSearchMap;
-	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> exactSearchMap;
+	private final TreeMap<String, HashMap<String, Set<Integer>>> partialSearchMap;
+	private final TreeMap<String, HashMap<String, Set<Integer>>> exactSearchMap;
 
 	/**
 	 * Class constructor
@@ -192,13 +195,13 @@ public class InvertedIndex {
 	}
 
 	//TODO ERROR WAS HERE!
-	public HashMap<String, TreeSet<Integer>> partialSearch(String[] queryWords) {
+	public HashMap<String, Set<Integer>> partialSearch(String[] queryWords) {
 
 		List<String> words = new ArrayList<>();
 		words.addAll(map.keySet());
 //		List<String> wordMatches = new ArrayList<>();
 		List<String> fileResult = new ArrayList<>();
-		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
+		HashMap<String, Set<Integer>> fileMatches = new HashMap<>();
 		
 		for (String word: queryWords) {
 
@@ -233,16 +236,19 @@ public class InvertedIndex {
 		System.out.println();
 		System.out.println("ENDED EXACT SEARCH");
 		
-		sortSearchResult(exactSearchMap);
+		for (String queryWord: exactSearchMap.keySet()) {
+			sortSearchResult(exactSearchMap.get(queryWord));
+		}
+		
 		
 	}
 	
-	public HashMap<String, TreeSet<Integer>> exactSearch(String[] queryWords) {
+	public HashMap<String, Set<Integer>> exactSearch(String[] queryWords) {
 
 		List<String> words = new ArrayList<>();
 		words.addAll(map.keySet());
 		List<String> fileResult = new ArrayList<>();
-		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
+		HashMap<String, Set<Integer>> fileMatches = new HashMap<>();
 		
 		for (String word: queryWords) {
 
@@ -264,7 +270,9 @@ public class InvertedIndex {
 
 	}
 	
-	public void sortSearchResult (TreeMap<String, HashMap<String, TreeSet<Integer>>> unsortedMap) {
+	public void sortSearchResult (HashMap<String, Set<Integer>> unsortedMap)  {
+		
+		
 		
 	}
 

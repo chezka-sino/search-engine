@@ -1,7 +1,35 @@
-import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
-public class SearchResult implements Comparable {
+public class SortResults  {
+	
+
+
+//	@Override
+//	public int compareTo(HashMap<String, TreeSet<Integer>> o) {
+//		// TODO Auto-generated method stub
+//		return 0;
+//	};
+//	@Override
+//	public int compare(HashMap<String, TreeSet<Integer>> o1, HashMap<String, TreeSet<Integer>> o2) {
+//		// TODO Auto-generated method stub
+//		return 0;
+//	}
+	
+//	public static final Comparator<HashMap<String, TreeSet<Integer>>> RESULT_ORDER = new Comparator<HashMap<String, TreeSet<Integer>>>() {
+//
+//		@Override
+//		public int compare(HashMap<String, TreeSet<Integer>> o1, HashMap<String, TreeSet<Integer>> o2) {
+//			// TODO Auto-generated method stub
+//			return 0;
+//		}
+//
+//		
+//		
+//	};
 
 //	public static final Comparator<Integer> FREQUENCY_ORDER = new Comparator<Integer>() {
 //
@@ -41,11 +69,11 @@ public class SearchResult implements Comparable {
 //
 //	};
 
-	@Override
-	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
-		
-		return 0;
-	}
+//	@Override
+//	public int compareTo(Object o) {
+//		// TODO Auto-generated method stub
+//		
+//		return 0;
+//	}
 	
 }
