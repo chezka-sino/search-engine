@@ -246,7 +246,7 @@ public class InvertedIndex {
 
 		List<String> words = new ArrayList<>();
 		words.addAll(map.keySet());
-		List<String> fileResult = new ArrayList<>();
+//		List<String> fileResult = new ArrayList<>();
 
 		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
 		System.out.println("INITIAL FILEMATCHES");
@@ -271,7 +271,10 @@ public class InvertedIndex {
 //						System.out.println("NULL POINTER PROBLEM?");
 //						System.out.println(map.get(match).get(filename).isEmpty());
 //						fileMatches.get(filename).addAll(map.get(match).get(filename));
-						fileMatches.put(filename, map.get(match).get(filename));
+//						fileMatches.put(filename, map.get(match).get(filename));
+						fileMatches.get(filename).addAll(map.get(match).get(filename));
+						System.out.println("POSITIONS FOR: " + word);
+						System.out.println(fileMatches.get(filename).toString());
 //						System.out.println(map.get(match).get(filename));
 //						System.out.println("ANTELOPE: " + map.get("antelope").get(filename));
 						System.out.println();
