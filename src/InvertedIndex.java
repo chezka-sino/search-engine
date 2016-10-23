@@ -180,18 +180,6 @@ public class InvertedIndex {
 		String[] words = queryLine.split("\\s+");
 		partialSearchMap.put(queryLine, partialSearch(words));
 
-		// for(String line: exactSearchMap.keySet()) {
-		// System.out.println("QUERY LINE PARTIAL: " + line);
-		// for (String filename: partialSearchMap.get(line).keySet()) {
-		// System.out.println("FILE: " + filename);
-		// System.out.println("FREQUENCY: " +
-		// partialSearchMap.get(line).get(filename).size());
-		// }
-		// }
-		//
-		// System.out.println();
-		// System.out.println("ENDED PARTIAL SEARCH");
-
 	}
 
 	public HashMap<String, Set<Integer>> partialSearch(String[] queryWords) {
@@ -219,18 +207,14 @@ public class InvertedIndex {
 	public void exact(String queryLine) {
 		
 		System.out.println("QUERY LINE AT EXACT: " + queryLine);
-//		System.out.println();
 		List<String> queryList = new ArrayList<>();
 		queryLine = queryLine.trim();
 		String[] words = queryLine.split("\\s+");
 
-		System.out.println("QUERY LINE AFTER SPLIT: ");
-		for (String smeb: words) {
-			queryList.add(smeb);
+		for (String indWords: words) {
+			queryList.add(indWords);
 		}
 		Collections.sort(queryList);
-		System.out.println(queryList.toString());
-		System.out.println();
 		
 		queryLine = String.join(" ", queryList);
 		System.out.println(queryLine);
@@ -242,6 +226,10 @@ public class InvertedIndex {
 		
 		if (exactSearch(words) != null || !exactSearch(words).isEmpty()) {
 			exactSearchMap.put(queryLine, exactSearch(words));
+		}
+		
+		else {
+			exactSearchMap.put(queryLine, null);
 		}
 
 		System.out.println();
@@ -259,30 +247,42 @@ public class InvertedIndex {
 		List<String> words = new ArrayList<>();
 		words.addAll(map.keySet());
 		List<String> fileResult = new ArrayList<>();
+
 		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
+		System.out.println("INITIAL FILEMATCHES");
+		System.out.println(fileMatches.toString());
+		System.out.println(fileMatches.isEmpty());
 
 		for (String word : queryWords) {
+			System.out.println("WORD CURRENTLY SEARCHED: " + word);
 
 			for (String match : words) {
 
 				if (match.equals(word)) {
+					System.out.println("FOUND MATCH FOR: " + word);
+					System.out.println(map.get(match).keySet().toString());
 
-					fileResult.addAll(map.get(match).keySet());
-					for (String filename : fileResult) {
-						if (!fileMatches.containsKey(fileMatches)) {
+//					fileResult.addAll(map.get(match).keySet());
+					for (String filename : map.get(match).keySet()) {
+						if (!fileMatches.containsKey(filename)) {
 							fileMatches.put(filename, new TreeSet<>());
 						}
-						System.out.println("NULL POINTER PROBLEM?");
-						System.out.println(map.get(match).get(filename).toString());
-						fileMatches.get(filename).addAll(map.get(match).get(filename));
-//						fileMatches.put(filename, map.get(match).get(filename));
+						//TODO error here. what if no match?
+//						System.out.println("NULL POINTER PROBLEM?");
+//						System.out.println(map.get(match).get(filename).isEmpty());
+//						fileMatches.get(filename).addAll(map.get(match).get(filename));
+						fileMatches.put(filename, map.get(match).get(filename));
+//						System.out.println(map.get(match).get(filename));
+//						System.out.println("ANTELOPE: " + map.get("antelope").get(filename));
 						System.out.println();
 					}
 
 				}
 			}
 		}
-
+//		if (fileMatches == null) {
+//			return (HashMap<String, TreeSet<Integer>>) Collections.EMPTY_MAP;
+//		}
 		return fileMatches;
 
 	}
@@ -293,6 +293,11 @@ public class InvertedIndex {
 
 			@Override
 			public int compare(String o1, String o2) {
+				
+				if (exactSearchMap.get(queryWord).get(o1) == null ||
+						exactSearchMap.get(queryWord).get(o2) == null) {
+					return 0;
+				}
 				
 //				System.out.println("STARTED SORTING");
 				System.out.println("o1: " + o1);
@@ -329,14 +334,14 @@ public class InvertedIndex {
 
 		sortedMap.putAll(exactSearchMap.get(queryWord));
 		
-		System.out.println("SORTEDMAP:");
-		System.out.println(queryWord);
-		System.out.println(sortedMap.toString());
-		for (String filename : sortedMap.keySet()) {
-			System.out.println(filename);
-			System.out.println(sortedMap.get(filename).size());
-			System.out.println();
-		}
+//		System.out.println("SORTEDMAP:");
+//		System.out.println(queryWord);
+//		System.out.println(sortedMap.toString());
+//		for (String filename : sortedMap.keySet()) {
+//			System.out.println(filename);
+//			System.out.println(sortedMap.get(filename).size());
+//			System.out.println();
+//		}
 
 		sortedExact.put(queryWord, sortedMap);
 
