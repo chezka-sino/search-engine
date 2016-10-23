@@ -95,6 +95,11 @@ public class Driver {
 //				System.out.println("Query path: " + queryPath);
 //				System.out.println("Exact path: " + exactPath);
 				
+				if (resultsPath == null || resultsPath.equals("")) {
+					resultsPath = checkResultsPath(argP);
+					System.out.println("New results path: " + resultsPath);
+				}
+				
 				if (!(queryPath == null)) {	
 //					System.out.println("parseFile partial");
 					QueryParser.parseFilePartial(Paths.get(queryPath), index);
@@ -102,17 +107,20 @@ public class Driver {
 				
 				if (!(exactPath == null)) {
 					QueryParser.parseFileExact(Paths.get(exactPath), index);
+					System.out.println("CALLING WRITEJSONSEARCH");
+					index.searchToJSON(resultsPath);
 				}
 				
 				if (indexPath == null || indexPath.equals("")) {
 					indexPath = checkJSONPath(argP);
 				}
+				
 				index.toJSON(indexPath);
 				
-				if (resultsPath == null || resultsPath.equals("")) {
-					resultsPath = checkResultsPath(argP);
-					System.out.println("New results path: " + resultsPath);
-				}
+//				if (resultsPath == null || resultsPath.equals("")) {
+//					resultsPath = checkResultsPath(argP);
+//					System.out.println("New results path: " + resultsPath);
+//				}
 //				
 				
 				

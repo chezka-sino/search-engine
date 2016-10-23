@@ -157,12 +157,12 @@ public class JSONWriter {
 	// TODO Might need to make a new method in JSON writer for project 2.
 	// method for writing search results since different format from project 1.
 	
-	public static void writeJSONSearch(Path outputFile, TreeMap<String, HashMap<String, TreeSet<Integer>>> searchMap) throws IOException {
+	public static void writeJSONSearch(Path outputFile, TreeMap<String, TreeMap<String, TreeSet<Integer>>> sortedExact) throws IOException {
 		
 		try (BufferedWriter writer = Files.newBufferedWriter(outputFile,
 				Charset.forName("UTF-8"))) {
 		
-			Set<String> words = searchMap.keySet();
+			Set<String> words = sortedExact.keySet();
 			Iterator<String> itr = words.iterator();
 			writer.write("{" + END);
 			
@@ -171,17 +171,17 @@ public class JSONWriter {
 				String current = itr.next();
 				writer.write(writeStrings(current, 1) + ": [" + END);
 				
-				Set<String> fileName = searchMap.get(current).keySet();
+				Set<String> fileName = sortedExact.get(current).keySet();
 				Iterator<String> itr2 = fileName.iterator();
 
 				while (itr2.hasNext()) {
 					
 					String current2 = itr2.next();
-					writer.write(writeStrings("{", 2) + END);
+					writer.write(tab(2) + "{" + END);
 					writer.write(writeStrings("where", 3) + ": " + writeStrings(current2, 0) + "," + END);
-					writer.write(writeStrings("count", 3) + ": " + searchMap.get(current).get(current2).size() + "," + END);
-					writer.write(writeStrings("index", 3) + ": " + searchMap.get(current).get(current2).first() + END);
-					writer.write(writeStrings("}", 2));
+					writer.write(writeStrings("count", 3) + ": " + sortedExact.get(current).get(current2).size() + "," + END);
+					writer.write(writeStrings("index", 3) + ": " + sortedExact.get(current).get(current2).first() + END);
+					writer.write(tab(2) + "}");
 					
 					if (itr2.hasNext()) {
 						writer.write(",");
@@ -191,9 +191,9 @@ public class JSONWriter {
 								
 				}
 				
-				writer.write(writeStrings("]", 2));
+				writer.write(TAB + "]");
 				
-				if (itr2.hasNext()){
+				if (itr.hasNext()){
 					writer.write(",");
 				}
 				

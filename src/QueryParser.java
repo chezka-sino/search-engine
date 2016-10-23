@@ -60,11 +60,12 @@ public class QueryParser {
 			System.err.println("Unable to read query file: " + inputFile.toString());
 		}
 
-		index.printExactSorted();
 
 	}
 
 	public static void toJSON(Path outputFile) {
+		
+		
 
 	}
 
