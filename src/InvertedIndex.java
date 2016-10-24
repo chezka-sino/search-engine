@@ -198,7 +198,7 @@ public class InvertedIndex {
 
 		for (String word : queryWords) {
 
-			for (String match : words) {
+			for (String match : map.tailMap(word).keySet()) {
 				
 				if (match.startsWith(word)) {
 					for (String filename: map.get(match).keySet()) {
