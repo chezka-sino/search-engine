@@ -18,10 +18,6 @@ public class QueryParser {
 	 */
 	public static void parseFilePartial(Path inputFile, InvertedIndex index) {
 
-		// Map<String, List> searchResults = new HashMap<>();
-		// ArrayList<String []> allQuery = new ArrayList<>();
-		int count = 0;
-
 		try (BufferedReader reader = Files.newBufferedReader(inputFile)) {
 
 			String line;
@@ -32,7 +28,7 @@ public class QueryParser {
 				index.partial(line);
 
 			}
-
+			
 		}
 
 		catch (IOException e) {
@@ -62,13 +58,5 @@ public class QueryParser {
 
 
 	}
-
-	public static void toJSON(Path outputFile) {
-		
-		
-
-	}
-
-	// TODO Query file, storing and writing of results
 
 }

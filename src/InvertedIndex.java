@@ -1,15 +1,11 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -25,9 +21,9 @@ public class InvertedIndex {
 	 * The TreeMap of the words
 	 */
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> map;
-	private final TreeMap<String, HashMap<String, Set<Integer>>> partialSearchMap;
+	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> partialSearchMap;
 	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> exactSearchMap;
-	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> sortedExact;
+	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> sortedSearchResult;
 
 	/**
 	 * Class constructor
@@ -36,7 +32,7 @@ public class InvertedIndex {
 		map = new TreeMap<>();
 		partialSearchMap = new TreeMap<>();
 		exactSearchMap = new TreeMap<>();
-		sortedExact = new TreeMap<>();
+		sortedSearchResult = new TreeMap<>();
 	}
 
 	/**
@@ -163,50 +159,66 @@ public class InvertedIndex {
 		return locations;
 	}
 
-	/*
-	 * Project 2
-	 * 
-	 * public List<SearchResult> exactSearch(String[] queryWords) {
-	 * 
-	 * loop through the query words get the matching key and inner map loop
-	 * through the files calculate search results
-	 * 
-	 * sort results return results }
-	 */
-
 	public void partial(String queryLine) {
-
+		
+		List<String> queryList = new ArrayList<>();
 		queryLine = queryLine.trim();
 		String[] words = queryLine.split("\\s+");
-		partialSearchMap.put(queryLine, partialSearch(words));
+		
+		for (String indWords: words) {
+			queryList.add(indWords);
+		}
+		Collections.sort(queryList);
+		queryLine = String.join(" ", queryList);
+		
+		if (!partialSearchMap.containsKey(queryLine)) {
+			partialSearchMap.put(queryLine, new HashMap<>());
+		}
+		
+		if (partialSearch(words) != null || !partialSearch(words).isEmpty()) {
+			partialSearchMap.put(queryLine, partialSearch(words));
+		}
+		
+		else {
+			partialSearchMap.put(queryLine, null);
+		}
+		
+		for (String queryWord: partialSearchMap.keySet()) {
+			sortSearchResult(queryWord, partialSearchMap);
+		}
 
 	}
 
-	public HashMap<String, Set<Integer>> partialSearch(String[] queryWords) {
+	public HashMap<String, TreeSet<Integer>> partialSearch(String[] queryWords) {
 
 		List<String> words = new ArrayList<>();
 		words.addAll(map.keySet());
-		// List<String> wordMatches = new ArrayList<>();
-		List<String> fileResult = new ArrayList<>();
-		HashMap<String, Set<Integer>> fileMatches = new HashMap<>();
+
+		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
 
 		for (String word : queryWords) {
 
-			for (String match : map.tailMap(word).keySet()) {
+			for (String match : words) {
+				
+				if (match.startsWith(word)) {
+					for (String filename: map.get(match).keySet()) {
+						if (!fileMatches.containsKey(filename)) {
+							fileMatches.put(filename, new TreeSet<>());
+						}
 
-				// System.out.println(map.get(match).keySet().toString());
-
+						fileMatches.get(filename).addAll(map.get(match).get(filename));
+					}
+					
+				}
 			}
 		}
 
 		return fileMatches;
 
 	}
-	// TODO Sort
 
 	public void exact(String queryLine) {
 		
-		System.out.println("QUERY LINE AT EXACT: " + queryLine);
 		List<String> queryList = new ArrayList<>();
 		queryLine = queryLine.trim();
 		String[] words = queryLine.split("\\s+");
@@ -215,14 +227,11 @@ public class InvertedIndex {
 			queryList.add(indWords);
 		}
 		Collections.sort(queryList);
-		
 		queryLine = String.join(" ", queryList);
-		System.out.println(queryLine);
 		
 		if (!exactSearchMap.containsKey(queryLine)) {
 			exactSearchMap.put(queryLine, new HashMap<>());
 		}
-//		exactSearchMap.put(queryLine, new HashMap<>());
 		
 		if (exactSearch(words) != null || !exactSearch(words).isEmpty()) {
 			exactSearchMap.put(queryLine, exactSearch(words));
@@ -232,37 +241,25 @@ public class InvertedIndex {
 			exactSearchMap.put(queryLine, null);
 		}
 
-		System.out.println();
-
 		for (String queryWord : exactSearchMap.keySet()) {
-			sortSearchResult(queryWord);
+			sortSearchResult(queryWord, exactSearchMap);
 		}
-
-		// System.out.println(sortedExact.toString());
-
+		
 	}
 
 	public HashMap<String, TreeSet<Integer>> exactSearch(String[] queryWords) {
 
 		List<String> words = new ArrayList<>();
 		words.addAll(map.keySet());
-//		List<String> fileResult = new ArrayList<>();
 
 		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
-		System.out.println("INITIAL FILEMATCHES");
-		System.out.println(fileMatches.toString());
-		System.out.println(fileMatches.isEmpty());
 
 		for (String word : queryWords) {
-			System.out.println("WORD CURRENTLY SEARCHED: " + word);
 
 			for (String match : words) {
 
 				if (match.equals(word)) {
-					System.out.println("FOUND MATCH FOR: " + word);
-					System.out.println(map.get(match).keySet().toString());
 
-//					fileResult.addAll(map.get(match).keySet());
 					for (String filename : map.get(match).keySet()) {
 						if (!fileMatches.containsKey(filename)) {
 							fileMatches.put(filename, new TreeSet<>());
@@ -275,44 +272,35 @@ public class InvertedIndex {
 				}
 			}
 		}
-//		if (fileMatches == null) {
-//			return (HashMap<String, TreeSet<Integer>>) Collections.EMPTY_MAP;
-//		}
+		
 		return fileMatches;
 
 	}
 
-	public void sortSearchResult(String queryWord) {
+	public void sortSearchResult(String queryWord, TreeMap<String, HashMap<String, TreeSet<Integer>>> unsorted) {
 
 		TreeMap<String, TreeSet<Integer>> sortedMap = new TreeMap<>(new Comparator<String>() {
 
 			@Override
 			public int compare(String o1, String o2) {
 				
-				if (exactSearchMap.get(queryWord).get(o1) == null ||
-						exactSearchMap.get(queryWord).get(o2) == null) {
+				if (unsorted.get(queryWord).get(o1) == null ||
+						unsorted.get(queryWord).get(o2) == null) {
 					return 0;
 				}
-				
-//				System.out.println("STARTED SORTING");
-				System.out.println("o1: " + o1);
-				System.out.println("o2: " + o2);
 
-				int size1 = exactSearchMap.get(queryWord).get(o1).size();
-				int size2 = exactSearchMap.get(queryWord).get(o2).size();
+				int size1 = unsorted.get(queryWord).get(o1).size();
+				int size2 = unsorted.get(queryWord).get(o2).size();
 
 				if (Integer.compare(size1, size2) != 0) {
-					System.out.println(o1 + " size: " + size1);
-					System.out.println(o2 + " size: " + size2);
-					System.out.println(-(Integer.compare(size1, size2)));
-					System.out.println();
+
 					return -(Integer.compare(size1, size2));
 				}
 
 				else {
 
-					int first1 = exactSearchMap.get(queryWord).get(o1).first();
-					int first2 = exactSearchMap.get(queryWord).get(o2).first();
+					int first1 = unsorted.get(queryWord).get(o1).first();
+					int first2 = unsorted.get(queryWord).get(o2).first();
 
 					if (first1 != first2) {
 						return Integer.compare(first1, first2);
@@ -327,37 +315,14 @@ public class InvertedIndex {
 
 		});
 
-		sortedMap.putAll(exactSearchMap.get(queryWord));
-		
-//		System.out.println("SORTEDMAP:");
-//		System.out.println(queryWord);
-//		System.out.println(sortedMap.toString());
-//		for (String filename : sortedMap.keySet()) {
-//			System.out.println(filename);
-//			System.out.println(sortedMap.get(filename).size());
-//			System.out.println();
-//		}
+		sortedMap.putAll(unsorted.get(queryWord));
+		sortedSearchResult.put(queryWord, sortedMap);
 
-		sortedExact.put(queryWord, sortedMap);
-
-	}
-
-	public void printExactSorted() {
-		System.out.println(sortedExact.toString());
-		for (String word: sortedExact.keySet()) {
-			System.out.println("QUERY WORD: " + word);
-			for (String file: sortedExact.get(word).keySet()) {
-				System.out.println("TEXT FILE: " + file);
-				System.out.println("POSITIONS: " + sortedExact.get(word).get(file).size());
-				System.out.println();
-			}
-		}
-		System.out.println();
 	}
 	
 	public void searchToJSON(String output) throws IOException {
 		Path outputFile = Paths.get(output);
-		JSONWriter.writeJSONSearch(outputFile, sortedExact);		
+		JSONWriter.writeJSONSearch(outputFile, sortedSearchResult);		
 		
 	}
 

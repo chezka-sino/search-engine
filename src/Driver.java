@@ -53,31 +53,19 @@ public class Driver {
 		String resultsPath = argP.getValue("-results");
 		String queryPath = argP.getValue("-query");
 		String exactPath = argP.getValue("-exact");
-		
-//		System.out.println("-dir: " + dirPath + " " + argP.hasFlag("-dir"));
-//		System.out.println("-index: " + indexPath + " " + argP.hasFlag("-index"));
-//		System.out.println("-results: " + resultsPath + " " + argP.hasFlag("-results"));
-//		System.out.println("-query: " + queryPath + " " + argP.hasFlag("-query"));
-//		System.out.println("-exact: " + exactPath + " " + argP.hasFlag("-exact"));
 
 		if (argP.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
 
-		if (argP.getValue("-dir") == null) {
-			System.out.println(argP.getValue("-dir"));
-			System.out.println(argP.hasFlag("-index"));
+		if (argP.getValue("-dir") == null || !argP.hasFlag("-dir")) {
 			System.err.println("Invalid directory. Check directory input");
 		}
 		
+		
+		
 		else {
 			
-//			if (!checkJSONPath(argP).equals("")) {
-//				indexPath = checkJSONPath(argP);
-//			}
-			
-			
-
 			try {
 
 				Path dir = Paths.get(dirPath);
@@ -86,28 +74,28 @@ public class Driver {
 				InvertedIndex index = new InvertedIndex();
 				InvertedIndexBuilder.readArray(textFiles, index);
 				
-//				if (indexPath == null || indexPath.equals("")) {
-//					indexPath = checkJSONPath(argP);
-//					
-//				}
+				if (!checkJSONPath(argP).equals("")) {
+					indexPath = checkJSONPath(argP);
+				}
 //				index.toJSON(indexPath);
-				
-//				System.out.println("Query path: " + queryPath);
-//				System.out.println("Exact path: " + exactPath);
 				
 				if (resultsPath == null || resultsPath.equals("")) {
 					resultsPath = checkResultsPath(argP);
 					System.out.println("New results path: " + resultsPath);
 				}
 				
+				if (argP.getValue("-results") == null && argP.hasFlag("-results")) {
+					resultsPath = "results.json";
+					System.out.println("New results path: " + resultsPath);
+				}
+				
 				if (!(queryPath == null)) {	
-//					System.out.println("parseFile partial");
 					QueryParser.parseFilePartial(Paths.get(queryPath), index);
+					index.searchToJSON(resultsPath);
 				}
 				
 				if (!(exactPath == null)) {
 					QueryParser.parseFileExact(Paths.get(exactPath), index);
-					System.out.println("CALLING WRITEJSONSEARCH");
 					index.searchToJSON(resultsPath);
 				}
 				
@@ -115,47 +103,17 @@ public class Driver {
 					indexPath = checkJSONPath(argP);
 				}
 				
-				index.toJSON(indexPath);
-				
-//				if (resultsPath == null || resultsPath.equals("")) {
-//					resultsPath = checkResultsPath(argP);
-//					System.out.println("New results path: " + resultsPath);
-//				}
-//				
-				
+				index.toJSON(indexPath);	
 				
 
 			}
 
 			catch (IOException e) {
 				System.err.println("Error in directory: " + dirPath);
-//				e.printStackTrace();
-			}
-			
-			
-		}
-		
 
-		//
-		// if (-dir) {
-		// build
-		// }
-		//
-		// if (-index) {
-		// index.toJSON(index);
-		// }
-
-		/*
-		 * Project 2
-		 * 
-		 * Create a query parser class to handle the query file and storing and
-		 * writing of results.
-		 * 
-		 * Create a single search result class that implements Comparable
-		 * 
-		 * Create some search methods in inverted index
-		 * 
-		 */
+			}	
+			
+		}	
 
 	}
 
