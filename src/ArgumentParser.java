@@ -1,6 +1,12 @@
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class parses the arguments passed and puts them in an argument map
+ * 
+ * @author Chezka Sino
+ *
+ */
 public class ArgumentParser {
 
 	private final Map<String, String> argumentMap;
@@ -173,9 +179,12 @@ public class ArgumentParser {
 
 	}
 
+	/**
+	 * Returns the argument map into a String
+	 * 
+	 */
 	@Override
 	public String toString() {
-		// You do not need to modify this method.
 		return argumentMap.toString();
 	}
 

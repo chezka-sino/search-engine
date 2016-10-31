@@ -150,15 +150,21 @@ public class JSONWriter {
 
 	}
 
-	// TODO Might need to make a new method in JSON writer for project 2.
-	// method for writing search results since different format from project 1.
-
-	public static void writeJSONSearch(Path outputFile, TreeMap<String, TreeMap<String, TreeSet<Integer>>> sortedExact)
+	/**
+	 * Writes the search results in a JSON file
+	 * 
+	 * @param outputFile
+	 * 			the path of the JSON file
+	 * @param searchResultMap
+	 * 			the map of the search results
+	 * @throws IOException
+	 */
+	public static void writeJSONSearch(Path outputFile, TreeMap<String, TreeMap<String, TreeSet<Integer>>> searchResultMap)
 			throws IOException {
 
 		try (BufferedWriter writer = Files.newBufferedWriter(outputFile, Charset.forName("UTF-8"))) {
 
-			Set<String> words = sortedExact.keySet();
+			Set<String> words = searchResultMap.keySet();
 			Iterator<String> itr = words.iterator();
 			writer.write("{" + END);
 
@@ -167,7 +173,7 @@ public class JSONWriter {
 				String current = itr.next();
 				writer.write(writeStrings(current, 1) + ": [" + END);
 
-				Set<String> fileName = sortedExact.get(current).keySet();
+				Set<String> fileName = searchResultMap.get(current).keySet();
 				Iterator<String> itr2 = fileName.iterator();
 
 				while (itr2.hasNext()) {
@@ -175,10 +181,10 @@ public class JSONWriter {
 					String current2 = itr2.next();
 					writer.write(tab(2) + "{" + END);
 					writer.write(writeStrings("where", 3) + ": " + writeStrings(current2, 0) + "," + END);
-					writer.write(writeStrings("count", 3) + ": " + sortedExact.get(current).get(current2).size() + ","
+					writer.write(writeStrings("count", 3) + ": " + searchResultMap.get(current).get(current2).size() + ","
 							+ END);
 					writer.write(
-							writeStrings("index", 3) + ": " + sortedExact.get(current).get(current2).first() + END);
+							writeStrings("index", 3) + ": " + searchResultMap.get(current).get(current2).first() + END);
 					writer.write(tab(2) + "}");
 
 					if (itr2.hasNext()) {

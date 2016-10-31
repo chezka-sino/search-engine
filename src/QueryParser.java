@@ -4,17 +4,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
+ * This class parses the query file that contains all of the query words for searching
  * 
- * @author shinheera
+ * @author Chezka Sino
  *
  */
 public class QueryParser {
 
 	/**
+	 * Parses the file for partial search query
 	 * 
 	 * @param inputFile
-	 * @param searchType
+	 * 			the file that contains the query words
 	 * @param index
+	 * 			InvertedIndex object
+	 * @see InvertedIndex
+	 * @see InvertedIndex#partial(String)
+	 * 
 	 */
 	public static void parseFilePartial(Path inputFile, InvertedIndex index) {
 
@@ -37,6 +43,17 @@ public class QueryParser {
 
 	}
 
+	/**
+	 * Parses the file for exact search query
+	 * 
+	 * @param inputFile
+	 * 			the file that contains the query words
+	 * @param index
+	 * 			InvertedIndex object
+	 * @see InvertedIndex
+	 * @see InvertedIndex#exact(String)
+	 * 
+	 */
 	public static void parseFileExact(Path inputFile, InvertedIndex index) {
 
 		try (BufferedReader reader = Files.newBufferedReader(inputFile)) {

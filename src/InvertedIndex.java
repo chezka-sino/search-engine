@@ -76,6 +76,11 @@ public class InvertedIndex {
 		
 	}
 
+	/**
+	 * Returns the map of word index into a String
+	 * 
+	 * @return string of the map of the word index
+	 */
 	@Override
 	public String toString() {
 		return map.toString();
@@ -105,6 +110,17 @@ public class InvertedIndex {
 		return map.get(word).size();
 	}
 
+	/**
+	 * Returns the first position of the word in a file
+	 * 
+	 * @param word
+	 * 			the word to be checked for the first location
+	 * @param fileName
+	 * 			the filename where the word is checked
+	 * @return
+	 * 			the first position of the word in the filename;
+	 * 			returns 0 if the map doesn't contain the word or filename
+	 */
 	public int firstIndex(String word, String fileName) {
 
 		if (map.containsKey(word)) {
@@ -153,12 +169,29 @@ public class InvertedIndex {
 		return wordList;
 	}
 
+	/**
+	 * Returns the list of the file locations of the word
+	 * 
+	 * @param word
+	 * 			the word to be checked for the filename list
+	 * @return
+	 * 			the list of the filenames where the word is located
+	 */
 	public List<String> getFileLocations(String word) {
 		List<String> locations = new ArrayList<>();
 		locations.addAll(map.get(word).keySet());
 		return locations;
 	}
 
+	/**
+	 * Initialized the partial search of the query line
+	 * This also puts the search results of the line in the partial search result map
+	 * 
+	 * @param queryLine
+	 * 			a line that contains the search query letters/words
+	 * @see InvertedIndex#partialSearch
+	 * 
+	 */
 	public void partial(String queryLine) {
 		
 		List<String> queryList = new ArrayList<>();
@@ -189,6 +222,15 @@ public class InvertedIndex {
 
 	}
 
+	/**
+	 * Returns the map of the search result
+	 * 
+	 * @param queryWords
+	 * 			the string array of the words to search
+	 * @return
+	 * 			map of the filenames and index locations of the search results
+	 * 
+	 */
 	public HashMap<String, TreeSet<Integer>> partialSearch(String[] queryWords) {
 
 		List<String> words = new ArrayList<>();
@@ -217,6 +259,15 @@ public class InvertedIndex {
 
 	}
 
+	/**
+	 * Initialized the exact search of the query line
+	 * This also puts the search results of the line in the exact search result map
+	 * 
+	 * @param queryLine
+	 * 			a line that contains the search query letters/words
+	 * @see InvertedIndex#exactSearch
+	 * 
+	 */
 	public void exact(String queryLine) {
 		
 		List<String> queryList = new ArrayList<>();
@@ -247,6 +298,15 @@ public class InvertedIndex {
 		
 	}
 
+	/**
+	 * Returns the map of the search result
+	 * 
+	 * @param queryWords
+	 * 			the string array of the words to search
+	 * @return
+	 * 			map of the filenames and index locations of the search results
+	 * 
+	 */
 	public HashMap<String, TreeSet<Integer>> exactSearch(String[] queryWords) {
 
 		List<String> words = new ArrayList<>();
@@ -277,6 +337,17 @@ public class InvertedIndex {
 
 	}
 
+	/**
+	 * Sorts the search results of each query based on the following criteria:
+	 * Frequency of the search result in a file, initial position if frequency is the same, filename in case-insensitive
+	 * order if the prior criteria are the same
+	 * 
+	 * @param queryWord
+	 * 			query word
+	 * @param unsorted
+	 * 			the unsorted map of the search results of the query word/s
+	 * 
+	 */
 	public void sortSearchResult(String queryWord, TreeMap<String, HashMap<String, TreeSet<Integer>>> unsorted) {
 
 		TreeMap<String, TreeSet<Integer>> sortedMap = new TreeMap<>(new Comparator<String>() {
@@ -320,10 +391,17 @@ public class InvertedIndex {
 
 	}
 	
+	/**
+	 * Writes the search results in a "pretty" JSON format
+	 * 
+	 * @param output
+	 * 			the output path of the search result JSON file
+	 * @throws IOException
+	 * 
+	 */
 	public void searchToJSON(String output) throws IOException {
 		Path outputFile = Paths.get(output);
 		JSONWriter.writeJSONSearch(outputFile, sortedSearchResult);		
-		
 	}
 
 }

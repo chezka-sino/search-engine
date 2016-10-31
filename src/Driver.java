@@ -16,6 +16,12 @@ public class Driver {
 	/**
 	 * Checks where the value of the -index flag is empty then assigns the
 	 * default JSON file to be used
+	 * 
+	 * @param argP
+	 * 		ArgumentParser object
+	 * @return
+	 * 		The default JSON file
+	 *  
 	 */
 	private static String checkJSONPath(ArgumentParser argP) {
 
@@ -27,6 +33,16 @@ public class Driver {
 
 	}
 
+	/**
+	 * Checks where the value of the -results flag is empty then assigns the
+	 * default JSON file to be used
+	 * 
+	 * @param argP
+	 * 		ArgumentParser object
+	 * @return
+	 * 		The default JSON file
+	 *  
+	 */
 	private static String checkResultsPath(ArgumentParser argP) {
 
 		if (argP.getValue("-results") == null && argP.hasFlag("-results")) {
@@ -83,13 +99,6 @@ public class Driver {
 				if (resultsPath == null || resultsPath.equals("")) {
 					resultsPath = checkResultsPath(argP);
 				}
-
-				//
-				// if (argP.getValue("-results") == null &&
-				// argP.hasFlag("-results")) {
-				// resultsPath = "results.json";
-				// System.out.println("New results path: " + resultsPath);
-				// }
 
 				if (!(queryPath == null)) {
 					QueryParser.parseFilePartial(Paths.get(queryPath), index);
