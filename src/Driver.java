@@ -26,13 +26,13 @@ public class Driver {
 		return "";
 
 	}
-	
+
 	private static String checkResultsPath(ArgumentParser argP) {
-		
+
 		if (argP.getValue("-results") == null && argP.hasFlag("-results")) {
 			return "results.json";
 		}
-		
+
 		return "";
 	}
 
@@ -61,11 +61,9 @@ public class Driver {
 		if (argP.getValue("-dir") == null || !argP.hasFlag("-dir")) {
 			System.err.println("Invalid directory. Check directory input");
 		}
-		
-		
-		
+
 		else {
-			
+
 			try {
 
 				Path dir = Paths.get(dirPath);
@@ -73,47 +71,50 @@ public class Driver {
 
 				InvertedIndex index = new InvertedIndex();
 				InvertedIndexBuilder.readArray(textFiles, index);
-				
+
+				// Checks if the output JSON file for the index exists then sets
+				// it to the default output file path
 				if (!checkJSONPath(argP).equals("")) {
 					indexPath = checkJSONPath(argP);
 				}
-//				index.toJSON(indexPath);
-				
+
+				// Checks if the output JSON file for the search results exists
+				// then sets it to the default output file path
 				if (resultsPath == null || resultsPath.equals("")) {
 					resultsPath = checkResultsPath(argP);
-					System.out.println("New results path: " + resultsPath);
 				}
-				
-				if (argP.getValue("-results") == null && argP.hasFlag("-results")) {
-					resultsPath = "results.json";
-					System.out.println("New results path: " + resultsPath);
-				}
-				
-				if (!(queryPath == null)) {	
+
+				//
+				// if (argP.getValue("-results") == null &&
+				// argP.hasFlag("-results")) {
+				// resultsPath = "results.json";
+				// System.out.println("New results path: " + resultsPath);
+				// }
+
+				if (!(queryPath == null)) {
 					QueryParser.parseFilePartial(Paths.get(queryPath), index);
 					index.searchToJSON(resultsPath);
 				}
-				
+
 				if (!(exactPath == null)) {
 					QueryParser.parseFileExact(Paths.get(exactPath), index);
 					index.searchToJSON(resultsPath);
 				}
-				
+
 				if (indexPath == null || indexPath.equals("")) {
 					indexPath = checkJSONPath(argP);
 				}
-				
-				index.toJSON(indexPath);	
-				
+
+				index.toJSON(indexPath);
 
 			}
 
 			catch (IOException e) {
 				System.err.println("Error in directory: " + dirPath);
 
-			}	
-			
-		}	
+			}
+
+		}
 
 	}
 
