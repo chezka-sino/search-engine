@@ -21,6 +21,8 @@ public class InvertedIndex {
 	 * The TreeMap of the words
 	 */
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> map;
+	
+	// TODO Remove all this stuff!
 	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> partialSearchMap;
 	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> exactSearchMap;
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> sortedSearchResult;
@@ -123,7 +125,7 @@ public class InvertedIndex {
 	 */
 	public int firstIndex(String word, String fileName) {
 
-		if (map.containsKey(word)) {
+		if (map.containsKey(word)) { // TODO null pointer if filename does not exist
 			return map.get(word).get(fileName).first();
 		}
 
@@ -179,7 +181,7 @@ public class InvertedIndex {
 	 */
 	public List<String> getFileLocations(String word) {
 		List<String> locations = new ArrayList<>();
-		locations.addAll(map.get(word).keySet());
+		locations.addAll(map.get(word).keySet()); // TODO null pointer
 		return locations;
 	}
 
@@ -259,6 +261,30 @@ public class InvertedIndex {
 
 	}
 
+	/*
+	public List<SearchResult> exactSearch(String[] queryWords) {
+		List<SearchResult> results = ?
+		HashMap<String, SearchResult> resultMap = ?
+		
+		for query in queryWords
+			if (map.containsKey(query))
+				innermap = map.get(query)
+				
+				for every location in innermap
+					if (location is a key in resultMap) {
+						get the search result and update its values
+					}
+					else {
+						add a new result to the result map
+						add the same result to the list too
+					}
+		}
+		
+		Collections.sort(results);
+		return results;
+	}
+	*/
+	
 	/**
 	 * Initialized the exact search of the query line
 	 * This also puts the search results of the line in the exact search result map
@@ -309,6 +335,7 @@ public class InvertedIndex {
 	 */
 	public HashMap<String, TreeSet<Integer>> exactSearch(String[] queryWords) {
 
+		// TODO No need for copy...
 		List<String> words = new ArrayList<>();
 		words.addAll(map.keySet());
 
@@ -316,7 +343,7 @@ public class InvertedIndex {
 
 		for (String word : queryWords) {
 
-			for (String match : words) {
+			for (String match : words) { // TODO for (String match : map.keySet())
 
 				if (match.equals(word)) {
 

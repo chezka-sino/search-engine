@@ -11,6 +11,8 @@ import java.util.ArrayList;
  * 
  */
 
+// TODO Rename argP to "parser"
+
 public class Driver {
 
 	/**
@@ -64,6 +66,23 @@ public class Driver {
 
 		ArgumentParser argP = new ArgumentParser(args);
 
+		/*
+		if (-dir flag)
+			get the -dir value
+			try {
+				immediately build
+			}
+			catch () {
+				informative error message
+			}
+		}
+		
+		if (-index)
+			String path = argParser.getValue(-index, index.json);
+		
+		*/
+		
+		// TODO No need to get if flag doesn't exist
 		String dirPath = argP.getValue("-dir");
 		String indexPath = argP.getValue("-index");
 		String resultsPath = argP.getValue("-results");
@@ -74,10 +93,10 @@ public class Driver {
 			System.err.println("No arguments");
 		}
 
+		// TODO Do not need this check at all
 		if (argP.getValue("-dir") == null || !argP.hasFlag("-dir")) {
 			System.err.println("Invalid directory. Check directory input");
 		}
-
 		else {
 
 			try {
@@ -119,6 +138,7 @@ public class Driver {
 			}
 
 			catch (IOException e) {
+				// TODO Not that informative
 				System.err.println("Error in directory: " + dirPath);
 
 			}
