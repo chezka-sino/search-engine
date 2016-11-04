@@ -2,6 +2,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.TreeMap;
 
 // TODO This is a hybrid class that stores and does stuff
 
@@ -17,11 +19,15 @@ public class QueryParser {
 	
 //	private final InvertedIndex index;
 //	private final TreeMap<String, List<SearchResult>> results;
+	
+	private final InvertedIndex index;
+	private final TreeMap<String, List<SearchResult>> results;
+	
 //	
-//	public QueryParser(InvertedIndex index) {
-//		this.index = index;
-//		this.results = new TreeMap<>();
-//	}
+	public QueryParser(InvertedIndex index) {
+		this.index = index;
+		this.results = new TreeMap<>();
+	}
 	
 	/*
 	public void parseFile(Path file, boolean exact) {
@@ -32,6 +38,15 @@ public class QueryParser {
 				index.partialSearch()
 	}
 	*/
+	
+	public void parseFile(Path file, boolean exact) {
+		if (exact) {
+			
+		}
+		else {
+			//partialSearch()
+		}
+	}
 	
 	/**
 	 * Parses the file for partial search query
