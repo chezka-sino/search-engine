@@ -3,13 +3,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import javax.naming.spi.ResolveResult;
 
 /**
  * This class indexes the words.
@@ -119,7 +116,7 @@ public class InvertedIndex {
 	 */
 	public int firstIndex(String word, String fileName) {
 
-		if (map.containsKey(word)) { // TODO null pointer if filename does not exist
+		if (map.containsKey(word)) {
 			return map.get(word).get(fileName).first();
 		}
 
@@ -245,13 +242,12 @@ public class InvertedIndex {
 				}
 				
 			}
+			
 		}
 		
 		Collections.sort(results);
 		return results;
 		
 	}
-		
-
 
 }
