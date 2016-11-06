@@ -2,6 +2,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -16,9 +19,6 @@ import java.util.TreeMap;
 public class QueryParser {
 	
 	// TODO No longer a bunch of static methods
-	
-//	private final InvertedIndex index;
-//	private final TreeMap<String, List<SearchResult>> results;
 	
 	private final InvertedIndex index;
 	private final TreeMap<String, List<SearchResult>> results;
@@ -40,12 +40,46 @@ public class QueryParser {
 	*/
 	
 	public void parseFile(Path file, boolean exact) {
-		if (exact) {
 			
+		try (BufferedReader reader = Files.newBufferedReader(file)) {
+
+			String line;
+	
+			while ((line = reader.readLine()) != null) {
+	
+				List<String> queryList = new ArrayList<>();
+				line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
+				line = line.trim();
+				String[] words = line.split("\\s+");
+				
+				for (String word: words) {
+					queryList.add(word);
+				}
+				Collections.sort(queryList);
+				line = String.join(" ", queryList);
+				
+				if (exact) {
+					results.put(line, index.exactSearch(words));
+				}
+				
+				else {
+//					results.put(line, index.partialSearch(words));
+					//partial
+				}
+
+			}
+
 		}
-		else {
-			//partialSearch()
+
+		catch (IOException e) {
+			System.err.println("Unable to read query file: " + file.toString());
 		}
+			
+	}
+	
+	public void toJSON (String output) throws IOException {
+		Path outputFile = Paths.get(output);
+		JSONWriter.toJSON(outputFile, results);
 	}
 	
 	/**
@@ -81,39 +115,6 @@ public class QueryParser {
 		catch (IOException e) {
 			System.err.println("Unable to read query file: " + inputFile.toString());
 		}
-
-	}
-
-	/**
-	 * Parses the file for exact search query
-	 * 
-	 * @param inputFile
-	 * 			the file that contains the query words
-	 * @param index
-	 * 			InvertedIndex object
-	 * @see InvertedIndex
-	 * @see InvertedIndex#exact(String)
-	 * 
-	 */
-	public static void parseFileExact(Path inputFile, InvertedIndex index) {
-
-		try (BufferedReader reader = Files.newBufferedReader(inputFile)) {
-
-			String line;
-
-			while ((line = reader.readLine()) != null) {
-
-				line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
-				index.exact(line);
-
-			}
-
-		}
-
-		catch (IOException e) {
-			System.err.println("Unable to read query file: " + inputFile.toString());
-		}
-
 
 	}
 

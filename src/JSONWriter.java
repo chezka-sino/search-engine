@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -209,6 +210,55 @@ public class JSONWriter {
 
 		}
 
+	}
+	
+	public static void toJSON (Path outputFile, TreeMap<String, List<SearchResult>> results) throws IOException {
+		
+		try (BufferedWriter writer = Files.newBufferedWriter(outputFile, Charset.forName("UTF-8"))) {
+			
+			Set<String> words = results.keySet();
+			Iterator<String> itr = words.iterator();
+			writer.write("{" + END);
+			
+			while (itr.hasNext()) {
+				
+				String current = itr.next();
+				writer.write(writeStrings(current, 1) + ": [" + END);
+				
+				List<SearchResult> search = results.get(current);
+				Iterator<SearchResult> itr2 = search.iterator();
+				
+				while (itr2.hasNext()) {
+					
+					SearchResult current2 = itr2.next();
+					writer.write(tab(2) + "{" + END);
+					writer.write(writeStrings("where", 3) + ": " + writeStrings(current2.getLocation(), 0) + "," + END);
+					writer.write(writeStrings("count", 3) + ": " + current2.getFrequency() + "," + END);
+					writer.write(writeStrings("index", 3) + ": " + current2.getPosition() + END);
+					writer.write(tab(2) + "}");
+					
+					if (itr2.hasNext()) {
+						writer.write(",");
+					}
+					
+					writer.write(END);
+					
+				}
+				
+				writer.write(TAB + "]");
+				
+				if (itr.hasNext()) {
+					writer.write(",");	
+				}
+				
+				writer.write(END);
+				
+			}
+			
+			writer.write("}" + END);
+		
+		}
+		
 	}
 
 }

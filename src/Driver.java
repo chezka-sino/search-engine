@@ -125,8 +125,14 @@ public class Driver {
 				}
 
 				if (!(exactPath == null)) {
-					QueryParser.parseFileExact(Paths.get(exactPath), index);
-					index.searchToJSON(resultsPath);
+//					QueryParser.parseFileExact(Paths.get(exactPath), index);
+//					index.searchToJSON(resultsPath);
+					
+					System.out.println("CHECKED IF EXACT PATH IS NULL");
+					
+					QueryParser exactSearch = new QueryParser(index);
+					exactSearch.parseFile(Paths.get(exactPath), true);
+					exactSearch.toJSON(resultsPath);
 				}
 
 				if (indexPath == null || indexPath.equals("")) {
@@ -140,6 +146,7 @@ public class Driver {
 			catch (IOException e) {
 				// TODO Not that informative
 				System.err.println("Error in directory: " + dirPath);
+//				e.printStackTrace();
 
 			}
 

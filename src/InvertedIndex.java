@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.naming.spi.ResolveResult;
+
 /**
  * This class indexes the words.
  * 
@@ -32,6 +34,8 @@ public class InvertedIndex {
 	 */
 	public InvertedIndex() {
 		map = new TreeMap<>();
+		
+		//TODO remove this too
 		partialSearchMap = new TreeMap<>();
 		exactSearchMap = new TreeMap<>();
 		sortedSearchResult = new TreeMap<>();
@@ -285,6 +289,62 @@ public class InvertedIndex {
 	}
 	*/
 	
+	public List<SearchResult> exactSearch(String[] queryWords) {
+		
+		List <SearchResult> results = new ArrayList<>();
+		//String key is the filename
+		HashMap<String, SearchResult> resultMap = new HashMap<>();
+		
+		System.out.println(queryWords.toString());
+		
+		for (String word: queryWords) {
+			
+			if (map.containsKey(word)) {
+				
+				System.out.println(word + " IS IN MAP.");
+				
+				TreeMap<String, TreeSet<Integer>> innerMap = map.get(word);
+				
+				for (String fileName: innerMap.keySet()) {
+					
+					System.out.println("FILENAME: " + fileName);
+					
+					if (resultMap.containsKey(fileName)) {
+						
+						int freqAdd = innerMap.get(fileName).size();
+						System.out.println("FREQUENCY ADD");
+						System.out.println("PREVIOUS FREQUENCY: " + resultMap.get(fileName).getFrequency());
+						resultMap.get(fileName).setFrequency(freqAdd);
+						System.out.println("TO ADD: " + freqAdd);
+						System.out.println("NEW FREQUENCY: " + resultMap.get(fileName).getFrequency());
+						System.out.println();
+						int first = map.get(word).get(fileName).first();
+						
+						if (Integer.compare(first, resultMap.get(fileName).getPosition()) < 0) {
+							System.out.println("FIRST IS DIFFERENT: " + first);
+							System.out.println("CURRENT FIRST: " + resultMap.get(fileName).getPosition());
+							resultMap.get(fileName).setPosition(first);
+							System.out.println("NEW POSITION: " + resultMap.get(fileName).getPosition());
+							System.out.println();
+						}
+						
+					}
+					
+					else {
+						SearchResult newResult = new SearchResult(fileName, innerMap.get(fileName).size(), innerMap.get(fileName).first());
+						resultMap.put(fileName, newResult);
+						results.add(newResult);												
+					}
+				}
+				
+			}
+		}
+		
+		Collections.sort(results);
+		return results;
+		
+	}
+	
 	/**
 	 * Initialized the exact search of the query line
 	 * This also puts the search results of the line in the exact search result map
@@ -294,35 +354,36 @@ public class InvertedIndex {
 	 * @see InvertedIndex#exactSearch
 	 * 
 	 */
-	public void exact(String queryLine) {
-		
-		List<String> queryList = new ArrayList<>();
-		queryLine = queryLine.trim();
-		String[] words = queryLine.split("\\s+");
 
-		for (String indWords: words) {
-			queryList.add(indWords);
-		}
-		Collections.sort(queryList);
-		queryLine = String.join(" ", queryList);
-		
-		if (!exactSearchMap.containsKey(queryLine)) {
-			exactSearchMap.put(queryLine, new HashMap<>());
-		}
-		
-		if (exactSearch(words) != null || !exactSearch(words).isEmpty()) {
-			exactSearchMap.put(queryLine, exactSearch(words));
-		}
-		
-		else {
-			exactSearchMap.put(queryLine, null);
-		}
-
-		for (String queryWord : exactSearchMap.keySet()) {
-			sortSearchResult(queryWord, exactSearchMap);
-		}
-		
-	}
+//	public void exact(String queryLine) {
+//		
+//		List<String> queryList = new ArrayList<>();
+//		queryLine = queryLine.trim();
+//		String[] words = queryLine.split("\\s+");
+//
+//		for (String indWords: words) {
+//			queryList.add(indWords);
+//		}
+//		Collections.sort(queryList);
+//		queryLine = String.join(" ", queryList);
+//		
+//		if (!exactSearchMap.containsKey(queryLine)) {
+//			exactSearchMap.put(queryLine, new HashMap<>());
+//		}
+//		
+//		if (exactSearch(words) != null || !exactSearch(words).isEmpty()) {
+//			exactSearchMap.put(queryLine, exactSearch(words));
+//		}
+//		
+//		else {
+//			exactSearchMap.put(queryLine, null);
+//		}
+//
+//		for (String queryWord : exactSearchMap.keySet()) {
+//			sortSearchResult(queryWord, exactSearchMap);
+//		}
+//		
+//	}
 
 	/**
 	 * Returns the map of the search result
@@ -333,36 +394,37 @@ public class InvertedIndex {
 	 * 			map of the filenames and index locations of the search results
 	 * 
 	 */
-	public HashMap<String, TreeSet<Integer>> exactSearch(String[] queryWords) {
-
-		// TODO No need for copy...
-		List<String> words = new ArrayList<>();
-		words.addAll(map.keySet());
-
-		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
-
-		for (String word : queryWords) {
-
-			for (String match : words) { // TODO for (String match : map.keySet())
-
-				if (match.equals(word)) {
-
-					for (String filename : map.get(match).keySet()) {
-						if (!fileMatches.containsKey(filename)) {
-							fileMatches.put(filename, new TreeSet<>());
-						}
-
-						fileMatches.get(filename).addAll(map.get(match).get(filename));
-
-					}
-
-				}
-			}
-		}
-		
-		return fileMatches;
-
-	}
+	
+//	public HashMap<String, TreeSet<Integer>> exactSearch(String[] queryWords) {
+//
+//		// TODO No need for copy...
+//		List<String> words = new ArrayList<>();
+//		words.addAll(map.keySet());
+//
+//		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
+//
+//		for (String word : queryWords) {
+//
+//			for (String match : words) { // TODO for (String match : map.keySet())
+//
+//				if (match.equals(word)) {
+//
+//					for (String filename : map.get(match).keySet()) {
+//						if (!fileMatches.containsKey(filename)) {
+//							fileMatches.put(filename, new TreeSet<>());
+//						}
+//
+//						fileMatches.get(filename).addAll(map.get(match).get(filename));
+//
+//					}
+//
+//				}
+//			}
+//		}
+//		
+//		return fileMatches;
+//
+//	}
 
 	/**
 	 * Sorts the search results of each query based on the following criteria:
