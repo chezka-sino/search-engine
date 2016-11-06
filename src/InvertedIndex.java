@@ -23,22 +23,12 @@ public class InvertedIndex {
 	 * The TreeMap of the words
 	 */
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> map;
-	
-	// TODO Remove all this stuff!
-	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> partialSearchMap;
-	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> exactSearchMap;
-	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> sortedSearchResult;
 
 	/**
 	 * Class constructor
 	 */
 	public InvertedIndex() {
 		map = new TreeMap<>();
-		
-		//TODO remove this too
-		partialSearchMap = new TreeMap<>();
-		exactSearchMap = new TreeMap<>();
-		sortedSearchResult = new TreeMap<>();
 	}
 
 	/**
@@ -175,157 +165,74 @@ public class InvertedIndex {
 		return wordList;
 	}
 
-	/**
-	 * Returns the list of the file locations of the word
-	 * 
-	 * @param word
-	 * 			the word to be checked for the filename list
-	 * @return
-	 * 			the list of the filenames where the word is located
-	 */
-	public List<String> getFileLocations(String word) {
-		List<String> locations = new ArrayList<>();
-		locations.addAll(map.get(word).keySet()); // TODO null pointer
-		return locations;
-	}
-
-	/**
-	 * Initialized the partial search of the query line
-	 * This also puts the search results of the line in the partial search result map
-	 * 
-	 * @param queryLine
-	 * 			a line that contains the search query letters/words
-	 * @see InvertedIndex#partialSearch
-	 * 
-	 */
-	public void partial(String queryLine) {
+	public List<SearchResult> partialSearch(String[] queryWords) {
 		
-		List<String> queryList = new ArrayList<>();
-		queryLine = queryLine.trim();
-		String[] words = queryLine.split("\\s+");
+		List <SearchResult> results = new ArrayList<>();
+		HashMap<String, SearchResult> resultMap = new HashMap<>();
 		
-		for (String indWords: words) {
-			queryList.add(indWords);
-		}
-		Collections.sort(queryList);
-		queryLine = String.join(" ", queryList);
-		
-		if (!partialSearchMap.containsKey(queryLine)) {
-			partialSearchMap.put(queryLine, new HashMap<>());
-		}
-		
-		if (partialSearch(words) != null || !partialSearch(words).isEmpty()) {
-			partialSearchMap.put(queryLine, partialSearch(words));
-		}
-		
-		else {
-			partialSearchMap.put(queryLine, null);
-		}
-		
-		for (String queryWord: partialSearchMap.keySet()) {
-			sortSearchResult(queryWord, partialSearchMap);
-		}
-
-	}
-
-	/**
-	 * Returns the map of the search result
-	 * 
-	 * @param queryWords
-	 * 			the string array of the words to search
-	 * @return
-	 * 			map of the filenames and index locations of the search results
-	 * 
-	 */
-	public HashMap<String, TreeSet<Integer>> partialSearch(String[] queryWords) {
-
-		List<String> words = new ArrayList<>();
-		words.addAll(map.keySet());
-
-		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
-
-		for (String word : queryWords) {
-
-			for (String match : map.tailMap(word).keySet()) {
+		for (String word: queryWords) {
+			
+			for (String match: map.tailMap(word).keySet()) {
 				
 				if (match.startsWith(word)) {
-					for (String filename: map.get(match).keySet()) {
-						if (!fileMatches.containsKey(filename)) {
-							fileMatches.put(filename, new TreeSet<>());
+					
+					TreeMap<String, TreeSet<Integer>> innerMap = map.get(match);
+					
+					for (String fileName: innerMap.keySet()) {
+						
+						if (resultMap.containsKey(fileName)) {
+							
+							int freqAdd = innerMap.get(fileName).size();
+							resultMap.get(fileName).setFrequency(freqAdd);
+							int first = innerMap.get(fileName).first();
+							
+							if (Integer.compare(first, resultMap.get(fileName).getPosition()) < 0) {
+								resultMap.get(fileName).setPosition(first);
+							}
+							
 						}
-
-						fileMatches.get(filename).addAll(map.get(match).get(filename));
+						
+						else {
+							SearchResult newResult = new SearchResult(fileName, innerMap.get(fileName).size(), innerMap.get(fileName).first());
+							resultMap.put(fileName, newResult);
+							results.add(newResult);												
+						}
+						
 					}
 					
+					
 				}
-			}
-		}
-
-		return fileMatches;
-
-	}
-
-	/*
-	public List<SearchResult> exactSearch(String[] queryWords) {
-		List<SearchResult> results = ?
-		HashMap<String, SearchResult> resultMap = ?
-		
-		for query in queryWords
-			if (map.containsKey(query))
-				innermap = map.get(query)
 				
-				for every location in innermap
-					if (location is a key in resultMap) {
-						get the search result and update its values
-					}
-					else {
-						add a new result to the result map
-						add the same result to the list too
-					}
+			}
+			
 		}
 		
 		Collections.sort(results);
 		return results;
+		
 	}
-	*/
 	
 	public List<SearchResult> exactSearch(String[] queryWords) {
 		
 		List <SearchResult> results = new ArrayList<>();
-		//String key is the filename
 		HashMap<String, SearchResult> resultMap = new HashMap<>();
-		
-		System.out.println(queryWords.toString());
 		
 		for (String word: queryWords) {
 			
 			if (map.containsKey(word)) {
 				
-				System.out.println(word + " IS IN MAP.");
-				
 				TreeMap<String, TreeSet<Integer>> innerMap = map.get(word);
 				
 				for (String fileName: innerMap.keySet()) {
-					
-					System.out.println("FILENAME: " + fileName);
-					
+
 					if (resultMap.containsKey(fileName)) {
 						
 						int freqAdd = innerMap.get(fileName).size();
-						System.out.println("FREQUENCY ADD");
-						System.out.println("PREVIOUS FREQUENCY: " + resultMap.get(fileName).getFrequency());
 						resultMap.get(fileName).setFrequency(freqAdd);
-						System.out.println("TO ADD: " + freqAdd);
-						System.out.println("NEW FREQUENCY: " + resultMap.get(fileName).getFrequency());
-						System.out.println();
-						int first = map.get(word).get(fileName).first();
+						int first = innerMap.get(fileName).first();
 						
 						if (Integer.compare(first, resultMap.get(fileName).getPosition()) < 0) {
-							System.out.println("FIRST IS DIFFERENT: " + first);
-							System.out.println("CURRENT FIRST: " + resultMap.get(fileName).getPosition());
 							resultMap.get(fileName).setPosition(first);
-							System.out.println("NEW POSITION: " + resultMap.get(fileName).getPosition());
-							System.out.println();
 						}
 						
 					}
@@ -344,153 +251,7 @@ public class InvertedIndex {
 		return results;
 		
 	}
-	
-	/**
-	 * Initialized the exact search of the query line
-	 * This also puts the search results of the line in the exact search result map
-	 * 
-	 * @param queryLine
-	 * 			a line that contains the search query letters/words
-	 * @see InvertedIndex#exactSearch
-	 * 
-	 */
+		
 
-//	public void exact(String queryLine) {
-//		
-//		List<String> queryList = new ArrayList<>();
-//		queryLine = queryLine.trim();
-//		String[] words = queryLine.split("\\s+");
-//
-//		for (String indWords: words) {
-//			queryList.add(indWords);
-//		}
-//		Collections.sort(queryList);
-//		queryLine = String.join(" ", queryList);
-//		
-//		if (!exactSearchMap.containsKey(queryLine)) {
-//			exactSearchMap.put(queryLine, new HashMap<>());
-//		}
-//		
-//		if (exactSearch(words) != null || !exactSearch(words).isEmpty()) {
-//			exactSearchMap.put(queryLine, exactSearch(words));
-//		}
-//		
-//		else {
-//			exactSearchMap.put(queryLine, null);
-//		}
-//
-//		for (String queryWord : exactSearchMap.keySet()) {
-//			sortSearchResult(queryWord, exactSearchMap);
-//		}
-//		
-//	}
-
-	/**
-	 * Returns the map of the search result
-	 * 
-	 * @param queryWords
-	 * 			the string array of the words to search
-	 * @return
-	 * 			map of the filenames and index locations of the search results
-	 * 
-	 */
-	
-//	public HashMap<String, TreeSet<Integer>> exactSearch(String[] queryWords) {
-//
-//		// TODO No need for copy...
-//		List<String> words = new ArrayList<>();
-//		words.addAll(map.keySet());
-//
-//		HashMap<String, TreeSet<Integer>> fileMatches = new HashMap<>();
-//
-//		for (String word : queryWords) {
-//
-//			for (String match : words) { // TODO for (String match : map.keySet())
-//
-//				if (match.equals(word)) {
-//
-//					for (String filename : map.get(match).keySet()) {
-//						if (!fileMatches.containsKey(filename)) {
-//							fileMatches.put(filename, new TreeSet<>());
-//						}
-//
-//						fileMatches.get(filename).addAll(map.get(match).get(filename));
-//
-//					}
-//
-//				}
-//			}
-//		}
-//		
-//		return fileMatches;
-//
-//	}
-
-	/**
-	 * Sorts the search results of each query based on the following criteria:
-	 * Frequency of the search result in a file, initial position if frequency is the same, filename in case-insensitive
-	 * order if the prior criteria are the same
-	 * 
-	 * @param queryWord
-	 * 			query word
-	 * @param unsorted
-	 * 			the unsorted map of the search results of the query word/s
-	 * 
-	 */
-	public void sortSearchResult(String queryWord, TreeMap<String, HashMap<String, TreeSet<Integer>>> unsorted) {
-
-		TreeMap<String, TreeSet<Integer>> sortedMap = new TreeMap<>(new Comparator<String>() {
-
-			@Override
-			public int compare(String o1, String o2) {
-				
-				if (unsorted.get(queryWord).get(o1) == null ||
-						unsorted.get(queryWord).get(o2) == null) {
-					return 0;
-				}
-
-				int size1 = unsorted.get(queryWord).get(o1).size();
-				int size2 = unsorted.get(queryWord).get(o2).size();
-
-				if (Integer.compare(size1, size2) != 0) {
-
-					return -(Integer.compare(size1, size2));
-				}
-
-				else {
-
-					int first1 = unsorted.get(queryWord).get(o1).first();
-					int first2 = unsorted.get(queryWord).get(o2).first();
-
-					if (first1 != first2) {
-						return Integer.compare(first1, first2);
-					}
-
-					else {
-						return o1.compareTo(o2);
-					}
-				}
-
-			}
-
-		});
-
-		sortedMap.putAll(unsorted.get(queryWord));
-		sortedSearchResult.put(queryWord, sortedMap);
-
-	}
-	
-	/**
-	 * Writes the search results in a "pretty" JSON format
-	 * 
-	 * @param output
-	 * 			the output path of the search result JSON file
-	 * @throws IOException
-	 * 
-	 */
-	public void searchToJSON(String output) throws IOException {
-		Path outputFile = Paths.get(output);
-		JSONWriter.writeJSONSearch(outputFile, sortedSearchResult);		
-	}
 
 }

@@ -16,141 +16,112 @@ import java.util.ArrayList;
 public class Driver {
 
 	/**
-	 * Checks where the value of the -index flag is empty then assigns the
-	 * default JSON file to be used
-	 * 
-	 * @param argP
-	 * 		ArgumentParser object
-	 * @return
-	 * 		The default JSON file
-	 *  
-	 */
-	private static String checkJSONPath(ArgumentParser argP) {
-
-		if (argP.getValue("-index") == null && argP.hasFlag("-index")) {
-			return "index.json";
-		}
-
-		return "";
-
-	}
-
-	/**
-	 * Checks where the value of the -results flag is empty then assigns the
-	 * default JSON file to be used
-	 * 
-	 * @param argP
-	 * 		ArgumentParser object
-	 * @return
-	 * 		The default JSON file
-	 *  
-	 */
-	private static String checkResultsPath(ArgumentParser argP) {
-
-		if (argP.getValue("-results") == null && argP.hasFlag("-results")) {
-			return "results.json";
-		}
-
-		return "";
-	}
-
-	/**
 	 * Main method Initializes the program
 	 * 
 	 * @param argss
 	 *            argument array
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		ArrayList<String> textFiles = new ArrayList<>();
 
 		ArgumentParser argP = new ArgumentParser(args);
-
-		/*
-		if (-dir flag)
-			get the -dir value
-			try {
-				immediately build
-			}
-			catch () {
-				informative error message
-			}
-		}
+		InvertedIndex index = new InvertedIndex();
 		
-		if (-index)
-			String path = argParser.getValue(-index, index.json);
-		
-		*/
-		
-		// TODO No need to get if flag doesn't exist
-		String dirPath = argP.getValue("-dir");
-		String indexPath = argP.getValue("-index");
-		String resultsPath = argP.getValue("-results");
-		String queryPath = argP.getValue("-query");
-		String exactPath = argP.getValue("-exact");
-
 		if (argP.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
-
-		// TODO Do not need this check at all
-		if (argP.getValue("-dir") == null || !argP.hasFlag("-dir")) {
-			System.err.println("Invalid directory. Check directory input");
-		}
-		else {
-
+		
+		if (argP.hasFlag("-dir")) {
+			
+			String dirPath = argP.getValue("-dir");
+			
 			try {
-
+				
 				Path dir = Paths.get(dirPath);
 				textFiles.addAll(DirectoryTraverser.traverse(dir));
-
-				InvertedIndex index = new InvertedIndex();
 				InvertedIndexBuilder.readArray(textFiles, index);
-
-				// Checks if the output JSON file for the index exists then sets
-				// it to the default output file path
-				if (!checkJSONPath(argP).equals("")) {
-					indexPath = checkJSONPath(argP);
-				}
-
-				// Checks if the output JSON file for the search results exists
-				// then sets it to the default output file path
-				if (resultsPath == null || resultsPath.equals("")) {
-					resultsPath = checkResultsPath(argP);
-				}
-
-				if (!(queryPath == null)) {
-					QueryParser.parseFilePartial(Paths.get(queryPath), index);
-					index.searchToJSON(resultsPath);
-				}
-
-				if (!(exactPath == null)) {
-//					QueryParser.parseFileExact(Paths.get(exactPath), index);
-//					index.searchToJSON(resultsPath);
-					
-					System.out.println("CHECKED IF EXACT PATH IS NULL");
-					
-					QueryParser exactSearch = new QueryParser(index);
-					exactSearch.parseFile(Paths.get(exactPath), true);
-					exactSearch.toJSON(resultsPath);
-				}
-
-				if (indexPath == null || indexPath.equals("")) {
-					indexPath = checkJSONPath(argP);
-				}
-
-				index.toJSON(indexPath);
-
+				
 			}
-
-			catch (IOException e) {
-				// TODO Not that informative
-				System.err.println("Error in directory: " + dirPath);
-//				e.printStackTrace();
-
+			
+			catch (NullPointerException e) {
+				System.err.println("No directory provided.");
 			}
-
+			
 		}
+		
+		if (argP.hasFlag("-index")) {
+			String indexPath = argP.getValue("-index", "index.json");
+			index.toJSON(indexPath);		
+		}
+		
+		if (argP.hasFlag("-results")) {
+			String resultsPath = argP.getValue("-results", "results.json");
+			
+			if (argP.hasFlag("-query")) {
+				QueryParser partialSearch = new QueryParser(index);
+				partialSearch.parseFile(Paths.get(argP.getValue("-query")), false);
+				partialSearch.toJSON(resultsPath);
+			}
+
+			if (argP.hasFlag("-exact")) {
+				QueryParser exactSearch = new QueryParser(index);
+				exactSearch.parseFile(Paths.get(argP.getValue("-exact")), true);
+				exactSearch.toJSON(resultsPath);
+			}
+			
+		}
+
+		
+
+		// TODO Do not need this check at all
+//		if (argP.getValue("-dir") == null || !argP.hasFlag("-dir")) {
+//			System.err.println("Invalid directory. Check directory input");
+//		}
+//		else {
+//
+//			try {
+//
+//				Path dir = Paths.get(dirPath);
+//				textFiles.addAll(DirectoryTraverser.traverse(dir));
+//
+//				InvertedIndex index = new InvertedIndex();
+//				InvertedIndexBuilder.readArray(textFiles, index);
+//
+//				if (!checkJSONPath(argP).equals("")) {
+//					indexPath = checkJSONPath(argP);
+//				}
+//
+//				if (resultsPath == null || resultsPath.equals("")) {
+//					resultsPath = checkResultsPath(argP);
+//				}
+//
+//				if (!(queryPath == null)) {
+//					QueryParser partialSearch = new QueryParser(index);
+//					partialSearch.parseFile(Paths.get(queryPath), false);
+//					partialSearch.toJSON(resultsPath);
+//				}
+//
+//				if (!(exactPath == null)) {
+//					QueryParser exactSearch = new QueryParser(index);
+//					exactSearch.parseFile(Paths.get(exactPath), true);
+//					exactSearch.toJSON(resultsPath);
+//				}
+//
+//				if (indexPath == null || indexPath.equals("")) {
+//					indexPath = checkJSONPath(argP);
+//				}
+//
+//				index.toJSON(indexPath);
+//
+//			}
+//
+//			catch (IOException e) {
+//
+//			}
+//
+//		}
 
 	}
 
