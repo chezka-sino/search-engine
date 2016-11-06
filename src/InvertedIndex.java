@@ -161,7 +161,16 @@ public class InvertedIndex {
 		wordList.addAll(map.keySet());
 		return wordList;
 	}
-
+	
+	/**
+	 * Searches for words that starts with the query words
+	 * 
+	 * @param queryWords
+	 * 		array of the query words
+	 * @return
+	 * 		the list of the sorted search results of the query words
+	 * 
+	 */
 	public List<SearchResult> partialSearch(String[] queryWords) {
 		
 		List <SearchResult> results = new ArrayList<>();
@@ -209,6 +218,15 @@ public class InvertedIndex {
 		
 	}
 	
+	/**
+	 * Searches for the exact matches of the query words
+	 * 
+	 * @param queryWords
+	 * 		array of the query words
+	 * @return
+	 * 		the list of the sorted search results of the query words
+	 * 
+	 */
 	public List<SearchResult> exactSearch(String[] queryWords) {
 		
 		List <SearchResult> results = new ArrayList<>();

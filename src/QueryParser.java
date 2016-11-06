@@ -21,11 +21,27 @@ public class QueryParser {
 	private final TreeMap<String, List<SearchResult>> results;
 	
 
+	/**
+	 * QueryParser constructor
+	 * 
+	 * @param index
+	 * 		InvertedIndex object
+	 * 
+	 */
 	public QueryParser(InvertedIndex index) {
 		this.index = index;
 		this.results = new TreeMap<>();
 	}
 	
+	/**
+	 * Goes through the query file line by line for the search words
+	 * 
+	 * @param file
+	 * 		file path containing the query words
+	 * @param exact
+	 * 		true if conducting an exact search, false otherwise
+	 * 
+	 */
 	public void parseFile(Path file, boolean exact) {
 			
 		try (BufferedReader reader = Files.newBufferedReader(file)) {
@@ -63,6 +79,14 @@ public class QueryParser {
 			
 	}
 	
+	/**
+	 * Writes the search results to a "pretty" JSON format
+	 * 
+	 * @param output
+	 * 		the output file name
+	 * @throws IOException
+	 * 
+	 */
 	public void toJSON (String output) throws IOException {
 		Path outputFile = Paths.get(output);
 		JSONWriter.toJSON(outputFile, results);

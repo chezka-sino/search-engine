@@ -83,6 +83,10 @@ public class JSONWriter {
 	/**
 	 * Writes the wordindex into a JSON file
 	 * 
+	 * @param outputFile
+	 * 		JSON file where the word index will be written
+	 * @param fileMap
+	 * 		map of the word index
 	 * @throws IOException
 	 * 
 	 */
@@ -151,6 +155,16 @@ public class JSONWriter {
 
 	}
 	
+	/**
+	 * Writes the search results into a JSON file
+	 * 
+	 * @param outputFile
+	 * 		JSON file where the results will be written
+	 * @param results
+	 * 		the list of the search results
+	 * @throws IOException
+	 * 
+	 */
 	public static void toJSON (Path outputFile, TreeMap<String, List<SearchResult>> results) throws IOException {
 		
 		try (BufferedWriter writer = Files.newBufferedWriter(outputFile, Charset.forName("UTF-8"))) {

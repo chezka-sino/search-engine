@@ -4,8 +4,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
- * This class demonstrates traversing through a directory, looking for .txt
- * files, organizing words into an array and writing them in a JSON File
+ * This class is a Search Engine project
+ * Progress: Inverted Index and Partial Search
  * 
  * @author Chezka Sino
  * 
