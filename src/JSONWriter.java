@@ -165,6 +165,8 @@ public class JSONWriter {
 	 * @throws IOException
 	 * 
 	 */
+	//TODO: Change class name to something more specific to the project
+	//TODO: Change method name to something specific to writing out results
 	public static void toJSON (Path outputFile, TreeMap<String, List<SearchResult>> results) throws IOException {
 		
 		try (BufferedWriter writer = Files.newBufferedWriter(outputFile, Charset.forName("UTF-8"))) {

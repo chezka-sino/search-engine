@@ -227,6 +227,7 @@ public class InvertedIndex {
 	 * 		the list of the sorted search results of the query words
 	 * 
 	 */
+	//TODO: Move identical code from search methods into helper method, removing duplicate code
 	public List<SearchResult> exactSearch(String[] queryWords) {
 		
 		List <SearchResult> results = new ArrayList<>();
