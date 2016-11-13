@@ -70,6 +70,13 @@ public class Driver {
 			}
 			
 		}
+		
+		if (parser.hasFlag("-url")) {
+			// TODO stuff for project 3
+			String seed = parser.getValue("-url");
+			String html = URLParser.fetchHTML(seed);
+			URLParser.URLList(html, seed);
+		}
 
 	}
 
