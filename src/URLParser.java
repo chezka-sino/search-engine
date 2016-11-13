@@ -4,9 +4,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,8 @@ public class URLParser {
 //		links = new ArrayList<>();
 //	}
     
-	public static ArrayList<String> URLList(String text, String seed) throws UnknownHostException, MalformedURLException, IOException {
+	public static ArrayList<String> URLList(String text, String seed) throws UnknownHostException, MalformedURLException, 
+		IOException, URISyntaxException {
 		
 		ArrayList<String> links = new ArrayList<String>();
 		links.add(seed);
@@ -50,21 +52,19 @@ public class URLParser {
 		while(m.find() && count <= 49) {
             // add the appropriate group from regular expression to list
 			
-//			URL base = new URL(m.group(GROUP));
 			URL absolute = new URL(base, m.group(GROUP).replaceAll("\"", ""));
-//			System.out.println("ABSOLUTE: " + absolute.toString());
+			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(),
+					absolute.getPath(), absolute.getQuery(), null);
 
-			
-//            links.add(m.group(GROUP).replaceAll("\"", ""));
-            links.add(absolute.toString());
+			if (!links.contains(cleanURL.toString())) {
+				links.add(cleanURL.toString());
+				count++;
+			}
             
-//            System.out.println("ADDED TO LINKS: " + m.group(GROUP).replaceAll("\"", ""));
-            count++;
         }
 		
-//		System.out.println("LINKS: ");
-//		System.out.println(links.toString());
-//		System.out.println();
+		System.out.println("LINKS: ");
+		System.out.println(links.toString());
 
         return links;
 		
@@ -108,7 +108,7 @@ public class URLParser {
 	public static String fetchHTML(String url) throws UnknownHostException, IOException, MalformedURLException {
 		
 		URL seed = new URL(url);
-		System.out.println("URL: " + seed.toString());
+//		System.out.println("URL: " + seed.toString());
 		String request = craftHTTPRequest(seed, HTTP.GET);
 		List<String> lines = fetchLines(seed, request);		
 		
