@@ -2,9 +2,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +31,17 @@ public class URLParser {
         OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
     };
     
-	public static ArrayList<String> URLList(String text, String seed) {
+//    private static ArrayList<String> links;
+//    
+//    public URLParser() {
+//		links = new ArrayList<>();
+//	}
+    
+	public static ArrayList<String> URLList(String text, String seed) throws UnknownHostException, MalformedURLException, IOException {
 		
 		ArrayList<String> links = new ArrayList<String>();
 		links.add(seed);
+		URL base = new URL(seed);
 		int count = 1;
 		
 		Pattern p = Pattern.compile(REGEX);
@@ -40,12 +49,22 @@ public class URLParser {
 		
 		while(m.find() && count <= 49) {
             // add the appropriate group from regular expression to list
-            links.add(m.group(GROUP).replaceAll("\"", ""));
+			
+//			URL base = new URL(m.group(GROUP));
+			URL absolute = new URL(base, m.group(GROUP).replaceAll("\"", ""));
+//			System.out.println("ABSOLUTE: " + absolute.toString());
+
+			
+//            links.add(m.group(GROUP).replaceAll("\"", ""));
+            links.add(absolute.toString());
+            
+//            System.out.println("ADDED TO LINKS: " + m.group(GROUP).replaceAll("\"", ""));
             count++;
         }
 		
-		System.out.println(links.toString());
-		System.out.println(links.size());
+//		System.out.println("LINKS: ");
+//		System.out.println(links.toString());
+//		System.out.println();
 
         return links;
 		
@@ -62,7 +81,7 @@ public class URLParser {
                 type.name(), resource, version, host);
     }
 	
-	public static List<String> fetchLines(URL url, String request) throws UnknownHostException, IOException {
+	public static List<String> fetchLines(URL url, String request) throws UnknownHostException, IOException, MalformedURLException {
 		
 		ArrayList<String> lines = new ArrayList<>();
         int port = url.getPort() < 0 ? DEFAULT_PORT : url.getPort();
@@ -86,9 +105,10 @@ public class URLParser {
 		
 	}
 	
-	public static String fetchHTML(String url) throws UnknownHostException, IOException {
+	public static String fetchHTML(String url) throws UnknownHostException, IOException, MalformedURLException {
 		
 		URL seed = new URL(url);
+		System.out.println("URL: " + seed.toString());
 		String request = craftHTTPRequest(seed, HTTP.GET);
 		List<String> lines = fetchLines(seed, request);		
 		
@@ -105,8 +125,7 @@ public class URLParser {
         String type = fields.get("Content-Type");
 
         if (type != null && type.toLowerCase().contains("html")) {
-//        	System.out.println(String.join(System.lineSeparator(),
-//                    lines.subList(start + 1, end)));
+
             return String.join(System.lineSeparator(),
                     lines.subList(start + 1, end));
         }		

@@ -81,5 +81,22 @@ public class InvertedIndexBuilder {
 		}
 
 	}
+	
+	public static void openHTML(String url, String[] words, InvertedIndex toIndex) {
+		
+		int count = 1;
+				
+		for (String i: words) {
+			i = i.replaceAll("\\p{Punct}+", "");
+			if (!i.isEmpty()) {
+	
+				toIndex.add(i, url, count);
+				count++;
+						
+			}
+				
+		}
+				
+	}		
 
 }

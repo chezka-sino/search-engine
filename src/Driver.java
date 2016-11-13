@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -49,6 +50,30 @@ public class Driver {
 			
 		}
 		
+//		if (parser.hasFlag("-index")) {
+//			String indexPath = parser.getValue("-index", "index.json");
+//			index.toJSON(indexPath);		
+//		}
+		
+		if (parser.hasFlag("-url")) {
+			// TODO stuff for project 3
+			
+			String seed = parser.getValue("-url");
+			String html = URLParser.fetchHTML(seed);
+			ArrayList<String> URLList = URLParser.URLList(html, seed);
+			
+			for (String link: URLList) {
+//				System.out.println("LINK: " + link);
+				String htmlFile = URLParser.fetchHTML(link);
+				String [] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
+//				System.out.println(cleanedHTML);
+				
+				InvertedIndexBuilder.openHTML(link, cleanedHTML, index);
+//				System.out.println();
+				
+			}
+		}
+		
 		if (parser.hasFlag("-index")) {
 			String indexPath = parser.getValue("-index", "index.json");
 			index.toJSON(indexPath);		
@@ -69,13 +94,6 @@ public class Driver {
 				exactSearch.toJSON(resultsPath);
 			}
 			
-		}
-		
-		if (parser.hasFlag("-url")) {
-			// TODO stuff for project 3
-			String seed = parser.getValue("-url");
-			String html = URLParser.fetchHTML(seed);
-			URLParser.URLList(html, seed);
 		}
 
 	}
