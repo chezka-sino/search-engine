@@ -89,7 +89,7 @@ public class QueryParser {
 	 */
 	public void toJSON (String output) throws IOException {
 		Path outputFile = Paths.get(output);
-		JSONWriter.toJSON(outputFile, results);
+		JSONWriter.searchResultsWriter(outputFile, results);
 	}
 	
 

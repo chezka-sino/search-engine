@@ -20,12 +20,14 @@ public class InvertedIndex {
 	 * The TreeMap of the words
 	 */
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> map;
+	private static List<SearchResult> results;
+	private static HashMap<String, SearchResult> resultMap;
 
 	/**
 	 * Class constructor
 	 */
 	public InvertedIndex() {
-		map = new TreeMap<>();
+		map = new TreeMap<>();	
 	}
 
 	/**
@@ -65,7 +67,7 @@ public class InvertedIndex {
 	 */
 	public void toJSON(String index) throws IOException {
 		Path outputFile = Paths.get(index);
-		JSONWriter.writeJSON(outputFile, map);
+		JSONWriter.indexWriter(outputFile, map);
 		
 	}
 
@@ -173,40 +175,15 @@ public class InvertedIndex {
 	 */
 	public List<SearchResult> partialSearch(String[] queryWords) {
 		
-		List <SearchResult> results = new ArrayList<>();
-		HashMap<String, SearchResult> resultMap = new HashMap<>();
+		results = new ArrayList<>();
+		resultMap = new HashMap<>();
 		
 		for (String word: queryWords) {
 			
 			for (String match: map.tailMap(word).keySet()) {
 				
-				if (match.startsWith(word)) {
-					
-					TreeMap<String, TreeSet<Integer>> innerMap = map.get(match);
-					
-					for (String fileName: innerMap.keySet()) {
-						
-						if (resultMap.containsKey(fileName)) {
-							
-							int freqAdd = innerMap.get(fileName).size();
-							resultMap.get(fileName).setFrequency(freqAdd);
-							int first = innerMap.get(fileName).first();
-							
-							if (Integer.compare(first, resultMap.get(fileName).getPosition()) < 0) {
-								resultMap.get(fileName).setPosition(first);
-							}
-							
-						}
-						
-						else {
-							SearchResult newResult = new SearchResult(fileName, innerMap.get(fileName).size(), innerMap.get(fileName).first());
-							resultMap.put(fileName, newResult);
-							results.add(newResult);												
-						}
-						
-					}
-					
-					
+				if (match.startsWith(word)) {					
+					addSearchResults(match);
 				}
 				
 			}
@@ -227,45 +204,55 @@ public class InvertedIndex {
 	 * 		the list of the sorted search results of the query words
 	 * 
 	 */
-	//TODO: Move identical code from search methods into helper method, removing duplicate code
 	public List<SearchResult> exactSearch(String[] queryWords) {
 		
-		List <SearchResult> results = new ArrayList<>();
-		HashMap<String, SearchResult> resultMap = new HashMap<>();
+		results = new ArrayList<>();
+		resultMap = new HashMap<>();
 		
 		for (String word: queryWords) {
 			
 			if (map.containsKey(word)) {
-				
-				TreeMap<String, TreeSet<Integer>> innerMap = map.get(word);
-				
-				for (String fileName: innerMap.keySet()) {
-
-					if (resultMap.containsKey(fileName)) {
-						
-						int freqAdd = innerMap.get(fileName).size();
-						resultMap.get(fileName).setFrequency(freqAdd);
-						int first = innerMap.get(fileName).first();
-						
-						if (Integer.compare(first, resultMap.get(fileName).getPosition()) < 0) {
-							resultMap.get(fileName).setPosition(first);
-						}
-						
-					}
-					
-					else {
-						SearchResult newResult = new SearchResult(fileName, innerMap.get(fileName).size(), innerMap.get(fileName).first());
-						resultMap.put(fileName, newResult);
-						results.add(newResult);												
-					}
-				}
-				
+				addSearchResults(word);				
 			}
 			
 		}
 		
 		Collections.sort(results);
 		return results;
+		
+	}
+	
+	/**
+	 * Adds the search results as SearchResult objects in a map
+	 * 
+	 * @param word
+	 * 		The word match
+	 * 
+	 */
+	public void addSearchResults(String word) {
+		
+		TreeMap<String, TreeSet<Integer>> innerMap = map.get(word);
+		
+		for (String fileName: innerMap.keySet()) {
+
+			if (resultMap.containsKey(fileName)) {
+				
+				int freqAdd = innerMap.get(fileName).size();
+				resultMap.get(fileName).setFrequency(freqAdd);
+				int first = innerMap.get(fileName).first();
+				
+				if (Integer.compare(first, resultMap.get(fileName).getPosition()) < 0) {
+					resultMap.get(fileName).setPosition(first);
+				}
+				
+			}
+			
+			else {
+				SearchResult newResult = new SearchResult(fileName, innerMap.get(fileName).size(), innerMap.get(fileName).first());
+				resultMap.put(fileName, newResult);
+				results.add(newResult);												
+			}
+		}
 		
 	}
 

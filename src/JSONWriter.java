@@ -90,7 +90,7 @@ public class JSONWriter {
 	 * @throws IOException
 	 * 
 	 */
-	public static void writeJSON(Path outputFile, TreeMap<String, TreeMap<String, TreeSet<Integer>>> fileMap)
+	public static void indexWriter(Path outputFile, TreeMap<String, TreeMap<String, TreeSet<Integer>>> fileMap)
 			throws IOException {
 
 		try (BufferedWriter writer = Files.newBufferedWriter(outputFile, Charset.forName("UTF-8"))) {
@@ -167,7 +167,7 @@ public class JSONWriter {
 	 */
 	//TODO: Change class name to something more specific to the project
 	//TODO: Change method name to something specific to writing out results
-	public static void toJSON (Path outputFile, TreeMap<String, List<SearchResult>> results) throws IOException {
+	public static void searchResultsWriter (Path outputFile, TreeMap<String, List<SearchResult>> results) throws IOException {
 		
 		try (BufferedWriter writer = Files.newBufferedWriter(outputFile, Charset.forName("UTF-8"))) {
 			
