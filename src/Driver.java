@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -52,21 +51,20 @@ public class Driver {
 			
 		}
 		
-//		if (parser.hasFlag("-index")) {
-//			String indexPath = parser.getValue("-index", "index.json");
-//			index.toJSON(indexPath);		
-//		}
-		
 		if (parser.hasFlag("-url")) {
 			// TODO stuff for project 3
+			URLParser parseURL = new URLParser();
 			
 			String seed = parser.getValue("-url");
-			String html = URLParser.fetchHTML(seed);
-			ArrayList<String> URLList = URLParser.URLList(html, seed);
+//			String html = parseURL.fetchHTML(seed);
+			ArrayList<String> URLList = parseURL.URLList(seed);
+			
+//			ArrayList<String> URLList = parseURL.traverseHTML(seed);
+			
 			
 			for (String link: URLList) {
 //				System.out.println("LINK: " + link);
-				String htmlFile = URLParser.fetchHTML(link);
+				String htmlFile = parseURL.fetchHTML(link);
 				String [] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
 //				System.out.println(cleanedHTML);
 				

@@ -32,25 +32,25 @@ public class URLParser {
         OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
     };
     
-//    private static ArrayList<String> links;
-//    
-//    public URLParser() {
-//		links = new ArrayList<>();
-//	}
+    public static ArrayList<String> links;
     
-	public static ArrayList<String> URLList(String text, String seed) throws UnknownHostException, MalformedURLException, 
+    public URLParser() {
+		links = new ArrayList<>();
+	}
+    
+	public ArrayList<String> URLList(String seed) throws UnknownHostException, MalformedURLException, 
 		IOException, URISyntaxException {
 		
-		ArrayList<String> links = new ArrayList<String>();
-		links.add(seed);
-		URL base = new URL(seed);
-		int count = 1;
-		
+//		ArrayList<String> links = new ArrayList<String>();
+		String text = fetchHTML(seed); 
 		Pattern p = Pattern.compile(REGEX);
 		Matcher m = p.matcher(text);
 		
+		links.add(seed);
+		URL base = new URL(seed);
+		int count = links.size();
+
 		while(m.find() && count <= 49) {
-            // add the appropriate group from regular expression to list
 			
 			URL absolute = new URL(base, m.group(GROUP).replaceAll("\"", ""));
 			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(),
@@ -63,19 +63,73 @@ public class URLParser {
             
         }
 		
+		ArrayList<String> linkCopy = new ArrayList<>();
+		linkCopy.addAll(links);
+		
+		if (links.size() < 50) {
+
+			for (String i: linkCopy) {
+				System.out.println(i);
+				String c = fetchHTML(i);
+				Matcher m2 = p.matcher(c);
+						
+				while(m2.find() && count <= 49) {
+					System.out.println("m2 group: " + m2.group(GROUP).replaceAll("\"", ""));
+					
+					URL absolute = new URL(base, m2.group(GROUP).replaceAll("\"", ""));
+					URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(),
+							absolute.getPath(), absolute.getQuery(), null);
+
+					if (!links.contains(cleanURL.toString())) {
+						System.out.println("CLEAN URL 2: " + cleanURL.toString());
+						links.add(cleanURL.toString());
+						count++;
+						System.out.println(count);
+					}
+		            
+		        }
+				
+			}
+			
+		}
+		
 		System.out.println("LINKS: ");
 		System.out.println(links.toString());
 
         return links;
 		
 	}
+	
+	public void traverseMore(String url) throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
+		URLList(url);
+		
+//		Pattern p = Pattern.compile(REGEX);
+//		Matcher m = p.matcher(text);
+//		
+//		links.add(seed);
+//		URL base = new URL(seed);
+//		int count = links.size();
+//
+//		while(m.find() && count <= 49) {
+//			
+//			URL absolute = new URL(base, m.group(GROUP).replaceAll("\"", ""));
+//			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(),
+//					absolute.getPath(), absolute.getQuery(), null);
+//
+//			if (!links.contains(cleanURL.toString())) {
+//				links.add(cleanURL.toString());
+//				count++;
+//			}
+//            
+//        }
+//		
+		
+	}
     
     public static String craftHTTPRequest(URL url, HTTP type) {
         String host = url.getHost();
         String resource = url.getFile().isEmpty() ? "/" : url.getFile();
-
-        // The specification is specific about where to use a new line
-        // versus a carriage return!
+        
         return String.format(
                 "%s %s %s\n" + "Host: %s\n" + "Connection: close\n" + "\r\n",
                 type.name(), resource, version, host);
@@ -105,7 +159,7 @@ public class URLParser {
 		
 	}
 	
-	public static String fetchHTML(String url) throws UnknownHostException, IOException, MalformedURLException {
+	public String fetchHTML(String url) throws UnknownHostException, IOException, MalformedURLException {
 		
 		URL seed = new URL(url);
 //		System.out.println("URL: " + seed.toString());
@@ -128,7 +182,7 @@ public class URLParser {
 
             return String.join(System.lineSeparator(),
                     lines.subList(start + 1, end));
-        }		
+        }
 		
 		return null;
 		
