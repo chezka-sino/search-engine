@@ -10,202 +10,174 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class URLParser {
-	
+
 	public static final String REGEX = "\\s*(?i)<a([^>]+)href\\s*=\\s*(\"([^\"]*\")|'[^']*'|([^'\">\\s]+))";
 	public static final int GROUP = 2;
-	
+
 	/** Port used by socket. For web servers, should be port 80. */
-    public static final int DEFAULT_PORT = 80;
+	public static final int DEFAULT_PORT = 80;
 
-    /** Version of HTTP used and supported. */
-    public static final String version = "HTTP/1.1";
+	/** Version of HTTP used and supported. */
+	public static final String version = "HTTP/1.1";
 
-    // See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.1
-    /** Valid HTTP method types. */
-    public static enum HTTP {
-        OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
-    };
-    
-    public static ArrayList<String> links;
-    
-    public URLParser() {
-		links = new ArrayList<>();
+	// See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.1
+	/** Valid HTTP method types. */
+	public static enum HTTP {
+		OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
+	};
+
+	public static HashSet<String> links;
+	public static Queue<String> queue;
+
+	public URLParser() {
+		links = new HashSet<String>();
+		queue = new LinkedList<>();
 	}
-    
-	public ArrayList<String> URLList(String seed) throws UnknownHostException, MalformedURLException, 
-		IOException, URISyntaxException {
-		
-//		ArrayList<String> links = new ArrayList<String>();
-		String text = fetchHTML(seed); 
+
+	// TODO
+	// if not 50 links add to queue and set
+	// while q is not empty
+
+	public HashSet<String> testParser(String seed)
+			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
+
+		links.add(seed);
+
+		if (links.size() < 50) {
+			queue.addAll(URLList(seed));
+			// System.out.println("CURRENT QUEUE: " + queue.toString());
+			links.addAll(URLList(seed));
+			// System.out.println("CURRENT LINKS: " + links.toString());
+		}
+
+		// System.out.println("QUEUE EMPTY: " + queue.isEmpty());
+
+		while (!queue.isEmpty()) {
+			// System.out.println(queue.remove());
+			String url = queue.remove();
+			links.addAll(URLList(url));
+			// System.out.println("AFTER REMOVE: " + queue.toString());
+			// System.out.println();
+			// testParser(url);
+
+		}
+
+		return links;
+	}
+
+	public HashSet<String> URLList(String seed)
+			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
+
+		// ArrayList<String> links = new ArrayList<String>();
+		String text = fetchHTML(seed);
 		Pattern p = Pattern.compile(REGEX);
 		Matcher m = p.matcher(text);
-		
-		links.add(seed);
+
+		// links.add(seed);
 		URL base = new URL(seed);
 		int count = links.size();
 
-		while(m.find() && count <= 49) {
-			
+		while (m.find() && count <= 49) {
+
 			URL absolute = new URL(base, m.group(GROUP).replaceAll("\"", ""));
-			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(),
-					absolute.getPath(), absolute.getQuery(), null);
+			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(), absolute.getPath(),
+					absolute.getQuery(), null);
 
 			if (!links.contains(cleanURL.toString())) {
 				links.add(cleanURL.toString());
 				count++;
 			}
-            
-        }
-		
-		ArrayList<String> linkCopy = new ArrayList<>();
-		linkCopy.addAll(links);
-		
-		if (links.size() < 50) {
 
-			for (String i: linkCopy) {
-				System.out.println(i);
-				String c = fetchHTML(i);
-				Matcher m2 = p.matcher(c);
-						
-				while(m2.find() && count <= 49) {
-					System.out.println("m2 group: " + m2.group(GROUP).replaceAll("\"", ""));
-					
-					URL absolute = new URL(base, m2.group(GROUP).replaceAll("\"", ""));
-					URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(),
-							absolute.getPath(), absolute.getQuery(), null);
-
-					if (!links.contains(cleanURL.toString())) {
-						System.out.println("CLEAN URL 2: " + cleanURL.toString());
-						links.add(cleanURL.toString());
-						count++;
-						System.out.println(count);
-					}
-		            
-		        }
-				
-			}
-			
 		}
-		
-		System.out.println("LINKS: ");
-		System.out.println(links.toString());
 
-        return links;
-		
+		return links;
+
 	}
-	
-	public void traverseMore(String url) throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
-		URLList(url);
-		
-//		Pattern p = Pattern.compile(REGEX);
-//		Matcher m = p.matcher(text);
-//		
-//		links.add(seed);
-//		URL base = new URL(seed);
-//		int count = links.size();
-//
-//		while(m.find() && count <= 49) {
-//			
-//			URL absolute = new URL(base, m.group(GROUP).replaceAll("\"", ""));
-//			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(),
-//					absolute.getPath(), absolute.getQuery(), null);
-//
-//			if (!links.contains(cleanURL.toString())) {
-//				links.add(cleanURL.toString());
-//				count++;
-//			}
-//            
-//        }
-//		
-		
+
+	public static String craftHTTPRequest(URL url, HTTP type) {
+		String host = url.getHost();
+		String resource = url.getFile().isEmpty() ? "/" : url.getFile();
+
+		return String.format("%s %s %s\n" + "Host: %s\n" + "Connection: close\n" + "\r\n", type.name(), resource,
+				version, host);
 	}
-    
-    public static String craftHTTPRequest(URL url, HTTP type) {
-        String host = url.getHost();
-        String resource = url.getFile().isEmpty() ? "/" : url.getFile();
-        
-        return String.format(
-                "%s %s %s\n" + "Host: %s\n" + "Connection: close\n" + "\r\n",
-                type.name(), resource, version, host);
-    }
-	
-	public static List<String> fetchLines(URL url, String request) throws UnknownHostException, IOException, MalformedURLException {
-		
+
+	public static List<String> fetchLines(URL url, String request)
+			throws UnknownHostException, IOException, MalformedURLException {
+
 		ArrayList<String> lines = new ArrayList<>();
-        int port = url.getPort() < 0 ? DEFAULT_PORT : url.getPort();
+		int port = url.getPort() < 0 ? DEFAULT_PORT : url.getPort();
 
-        try (Socket socket = new Socket(url.getHost(), port);
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream(), "UTF-8"));
-                PrintWriter writer = new PrintWriter(
-                        socket.getOutputStream());) {
-            writer.println(request);
-            writer.flush();
+		try (Socket socket = new Socket(url.getHost(), port);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+				PrintWriter writer = new PrintWriter(socket.getOutputStream());) {
+			writer.println(request);
+			writer.flush();
 
-            String line = null;
+			String line = null;
 
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
-        }
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+		}
 
-        return lines;
-		
+		return lines;
+
 	}
-	
+
 	public String fetchHTML(String url) throws UnknownHostException, IOException, MalformedURLException {
-		
+
 		URL seed = new URL(url);
-//		System.out.println("URL: " + seed.toString());
+		// System.out.println("URL: " + seed.toString());
 		String request = craftHTTPRequest(seed, HTTP.GET);
-		List<String> lines = fetchLines(seed, request);		
-		
+		List<String> lines = fetchLines(seed, request);
+
 		int start = 0;
-        int end = lines.size();
+		int end = lines.size();
 
-        // Determines start of HTML versus headers.
-        while (!lines.get(start).trim().isEmpty() && start < end) {
-            start++;
-        }
+		// Determines start of HTML versus headers.
+		while (!lines.get(start).trim().isEmpty() && start < end) {
+			start++;
+		}
 
-        // Double-check this is an HTML file.
-        Map<String, String> fields = parseHeaders(lines.subList(0, start + 1));
-        String type = fields.get("Content-Type");
+		// Double-check this is an HTML file.
+		Map<String, String> fields = parseHeaders(lines.subList(0, start + 1));
+		String type = fields.get("Content-Type");
 
-        if (type != null && type.toLowerCase().contains("html")) {
+		if (type != null && type.toLowerCase().contains("html")) {
 
-            return String.join(System.lineSeparator(),
-                    lines.subList(start + 1, end));
-        }
-		
+			return String.join(System.lineSeparator(), lines.subList(start + 1, end));
+		}
+
 		return null;
-		
+
 	}
-	
-    public static Map<String, String> parseHeaders(List<String> headers) {
-        Map<String, String> fields = new HashMap<>();
 
-        if (headers.size() > 0 && headers.get(0).startsWith(version)) {
-            fields.put("Status",
-                    headers.get(0).substring(version.length()).trim());
+	public static Map<String, String> parseHeaders(List<String> headers) {
+		Map<String, String> fields = new HashMap<>();
 
-            for (String line : headers.subList(1, headers.size())) {
-                String[] pair = line.split(":", 2);
+		if (headers.size() > 0 && headers.get(0).startsWith(version)) {
+			fields.put("Status", headers.get(0).substring(version.length()).trim());
 
-                if (pair.length == 2) {
-                    fields.put(pair[0].trim(), pair[1].trim());
-                }
-            }
-        }
+			for (String line : headers.subList(1, headers.size())) {
+				String[] pair = line.split(":", 2);
 
-        return fields;
-    }
-	
+				if (pair.length == 2) {
+					fields.put(pair[0].trim(), pair[1].trim());
+				}
+			}
+		}
+
+		return fields;
+	}
 
 }

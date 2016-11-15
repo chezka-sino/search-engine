@@ -3,10 +3,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
- * This class is a Search Engine project
- * Progress: Inverted Index and Partial Search
+ * This class is a Search Engine project Progress: Inverted Index and Partial
+ * Search
  * 
  * @author Chezka Sino
  * 
@@ -19,8 +20,8 @@ public class Driver {
 	 * 
 	 * @param argss
 	 *            argument array
-	 * @throws IOException 
-	 * @throws URISyntaxException 
+	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
 	public static void main(String[] args) throws IOException, URISyntaxException {
 
@@ -28,60 +29,60 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		InvertedIndex index = new InvertedIndex();
-		
+
 		if (parser.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
-		
+
 		if (parser.hasFlag("-dir")) {
-			
+
 			String dirPath = parser.getValue("-dir");
-			
+
 			try {
-				
+
 				Path dir = Paths.get(dirPath);
 				textFiles.addAll(DirectoryTraverser.traverse(dir));
 				InvertedIndexBuilder.readArray(textFiles, index);
-				
+
 			}
-			
+
 			catch (NullPointerException e) {
 				System.err.println("No directory provided.");
 			}
-			
+
 		}
-		
+
 		if (parser.hasFlag("-url")) {
 			// TODO stuff for project 3
 			URLParser parseURL = new URLParser();
-			
+
 			String seed = parser.getValue("-url");
-//			String html = parseURL.fetchHTML(seed);
-			ArrayList<String> URLList = parseURL.URLList(seed);
-			
-//			ArrayList<String> URLList = parseURL.traverseHTML(seed);
-			
-			
-			for (String link: URLList) {
-//				System.out.println("LINK: " + link);
+			// String html = parseURL.fetchHTML(seed);
+			HashSet<String> URLList = parseURL.testParser(seed);
+			// HashSet<String> URLList = parseURL.URLList(seed);
+
+			// ArrayList<String> URLList = parseURL.traverseHTML(seed);
+
+			for (String link : URLList) {
+				// System.out.println("LINK: " + link);
 				String htmlFile = parseURL.fetchHTML(link);
-				String [] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
-//				System.out.println(cleanedHTML);
-				
+				String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
+				// System.out.println(cleanedHTML);
+
 				InvertedIndexBuilder.openHTML(link, cleanedHTML, index);
-//				System.out.println();
-				
+				// System.out.println();
+
 			}
 		}
-		
+
 		if (parser.hasFlag("-index")) {
 			String indexPath = parser.getValue("-index", "index.json");
-			index.toJSON(indexPath);		
+			index.toJSON(indexPath);
 		}
-		
+
 		if (parser.hasFlag("-results")) {
 			String resultsPath = parser.getValue("-results", "results.json");
-			
+
 			if (parser.hasFlag("-query")) {
 				QueryParser partialSearch = new QueryParser(index);
 				partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
@@ -93,7 +94,7 @@ public class Driver {
 				exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
 				exactSearch.toJSON(resultsPath);
 			}
-			
+
 		}
 
 	}
