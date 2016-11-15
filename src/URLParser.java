@@ -54,6 +54,7 @@ public class URLParser {
 
 		if (links.size() < 50) {
 			queue.addAll(URLList(seed));
+			System.out.println("URL seed: " + URLList(seed));
 			// System.out.println("CURRENT QUEUE: " + queue.toString());
 			links.addAll(URLList(seed));
 			// System.out.println("CURRENT LINKS: " + links.toString());
@@ -62,16 +63,31 @@ public class URLParser {
 		// System.out.println("QUEUE EMPTY: " + queue.isEmpty());
 
 		while (!queue.isEmpty()) {
-			// System.out.println(queue.remove());
 			String url = queue.remove();
+			System.out.println(url);
 			links.addAll(URLList(url));
-			// System.out.println("AFTER REMOVE: " + queue.toString());
+			System.out.println(URLList(url));
+//			queue.addAll(URLList(url));
+			 System.out.println("AFTER REMOVE: " + queue.toString());
 			// System.out.println();
 			// testParser(url);
+			 System.out.println("LINKS: " + links.toString());
+			 System.out.println();
 
 		}
 
 		return links;
+	}
+	
+	public void breadth(String seed) {
+		if (seed == null) {
+			return;
+		}
+		queue.clear();
+		queue.add(seed);
+		while(!queue.isEmpty()) {
+			
+		}
 	}
 
 	public HashSet<String> URLList(String seed)
