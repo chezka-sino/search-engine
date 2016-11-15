@@ -53,25 +53,16 @@ public class Driver {
 		}
 
 		if (parser.hasFlag("-url")) {
-			// TODO stuff for project 3
 			URLParser parseURL = new URLParser();
 
 			String seed = parser.getValue("-url");
-			// String html = parseURL.fetchHTML(seed);
-			HashSet<String> URLList = parseURL.testParser(seed);
-			// HashSet<String> URLList = parseURL.URLList(seed);
 
-			// ArrayList<String> URLList = parseURL.traverseHTML(seed);
+			HashSet<String> URLList = parseURL.urlList(seed);
 
 			for (String link : URLList) {
-				// System.out.println("LINK: " + link);
 				String htmlFile = parseURL.fetchHTML(link);
 				String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
-				// System.out.println(cleanedHTML);
-
 				InvertedIndexBuilder.openHTML(link, cleanedHTML, index);
-				// System.out.println();
-
 			}
 		}
 

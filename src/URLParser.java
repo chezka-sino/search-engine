@@ -47,58 +47,28 @@ public class URLParser {
 	// if not 50 links add to queue and set
 	// while q is not empty
 
-	public HashSet<String> testParser(String seed)
+	public HashSet<String> urlList(String seed)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
-		links.add(seed);
-
-		if (links.size() < 50) {
-			queue.addAll(URLList(seed));
-			System.out.println("URL seed: " + URLList(seed));
-			// System.out.println("CURRENT QUEUE: " + queue.toString());
-			links.addAll(URLList(seed));
-			// System.out.println("CURRENT LINKS: " + links.toString());
-		}
-
-		// System.out.println("QUEUE EMPTY: " + queue.isEmpty());
+		links.addAll(getURLs(seed));
+		queue.addAll(getURLs(seed));
 
 		while (!queue.isEmpty()) {
 			String url = queue.remove();
-			System.out.println(url);
-			links.addAll(URLList(url));
-			System.out.println(URLList(url));
-//			queue.addAll(URLList(url));
-			 System.out.println("AFTER REMOVE: " + queue.toString());
-			// System.out.println();
-			// testParser(url);
-			 System.out.println("LINKS: " + links.toString());
-			 System.out.println();
-
+			getURLs(url);
 		}
 
 		return links;
 	}
-	
-	public void breadth(String seed) {
-		if (seed == null) {
-			return;
-		}
-		queue.clear();
-		queue.add(seed);
-		while(!queue.isEmpty()) {
-			
-		}
-	}
 
-	public HashSet<String> URLList(String seed)
+	public HashSet<String> getURLs(String seed)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
-		// ArrayList<String> links = new ArrayList<String>();
 		String text = fetchHTML(seed);
 		Pattern p = Pattern.compile(REGEX);
 		Matcher m = p.matcher(text);
 
-		// links.add(seed);
+		links.add(seed);
 		URL base = new URL(seed);
 		int count = links.size();
 
@@ -107,9 +77,9 @@ public class URLParser {
 			URL absolute = new URL(base, m.group(GROUP).replaceAll("\"", ""));
 			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(), absolute.getPath(),
 					absolute.getQuery(), null);
-
-			if (!links.contains(cleanURL.toString())) {
+			if (!links.contains(cleanURL.toString()) && !cleanURL.equals(seed)) {
 				links.add(cleanURL.toString());
+				queue.add(cleanURL.toString());
 				count++;
 			}
 
@@ -153,7 +123,6 @@ public class URLParser {
 	public String fetchHTML(String url) throws UnknownHostException, IOException, MalformedURLException {
 
 		URL seed = new URL(url);
-		// System.out.println("URL: " + seed.toString());
 		String request = craftHTTPRequest(seed, HTTP.GET);
 		List<String> lines = fetchLines(seed, request);
 
