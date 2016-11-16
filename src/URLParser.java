@@ -35,19 +35,35 @@ public class URLParser {
 		OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
 	};
 
-	public static HashSet<String> links;
-	public static Queue<String> queue;
+	// Set of all the URLs parsed
+	public final HashSet<String> links;
+	// Queue of the URLs to be processed
+	public final Queue<String> queue;
 
+	/**
+	 * Class constructor Initializes the set and queue
+	 */
 	public URLParser() {
 		links = new HashSet<String>();
 		queue = new LinkedList<>();
 	}
 
-	// TODO
-	// if not 50 links add to queue and set
-	// while q is not empty
-
-	public HashSet<String> urlList(String seed)
+	/**
+	 * Parses the html of the seed to look for URLs Indexes the words found in
+	 * the paage
+	 * 
+	 * @param seed
+	 *            URL string
+	 * @param index
+	 *            Inverted Index object
+	 * 
+	 * @throws UnknownHostException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * 
+	 */
+	public void urlList(String seed, InvertedIndex index)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		links.addAll(getURLs(seed));
@@ -55,12 +71,27 @@ public class URLParser {
 
 		while (!queue.isEmpty()) {
 			String url = queue.remove();
+			String htmlFile = fetchHTML(url);
+			String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
+			InvertedIndexBuilder.openHTML(url, cleanedHTML, index);
 			getURLs(url);
 		}
 
-		return links;
 	}
 
+	/**
+	 * Returns the list of URLs found in the page
+	 * 
+	 * @param seed
+	 *            String of the URLs
+	 * @return Set of URLs
+	 * 
+	 * @throws UnknownHostException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * 
+	 */
 	public HashSet<String> getURLs(String seed)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
@@ -89,6 +120,17 @@ public class URLParser {
 
 	}
 
+	/**
+	 * Crafts a minimal HTTP/1.1 request for the provided method.
+	 *
+	 * @param url
+	 *            url to fetch
+	 * @param type
+	 *            HTTP method to use
+	 *
+	 * @return HTTP/1.1 request
+	 * 
+	 */
 	public static String craftHTTPRequest(URL url, HTTP type) {
 		String host = url.getHost();
 		String resource = url.getFile().isEmpty() ? "/" : url.getFile();
@@ -97,6 +139,21 @@ public class URLParser {
 				version, host);
 	}
 
+	/**
+	 * Will connect to the web server and fetch the URL using the HTTP request
+	 * provided. It would be more efficient to operate on each line as returned
+	 * instead of storing the entire result as a list.
+	 *
+	 * @param url
+	 *            - url to fetch
+	 * @param request
+	 *            - full HTTP request
+	 *
+	 * @return the lines read from the web server
+	 *
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 */
 	public static List<String> fetchLines(URL url, String request)
 			throws UnknownHostException, IOException, MalformedURLException {
 
@@ -120,6 +177,17 @@ public class URLParser {
 
 	}
 
+	/**
+	 * Fetches the HTML for the specified URL (without headers).
+	 *
+	 * @param url
+	 *            - url to fetch
+	 * @return HTML as a single {@link String}, or null if not HTML
+	 *
+	 * @throws UnknownHostException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	public String fetchHTML(String url) throws UnknownHostException, IOException, MalformedURLException {
 
 		URL seed = new URL(url);
@@ -147,6 +215,16 @@ public class URLParser {
 
 	}
 
+	/**
+	 * Helper method that parses HTTP headers into a map where the key is the
+	 * field name and the value is the field value. The status code will be
+	 * stored under the key "Status".
+	 *
+	 * @param headers
+	 *            - HTTP/1.1 header lines
+	 * @return field names mapped to values if the headers are properly
+	 *         formatted
+	 */
 	public static Map<String, String> parseHeaders(List<String> headers) {
 		Map<String, String> fields = new HashMap<>();
 

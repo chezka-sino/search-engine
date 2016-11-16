@@ -3,11 +3,10 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
- * This class is a Search Engine project Progress: Inverted Index and Partial
- * Search
+ * This class is a Search Engine project Done: Inverted Index and Partial Search
+ * In Progress: Web Crawler
  * 
  * @author Chezka Sino
  * 
@@ -56,14 +55,8 @@ public class Driver {
 			URLParser parseURL = new URLParser();
 
 			String seed = parser.getValue("-url");
+			parseURL.urlList(seed, index);
 
-			HashSet<String> URLList = parseURL.urlList(seed);
-
-			for (String link : URLList) {
-				String htmlFile = parseURL.fetchHTML(link);
-				String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
-				InvertedIndexBuilder.openHTML(link, cleanedHTML, index);
-			}
 		}
 
 		if (parser.hasFlag("-index")) {
