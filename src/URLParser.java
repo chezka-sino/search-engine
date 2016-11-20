@@ -18,8 +18,10 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// TODO WebCrawler
 public class URLParser {
 
+	// TODO Reduce the total number of groups, don't include the quote in the capturing group
 	public static final String REGEX = "\\s*(?i)<a([^>]+)href\\s*=\\s*(\"([^\"]*\")|'[^']*'|([^'\">\\s]+))";
 	public static final int GROUP = 2;
 
@@ -35,6 +37,7 @@ public class URLParser {
 		OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
 	};
 
+	// TODO Make private
 	// Set of all the URLs parsed
 	public final HashSet<String> links;
 	// Queue of the URLs to be processed
@@ -68,9 +71,14 @@ public class URLParser {
 
 		links.addAll(getURLs(seed));
 		queue.addAll(getURLs(seed));
+		
+		// TODO instead...
+		// links.add(seed), queue.add(seed)
 
 		while (!queue.isEmpty()) {
 			String url = queue.remove();
+			
+			// TODO fetch every page once, pass around the HTML as necessary
 			String htmlFile = fetchHTML(url);
 			String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
 			InvertedIndexBuilder.openHTML(url, cleanedHTML, index);
@@ -92,23 +100,27 @@ public class URLParser {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	public HashSet<String> getURLs(String seed)
+	public HashSet<String> getURLs(String seed) // TODO Take in the HTML instead?
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		String text = fetchHTML(seed);
 		Pattern p = Pattern.compile(REGEX);
 		Matcher m = p.matcher(text);
 
-		links.add(seed);
+		links.add(seed); // TODO Not here
 		URL base = new URL(seed);
 		int count = links.size();
 
-		while (m.find() && count <= 49) {
+		while (m.find() && count <= 49) { // TODO instead of count you call links.size() in the while
 
+			// TODO Shouldn't need a replaceAll, if you do we need to fix the REGEX
 			URL absolute = new URL(base, m.group(GROUP).replaceAll("\"", ""));
 			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(), absolute.getPath(),
 					absolute.getQuery(), null);
-			if (!links.contains(cleanURL.toString()) && !cleanURL.equals(seed)) {
+			
+			// TODO Save the toString() representation of the cleanURL so you don't need to keep recalling it
+			
+			if (!links.contains(cleanURL.toString()) && !cleanURL.equals(seed)) { // TODO can remove the cleanURL.equals(seed) part
 				links.add(cleanURL.toString());
 				queue.add(cleanURL.toString());
 				count++;
@@ -120,6 +132,9 @@ public class URLParser {
 
 	}
 
+	
+	
+	// TODO Might still make sense to have a seperate HTTPFetcher class
 	/**
 	 * Crafts a minimal HTTP/1.1 request for the provided method.
 	 *
