@@ -52,7 +52,7 @@ public class Driver {
 		}
 
 		if (parser.hasFlag("-url")) {
-			URLParser parseURL = new URLParser();
+			WebCrawler parseURL = new WebCrawler();
 
 			String seed = parser.getValue("-url");
 			parseURL.urlList(seed, index);

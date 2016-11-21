@@ -20,10 +20,6 @@ public class InvertedIndex {
 	 * The TreeMap of the words
 	 */
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> map;
-	
-	// TODO Usually not appropriate to create static mutable members, make these local variables instead
-	private static List<SearchResult> results;
-	private static HashMap<String, SearchResult> resultMap;
 
 	/**
 	 * Class constructor
@@ -177,17 +173,20 @@ public class InvertedIndex {
 	 */
 	public List<SearchResult> partialSearch(String[] queryWords) {
 		
-		results = new ArrayList<>();
-		resultMap = new HashMap<>();
+		ArrayList<SearchResult >results = new ArrayList<>();
+		HashMap<String, SearchResult> resultMap = new HashMap<>();
 		
 		for (String word: queryWords) {
 			
 			for (String match: map.tailMap(word).keySet()) {
 				
 				if (match.startsWith(word)) {
-					addSearchResults(match);
+					addSearchResults(match, results, resultMap);
 				}
-				// TODO else break
+				
+				else if (match.compareTo(word) > 0) {
+					break;					
+				}
 			}
 			
 		}
@@ -208,13 +207,13 @@ public class InvertedIndex {
 	 */
 	public List<SearchResult> exactSearch(String[] queryWords) {
 		
-		results = new ArrayList<>();
-		resultMap = new HashMap<>();
+		ArrayList<SearchResult >results = new ArrayList<>();
+		HashMap<String, SearchResult> resultMap = new HashMap<>();
 		
 		for (String word: queryWords) {
 			
 			if (map.containsKey(word)) {
-				addSearchResults(word);				
+				addSearchResults(word, results, resultMap);				
 			}
 			
 		}
@@ -231,7 +230,7 @@ public class InvertedIndex {
 	 * 		The word match
 	 * 
 	 */
-	public void addSearchResults(String word) { // TODO pass in the set and list that this method needs to add to
+	public void addSearchResults(String word, ArrayList<SearchResult> results, HashMap<String, SearchResult> resultMap) { // TODO pass in the set and list that this method needs to add to
 		
 		TreeMap<String, TreeSet<Integer>> innerMap = map.get(word);
 		
