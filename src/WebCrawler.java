@@ -10,6 +10,8 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// TODO In general, its only okay to make things less general if they improve efficiency
+
 public class WebCrawler {
 	
 	public static final String REGEX = "<a([^>]+)href\\s*=\\s*\"([^\"]*)\"";
@@ -43,7 +45,7 @@ public class WebCrawler {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	public void urlList(String seed, InvertedIndex index)
+	public void urlList(String seed, InvertedIndex index) // TODO refactor addSeed()
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 		
 		links.add(seed);
@@ -73,7 +75,7 @@ public class WebCrawler {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	public HashSet<String> getURLs(String seed, String text)
+	public HashSet<String> getURLs(String seed, String text) // TODO private and void
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		Pattern p = Pattern.compile(REGEX);
@@ -85,7 +87,7 @@ public class WebCrawler {
 			
 			URL absolute = new URL(base, m.group(GROUP));
 			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(), absolute.getPath(),
-					absolute.getQuery(), null);			
+					absolute.getQuery(), null);
 			String urlString = cleanURL.toString();
 			
 			if (!links.contains(urlString)) {

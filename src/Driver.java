@@ -4,6 +4,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+// TODO Check your TODOs
+
 /**
  * This class is a Search Engine project Done: Inverted Index and Partial Search
  * In Progress: Web Crawler

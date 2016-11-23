@@ -58,6 +58,8 @@ public class InvertedIndexBuilder {
 			String line;
 
 			while ((line = reader.readLine()) != null) {
+				
+				// TODO Replace before you split to reduce empty strings
 
 				String[] words = line.toLowerCase().split("\\s+");
 
@@ -82,6 +84,8 @@ public class InvertedIndexBuilder {
 
 	}
 	
+	// TODO JAVADOC
+	// TODO Move into web crawler for purposes of multithreading later on...
 	public static void openHTML(String url, String[] words, InvertedIndex toIndex) {
 		
 		int count = 1;
