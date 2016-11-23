@@ -85,4 +85,29 @@ public class Driver {
 
 	}
 
+	/*
+	 * Project 4 Hints:
+	 * 
+	 * Create a thread-safe inverted index that extends your inverted index and uses the synchronized keyword
+	 * Use the work queue from the prime finder homework
+	 * 
+	 * Create NEW classes (do not extend) that are multithreaded for your inverted index builder, query parser, web crawler
+	 * - building, one "task" or Runnable object per file
+	 * - searching, one "task" per query line
+	 * - crawling, one "task" per url
+	 * 
+	 * Change 1 class at a time, then test.
+	 * Do not worry about efficiency, try to get into code review for help speeding things up
+	 *  
+	 * Have an ugly driver to start...
+	 * if (-multi) {
+	 * 		everything you have now
+	 * 		change classes one-by-one to multithreaded versions
+	 * 
+	 * }
+	 * else {
+	 * 		everything you have now
+	 * }
+	 */
+	
 }
