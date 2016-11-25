@@ -83,14 +83,6 @@ public class HTMLCleaner {
 	 * @return html code without the element specified
 	 */
 	public static String stripElement(String name, String html) {
-		// html = html.toLowerCase();
-
-		// if (name.equals("style")) {
-		//
-		// html = html.replaceAll("(\\{\n*?\\s*?.*?\\s*?\n*?\\})", "");
-		//
-		// }
-		// return ?
 		return html.replaceAll("<((?i)" + name + "(?-i))([\\s\\S]+?)</((?i)" + name + "(?-i))>", "");
 	}
 
