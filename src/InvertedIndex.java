@@ -230,7 +230,7 @@ public class InvertedIndex {
 	 * 		The word match
 	 * 
 	 */
-	public void addSearchResults(String word, ArrayList<SearchResult> results, HashMap<String, SearchResult> resultMap) { // TODO pass in the set and list that this method needs to add to
+	public void addSearchResults(String word, ArrayList<SearchResult> results, HashMap<String, SearchResult> resultMap) {
 		
 		TreeMap<String, TreeSet<Integer>> innerMap = map.get(word);
 		

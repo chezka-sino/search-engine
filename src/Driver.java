@@ -57,7 +57,7 @@ public class Driver {
 			WebCrawler parseURL = new WebCrawler();
 
 			String seed = parser.getValue("-url");
-			parseURL.urlList(seed, index);
+			parseURL.addSeed(seed, index);
 
 		}
 

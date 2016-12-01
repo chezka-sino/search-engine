@@ -58,16 +58,13 @@ public class InvertedIndexBuilder {
 			String line;
 
 			while ((line = reader.readLine()) != null) {
-				
-				// TODO Replace before you split to reduce empty strings
 
+				line = line.replaceAll("\\p{Punct}+", "");
 				String[] words = line.toLowerCase().split("\\s+");
 
 				for (String i : words) {
 
-					i = i.replaceAll("\\p{Punct}+", "");
 					if (!i.isEmpty()) {
-
 						toIndex.add(i, inputFile.toString(), count);
 						count++;
 					}
@@ -82,25 +79,6 @@ public class InvertedIndexBuilder {
 			System.err.println("Unable to read file: " + inputFile.toString());
 		}
 
-	}
-	
-	// TODO JAVADOC
-	// TODO Move into web crawler for purposes of multithreading later on...
-	public static void openHTML(String url, String[] words, InvertedIndex toIndex) {
-		
-		int count = 1;
-				
-		for (String i: words) {
-			i = i.replaceAll("\\p{Punct}+", "");
-			if (!i.isEmpty()) {
-	
-				toIndex.add(i, url, count);
-				count++;
-						
-			}
-				
-		}
-				
 	}		
 
 }

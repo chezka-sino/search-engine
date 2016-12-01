@@ -10,8 +10,6 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO In general, its only okay to make things less general if they improve efficiency
-
 public class WebCrawler {
 	
 	public static final String REGEX = "<a([^>]+)href\\s*=\\s*\"([^\"]*)\"";
@@ -45,7 +43,7 @@ public class WebCrawler {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	public void urlList(String seed, InvertedIndex index) // TODO refactor addSeed()
+	public void addSeed(String seed, InvertedIndex index)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 		
 		links.add(seed);
@@ -56,7 +54,7 @@ public class WebCrawler {
 			
 			String htmlFile = HTTPFetcher.fetchHTML(url);
 			String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
-			InvertedIndexBuilder.openHTML(url, cleanedHTML, index);
+			htmlToIndex(url, cleanedHTML, index);
 			getURLs(url, htmlFile);
 		}
 
@@ -75,7 +73,7 @@ public class WebCrawler {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	public HashSet<String> getURLs(String seed, String text) // TODO private and void
+	private void getURLs(String seed, String text)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		Pattern p = Pattern.compile(REGEX);
@@ -97,8 +95,34 @@ public class WebCrawler {
 
 		}
 
-		return links;
-
+	}
+	
+	/**
+	 * Indexes the words in the HTML
+	 * 
+	 * @param url
+	 * 			URL where the word was found
+	 * @param words
+	 * 			array of words to be indexed
+	 * @param toIndex
+	 * 			InvertedIndex object
+	 * 
+	 */
+	public static void htmlToIndex(String url, String[] words, InvertedIndex toIndex) {
+			
+		int count = 1;
+				
+		for (String i: words) {
+			i = i.replaceAll("\\p{Punct}+", "");
+			if (!i.isEmpty()) {
+		
+				toIndex.add(i, url, count);
+				count++;
+							
+			}
+				
+		}
+					
 	}
 
 }
