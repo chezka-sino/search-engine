@@ -29,8 +29,8 @@ public class Driver {
 		ArrayList<String> textFiles = new ArrayList<>();
 
 		ArgumentParser parser = new ArgumentParser(args);
-//		InvertedIndex index = new InvertedIndex();
-		ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
+		InvertedIndex index = new InvertedIndex();
+//		ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
 
 		if (parser.numFlags() == 0) {
 			System.err.println("No arguments");
@@ -38,6 +38,8 @@ public class Driver {
 
 		if (parser.hasFlag("-multi")) {
 			int threads = parser.getValue("-multi", 5);
+			
+			WorkQueue workQueue = new WorkQueue(threads);
 			
 			if (parser.hasFlag("-dir")) {
 
@@ -47,7 +49,7 @@ public class Driver {
 
 					Path dir = Paths.get(dirPath);
 					textFiles.addAll(DirectoryTraverser.traverse(dir));
-					InvertedIndexBuilder.readArray(textFiles, index);
+					InvertedIndexBuilder.readArray(textFiles, index, workQueue);
 
 				}
 

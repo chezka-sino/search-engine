@@ -5,6 +5,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 /**
  * This class looks into the .txt files, calls the InvertedIndex class to add
  * the words in a TreeMap then calls the JSONWriter to write the Inverted Index
@@ -17,6 +22,8 @@ import java.util.ArrayList;
  *
  */
 public class InvertedIndexBuilder {
+	
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Goes through the list of .txt files
@@ -30,11 +37,45 @@ public class InvertedIndexBuilder {
 	 * 
 	 */
 	public static void readArray(ArrayList<String> textFiles, InvertedIndex index) throws IOException {
-
+		
+		
 		for (String name : textFiles) {
 			Path inputFile = Paths.get(name);
 			openFile(inputFile, index);
 		}
+
+	}
+	
+	public static void readArray(ArrayList<String> textFiles, InvertedIndex index, WorkQueue minions) throws IOException {
+		
+//		WorkQueue minions = new WorkQueue(threads);
+		
+		class DirectoryMinion implements Runnable {
+			
+			private String file;
+			
+			public DirectoryMinion(String file) {
+				LOGGER.debug("Minion created for {}", file);
+				this.file = file;
+				minions.incrementPending();
+			}
+
+			@Override
+			public void run() {
+				Path inputFile = Paths.get(file);
+				openFile(inputFile, index);
+				LOGGER.debug("Minion finished openFile on {}", inputFile);
+				minions.decrementPending();				
+			}
+			
+		}
+		
+		for (String name : textFiles) {
+//			minions.incrementPending();
+			minions.execute(new DirectoryMinion(name));
+			minions.finish();
+			LOGGER.debug("Minion finished {}", name);
+		}	
 
 	}
 
@@ -77,8 +118,9 @@ public class InvertedIndexBuilder {
 
 		catch (IOException e) {
 			System.err.println("Unable to read file: " + inputFile.toString());
+			LOGGER.catching(Level.DEBUG, e);
 		}
 
-	}		
+	}
 
 }

@@ -1,5 +1,8 @@
 import java.util.LinkedList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * A simple work queue implementation based on the IBM developerWorks article by
  * Brian Goetz. It is up to the user of this class to keep track of whether
@@ -27,6 +30,8 @@ public class WorkQueue {
 	public static final int DEFAULT = 5;
 
 	private int pending;
+	
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Starts a work queue with the default number of threads.
@@ -88,7 +93,7 @@ public class WorkQueue {
 			e.printStackTrace();
 		}
 
-		this.notifyAll();
+//		this.notifyAll();
 
 	}
 
@@ -148,6 +153,7 @@ public class WorkQueue {
 							queue.wait();
 						} catch (InterruptedException ex) {
 							System.err.println("Warning: Work queue interrupted.");
+							LOGGER.warn("Work queue interrupted in poolworker while true");
 							Thread.currentThread().interrupt();
 						}
 					}
@@ -169,6 +175,7 @@ public class WorkQueue {
 				} catch (RuntimeException ex) {
 					// catch runtime exceptions to avoid leaking threads
 					System.err.println("Warning: Work queue encountered an " + "exception while running.");
+					LOGGER.warn("Work queue interrupted runtime exception");
 				}
 				decrementPending();
 			}
