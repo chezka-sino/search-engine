@@ -29,8 +29,8 @@ public class Driver {
 		ArrayList<String> textFiles = new ArrayList<>();
 
 		ArgumentParser parser = new ArgumentParser(args);
-		InvertedIndex index = new InvertedIndex();
-//		ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
+//		InvertedIndex index = new InvertedIndex();
+		ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
 
 		if (parser.numFlags() == 0) {
 			System.err.println("No arguments");
