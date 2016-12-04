@@ -30,7 +30,7 @@ public class WebCrawler {
 
 	/**
 	 * Parses the html of the seed to look for URLs Indexes the words found in
-	 * the paage
+	 * the page
 	 * 
 	 * @param seed
 	 *            URL string

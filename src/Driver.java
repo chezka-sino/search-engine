@@ -29,62 +29,117 @@ public class Driver {
 		ArrayList<String> textFiles = new ArrayList<>();
 
 		ArgumentParser parser = new ArgumentParser(args);
-		InvertedIndex index = new InvertedIndex();
+//		InvertedIndex index = new InvertedIndex();
+		ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
 
 		if (parser.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
 
-		if (parser.hasFlag("-dir")) {
+		if (parser.hasFlag("-multi")) {
+			int threads = parser.getValue("-multi", 5);
+			
+			if (parser.hasFlag("-dir")) {
 
-			String dirPath = parser.getValue("-dir");
+				String dirPath = parser.getValue("-dir");
 
-			try {
+				try {
 
-				Path dir = Paths.get(dirPath);
-				textFiles.addAll(DirectoryTraverser.traverse(dir));
-				InvertedIndexBuilder.readArray(textFiles, index);
+					Path dir = Paths.get(dirPath);
+					textFiles.addAll(DirectoryTraverser.traverse(dir));
+					InvertedIndexBuilder.readArray(textFiles, index);
+
+				}
+
+				catch (NullPointerException e) {
+					System.err.println("No directory provided.");
+				}
 
 			}
 
-			catch (NullPointerException e) {
-				System.err.println("No directory provided.");
+			if (parser.hasFlag("-url")) {
+				WebCrawler parseURL = new WebCrawler();
+
+				String seed = parser.getValue("-url");
+				parseURL.addSeed(seed, index);
+
+			}
+
+			if (parser.hasFlag("-index")) {
+				String indexPath = parser.getValue("-index", "index.json");
+				index.toJSON(indexPath);
+			}
+
+			if (parser.hasFlag("-results")) {
+				String resultsPath = parser.getValue("-results", "results.json");
+
+				if (parser.hasFlag("-query")) {
+					QueryParser partialSearch = new QueryParser(index);
+					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
+					partialSearch.toJSON(resultsPath);
+				}
+
+				if (parser.hasFlag("-exact")) {
+					QueryParser exactSearch = new QueryParser(index);
+					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
+					exactSearch.toJSON(resultsPath);
+				}
+
 			}
 
 		}
-
-		if (parser.hasFlag("-url")) {
-			WebCrawler parseURL = new WebCrawler();
-
-			String seed = parser.getValue("-url");
-			parseURL.addSeed(seed, index);
-
-		}
-
-		if (parser.hasFlag("-index")) {
-			String indexPath = parser.getValue("-index", "index.json");
-			index.toJSON(indexPath);
-		}
-
-		if (parser.hasFlag("-results")) {
-			String resultsPath = parser.getValue("-results", "results.json");
-
-			if (parser.hasFlag("-query")) {
-				QueryParser partialSearch = new QueryParser(index);
-				partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
-				partialSearch.toJSON(resultsPath);
+		
+		else {
+			if (parser.hasFlag("-dir")) {
+	
+				String dirPath = parser.getValue("-dir");
+	
+				try {
+	
+					Path dir = Paths.get(dirPath);
+					textFiles.addAll(DirectoryTraverser.traverse(dir));
+					InvertedIndexBuilder.readArray(textFiles, index);
+	
+				}
+	
+				catch (NullPointerException e) {
+					System.err.println("No directory provided.");
+				}
+	
 			}
-
-			if (parser.hasFlag("-exact")) {
-				QueryParser exactSearch = new QueryParser(index);
-				exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
-				exactSearch.toJSON(resultsPath);
+	
+			if (parser.hasFlag("-url")) {
+				WebCrawler parseURL = new WebCrawler();
+	
+				String seed = parser.getValue("-url");
+				parseURL.addSeed(seed, index);
+	
 			}
-
+	
+			if (parser.hasFlag("-index")) {
+				String indexPath = parser.getValue("-index", "index.json");
+				index.toJSON(indexPath);
+			}
+	
+			if (parser.hasFlag("-results")) {
+				String resultsPath = parser.getValue("-results", "results.json");
+	
+				if (parser.hasFlag("-query")) {
+					QueryParser partialSearch = new QueryParser(index);
+					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
+					partialSearch.toJSON(resultsPath);
+				}
+	
+				if (parser.hasFlag("-exact")) {
+					QueryParser exactSearch = new QueryParser(index);
+					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
+					exactSearch.toJSON(resultsPath);
+				}
+	
+			}
+	
 		}
-
 	}
-
 	/*
 	 * Project 4 Hints:
 	 * 
@@ -99,7 +154,7 @@ public class Driver {
 	 * Change 1 class at a time, then test.
 	 * Do not worry about efficiency, try to get into code review for help speeding things up
 	 *  
-	 * Have an ugly driver to start...
+	 * Have an ugly driver to start... (ok)
 	 * if (-multi) {
 	 * 		everything you have now
 	 * 		change classes one-by-one to multithreaded versions

@@ -70,16 +70,6 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Returns the map of word index into a String
-	 * 
-	 * @return string of the map of the word index
-	 */
-	@Override
-	public String toString() {
-		return map.toString();
-	}
-
-	/**
 	 * Returns the number of words in the map
 	 * 
 	 * @return the number of words in the map
