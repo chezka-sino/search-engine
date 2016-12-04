@@ -37,7 +37,17 @@ public class Driver {
 		}
 
 		if (parser.hasFlag("-multi")) {
-			int threads = parser.getValue("-multi", 5);
+			int threads;
+			
+			try {
+				threads = Integer.parseInt(parser.getValue("-multi"));
+				if (threads == 0) {
+					threads = 5;
+				}
+			}
+			catch (NumberFormatException e) {
+				threads = 5;
+			}
 			
 			WorkQueue workQueue = new WorkQueue(threads);
 			
