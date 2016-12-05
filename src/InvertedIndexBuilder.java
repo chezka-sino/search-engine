@@ -47,9 +47,7 @@ public class InvertedIndexBuilder {
 	}
 	
 	public static void readArray(ArrayList<String> textFiles, InvertedIndex index, WorkQueue minions) throws IOException {
-		
-//		WorkQueue minions = new WorkQueue(threads);
-		
+
 		class DirectoryMinion implements Runnable {
 			
 			private String file;

@@ -33,6 +33,11 @@ public class QueryParser {
 		this.results = new TreeMap<>();
 	}
 	
+	public QueryParser(ThreadSafeInvertedIndex index) {
+		this.index = index;
+		this.results = new TreeMap<>();
+	}
+	
 	/**
 	 * Goes through the query file line by line for the search words
 	 * 

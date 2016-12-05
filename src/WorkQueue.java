@@ -52,14 +52,15 @@ public class WorkQueue {
 		this.queue = new LinkedList<Runnable>();
 		this.workers = new PoolWorker[threads];
 
-		this.shutdown = false;
+		shutdown = false;
 
-		this.pending = 0;
+		pending = 0;
 
 		// start the threads so they are waiting in the background
 		for (int i = 0; i < threads; i++) {
 			workers[i] = new PoolWorker();
 			workers[i].start();
+			LOGGER.debug("Started Thread" + i);
 		}
 	}
 
@@ -118,7 +119,7 @@ public class WorkQueue {
 	public void shutdown() {
 		// safe to do unsynchronized due to volatile keyword
 		shutdown = true;
-		finish();
+//		finish();
 		synchronized (queue) {
 			queue.notifyAll();
 		}
