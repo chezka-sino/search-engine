@@ -178,7 +178,7 @@ public class WebCrawler {
 		}
 
 	}
-
+	
 	public static void htmlToIndex(String url, String[] words, ThreadSafeInvertedIndex toIndex) {
 
 		int count = 1;

@@ -72,7 +72,7 @@ public class Driver {
 				WebCrawler parseURL = new WebCrawler();
 
 				String seed = parser.getValue("-url");
-				parseURL.addSeed(seed, index);
+				parseURL.addSeed(seed, index, threads);
 
 			}
 
@@ -100,56 +100,56 @@ public class Driver {
 
 		}
 
-		else {
-			if (parser.hasFlag("-dir")) {
-
-				String dirPath = parser.getValue("-dir");
-
-				try {
-
-					Path dir = Paths.get(dirPath);
-					textFiles.addAll(DirectoryTraverser.traverse(dir));
-					InvertedIndexBuilder.readArray(textFiles, index);
-
-				}
-
-				catch (NullPointerException e) {
-					System.err.println("No directory provided.");
-				}
-
-			}
-
-			if (parser.hasFlag("-url")) {
-				WebCrawler parseURL = new WebCrawler();
-
-				String seed = parser.getValue("-url");
-				parseURL.addSeed(seed, index);
-
-			}
-
-			if (parser.hasFlag("-index")) {
-				String indexPath = parser.getValue("-index", "index.json");
-				index.toJSON(indexPath);
-			}
-
-			if (parser.hasFlag("-results")) {
-				String resultsPath = parser.getValue("-results", "results.json");
-
-				if (parser.hasFlag("-query")) {
-					QueryParser partialSearch = new QueryParser(index);
-					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
-					partialSearch.toJSON(resultsPath);
-				}
-
-				if (parser.hasFlag("-exact")) {
-					QueryParser exactSearch = new QueryParser(index);
-					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
-					exactSearch.toJSON(resultsPath);
-				}
-
-			}
-
-		}
+		// else {
+		// if (parser.hasFlag("-dir")) {
+		//
+		// String dirPath = parser.getValue("-dir");
+		//
+		// try {
+		//
+		// Path dir = Paths.get(dirPath);
+		// textFiles.addAll(DirectoryTraverser.traverse(dir));
+		// InvertedIndexBuilder.readArray(textFiles, index);
+		//
+		// }
+		//
+		// catch (NullPointerException e) {
+		// System.err.println("No directory provided.");
+		// }
+		//
+		// }
+		//
+		// if (parser.hasFlag("-url")) {
+		// WebCrawler parseURL = new WebCrawler();
+		//
+		// String seed = parser.getValue("-url");
+		// parseURL.addSeed(seed, index);
+		//
+		// }
+		//
+		// if (parser.hasFlag("-index")) {
+		// String indexPath = parser.getValue("-index", "index.json");
+		// index.toJSON(indexPath);
+		// }
+		//
+		// if (parser.hasFlag("-results")) {
+		// String resultsPath = parser.getValue("-results", "results.json");
+		//
+		// if (parser.hasFlag("-query")) {
+		// QueryParser partialSearch = new QueryParser(index);
+		// partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
+		// partialSearch.toJSON(resultsPath);
+		// }
+		//
+		// if (parser.hasFlag("-exact")) {
+		// QueryParser exactSearch = new QueryParser(index);
+		// exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
+		// exactSearch.toJSON(resultsPath);
+		// }
+		//
+		// }
+		//
+		// }
 	}
 	/*
 	 * Project 4 Hints:

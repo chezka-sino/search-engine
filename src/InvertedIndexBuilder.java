@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 /**
  * This class looks into the .txt files, calls the InvertedIndex class to add
  * the words in a TreeMap then calls the JSONWriter to write the Inverted Index
@@ -22,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class InvertedIndexBuilder {
-	
+
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
@@ -37,23 +36,23 @@ public class InvertedIndexBuilder {
 	 * 
 	 */
 	public static void readArray(ArrayList<String> textFiles, InvertedIndex index) throws IOException {
-		
-		
+
 		for (String name : textFiles) {
 			Path inputFile = Paths.get(name);
 			openFile(inputFile, index);
 		}
-		
+
 	}
-	
-	public static void readArray(ArrayList<String> textFiles, InvertedIndex index, int threads) throws IOException {
+
+	public static void readArray(ArrayList<String> textFiles, ThreadSafeInvertedIndex index, int threads)
+			throws IOException {
 
 		WorkQueue minions = new WorkQueue(threads);
-		
+
 		class DirectoryMinion implements Runnable {
-			
+
 			private String file;
-			
+
 			public DirectoryMinion(String file) {
 				LOGGER.debug("Minion created for {}", file);
 				this.file = file;
@@ -65,17 +64,17 @@ public class InvertedIndexBuilder {
 				Path inputFile = Paths.get(file);
 				openFile(inputFile, index);
 				LOGGER.debug("Minion finished openFile on {}", inputFile);
-				minions.decrementPending();				
+				minions.decrementPending();
 			}
-			
+
 		}
-		
+
 		for (String name : textFiles) {
-//			minions.incrementPending();
+			// minions.incrementPending();
 			minions.execute(new DirectoryMinion(name));
 			minions.finish();
 			LOGGER.debug("Minion finished {}", name);
-		}	
+		}
 
 	}
 
@@ -91,6 +90,39 @@ public class InvertedIndexBuilder {
 	 * 
 	 */
 	public static void openFile(Path inputFile, InvertedIndex toIndex) {
+
+		int count = 1;
+
+		try (BufferedReader reader = Files.newBufferedReader(inputFile)) {
+
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+
+				line = line.replaceAll("\\p{Punct}+", "");
+				String[] words = line.toLowerCase().split("\\s+");
+
+				for (String i : words) {
+
+					if (!i.isEmpty()) {
+						toIndex.add(i, inputFile.toString(), count);
+						count++;
+					}
+
+				}
+
+			}
+
+		}
+
+		catch (IOException e) {
+			System.err.println("Unable to read file: " + inputFile.toString());
+			LOGGER.catching(Level.DEBUG, e);
+		}
+
+	}
+
+	public static void openFile(Path inputFile, ThreadSafeInvertedIndex toIndex) {
 
 		int count = 1;
 
