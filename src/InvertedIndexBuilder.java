@@ -43,11 +43,13 @@ public class InvertedIndexBuilder {
 			Path inputFile = Paths.get(name);
 			openFile(inputFile, index);
 		}
-
+		
 	}
 	
-	public static void readArray(ArrayList<String> textFiles, InvertedIndex index, WorkQueue minions) throws IOException {
+	public static void readArray(ArrayList<String> textFiles, InvertedIndex index, int threads) throws IOException {
 
+		WorkQueue minions = new WorkQueue(threads);
+		
 		class DirectoryMinion implements Runnable {
 			
 			private String file;

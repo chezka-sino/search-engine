@@ -100,13 +100,14 @@ public class WorkQueue {
 
 	public synchronized void incrementPending() {
 		pending++;
-		this.notifyAll();
+		LOGGER.debug("Pending is now {}", pending);
 	}
 
 	public synchronized void decrementPending() {
 		assert pending > 0;
 		pending--;
-
+		LOGGER.debug("Pending is now {}", pending);
+		
 		if (pending == 0) {
 			this.notifyAll();
 		}

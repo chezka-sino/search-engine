@@ -49,7 +49,7 @@ public class Driver {
 				threads = 5;
 			}
 			
-			WorkQueue workQueue = new WorkQueue(threads);
+//			WorkQueue workQueue = new WorkQueue(threads);
 			
 			if (parser.hasFlag("-dir")) {
 
@@ -59,7 +59,7 @@ public class Driver {
 
 					Path dir = Paths.get(dirPath);
 					textFiles.addAll(DirectoryTraverser.traverse(dir));
-					InvertedIndexBuilder.readArray(textFiles, index, workQueue);
+					InvertedIndexBuilder.readArray(textFiles, index, threads);
 
 				}
 
@@ -86,13 +86,13 @@ public class Driver {
 				String resultsPath = parser.getValue("-results", "results.json");
 
 				if (parser.hasFlag("-query")) {
-					QueryParser partialSearch = new QueryParser(index);
+					QueryParser partialSearch = new QueryParser(index, threads);
 					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
 					partialSearch.toJSON(resultsPath);
 				}
 
 				if (parser.hasFlag("-exact")) {
-					QueryParser exactSearch = new QueryParser(index);
+					QueryParser exactSearch = new QueryParser(index, threads);
 					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
 					exactSearch.toJSON(resultsPath);
 				}

@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * This class parses the query file that contains all of the query words for searching
@@ -20,6 +23,8 @@ public class QueryParser {
 	private final InvertedIndex index;
 	private final TreeMap<String, List<SearchResult>> results;
 	
+	private final WorkQueue minions;	
+	private static final Logger logger = LogManager.getLogger();
 
 	/**
 	 * QueryParser constructor
@@ -29,11 +34,13 @@ public class QueryParser {
 	 * 
 	 */
 	public QueryParser(InvertedIndex index) {
+		minions = new WorkQueue();
 		this.index = index;
 		this.results = new TreeMap<>();
 	}
 	
-	public QueryParser(ThreadSafeInvertedIndex index) {
+	public QueryParser(ThreadSafeInvertedIndex index, int threads) {
+		minions = new WorkQueue(threads);
 		this.index = index;
 		this.results = new TreeMap<>();
 	}
@@ -48,6 +55,18 @@ public class QueryParser {
 	 * 
 	 */
 	public void parseFile(Path file, boolean exact) {
+		
+		class QueryMinion implements Runnable {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			
+			
+		}
 			
 		try (BufferedReader reader = Files.newBufferedReader(file)) {
 
@@ -83,6 +102,43 @@ public class QueryParser {
 		}
 			
 	}
+	
+//	private class QueryMinion implements Runnable {
+//		
+//		private String line;
+//		
+//		public QueryMinion(String line) {
+//			logger.debug("Minion created for {}", line);
+//			this.line = line;
+//			minions.incrementPending();
+//		}
+//
+//		@Override
+//		public void run() {
+//			// TODO Auto-generated method stub
+//			List<String> queryList = new ArrayList<>();
+//			line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
+//			line = line.trim();
+//			String[] words = line.split("\\s+");
+//			
+//			for (String word: words) {
+//				queryList.add(word);
+//			}
+//			Collections.sort(queryList);
+//			line = String.join(" ", queryList);
+//			
+//			if (exact) {
+//				results.put(line, index.exactSearch(words));
+//			}
+//			
+//			else {
+//				results.put(line, index.partialSearch(words));
+//			}
+//			
+//			
+//		}
+//		
+//	}
 	
 	/**
 	 * Writes the search results to a "pretty" JSON format
