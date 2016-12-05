@@ -10,15 +10,20 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class WebCrawler {
-	
+
 	public static final String REGEX = "<a([^>]+)href\\s*=\\s*\"([^\"]*)\"";
 	public static final int GROUP = 2;
-	
+
 	// Set of all the URLs parsed
 	private final HashSet<String> links;
 	// Queue of the URLs to be processed
 	private final Queue<String> queue;
+
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Class constructor Initializes the set and queue
@@ -45,17 +50,66 @@ public class WebCrawler {
 	 */
 	public void addSeed(String seed, InvertedIndex index)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
-		
+
 		links.add(seed);
 		queue.add(seed);
 
 		while (!queue.isEmpty()) {
 			String url = queue.remove();
-			
+
 			String htmlFile = HTTPFetcher.fetchHTML(url);
 			String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
 			htmlToIndex(url, cleanedHTML, index);
 			getURLs(url, htmlFile);
+		}
+
+	}
+
+	public void addSeed(String seed, ThreadSafeInvertedIndex index, int threads)
+			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
+
+		links.add(seed);
+		queue.add(seed);
+
+		WorkQueue minions = new WorkQueue(threads);
+
+		class urlMinion implements Runnable {
+
+			private String url;
+
+			public urlMinion(String url) {
+				LOGGER.debug("Minion created for {}", url);
+				this.url = url;
+				minions.incrementPending();
+			}
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				String htmlFile;
+				try {
+					htmlFile = HTTPFetcher.fetchHTML(url);
+					String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
+					htmlToIndex(url, cleanedHTML, index);
+					getURLs(url, htmlFile);
+				} catch (IOException e) {
+					LOGGER.warn("IOException on {}", url);
+				} catch (URISyntaxException e) {
+					LOGGER.warn("URISyntaxException on {}", url);
+				}
+
+				LOGGER.debug("Minion indexed {}", url);
+				minions.decrementPending();
+			}
+
+		}
+
+		while (!queue.isEmpty()) {
+			String url = queue.remove();
+			minions.execute(new urlMinion(url));
+			minions.finish();
+			LOGGER.debug("Minion finished {}", url);
+
 		}
 
 	}
@@ -81,13 +135,13 @@ public class WebCrawler {
 
 		URL base = new URL(seed);
 
-		while (m.find() && links.size() <= 49) { 
-			
+		while (m.find() && links.size() <= 49) {
+
 			URL absolute = new URL(base, m.group(GROUP));
 			URI cleanURL = new URI(absolute.getProtocol(), absolute.getAuthority(), absolute.getPath(),
 					absolute.getQuery(), null);
 			String urlString = cleanURL.toString();
-			
+
 			if (!links.contains(urlString)) {
 				links.add(urlString);
 				queue.add(urlString);
@@ -96,33 +150,50 @@ public class WebCrawler {
 		}
 
 	}
-	
+
 	/**
 	 * Indexes the words in the HTML
 	 * 
 	 * @param url
-	 * 			URL where the word was found
+	 *            URL where the word was found
 	 * @param words
-	 * 			array of words to be indexed
+	 *            array of words to be indexed
 	 * @param toIndex
-	 * 			InvertedIndex object
+	 *            InvertedIndex object
 	 * 
 	 */
 	public static void htmlToIndex(String url, String[] words, InvertedIndex toIndex) {
-			
+
 		int count = 1;
-				
-		for (String i: words) {
+
+		for (String i : words) {
 			i = i.replaceAll("\\p{Punct}+", "");
 			if (!i.isEmpty()) {
-		
+
 				toIndex.add(i, url, count);
 				count++;
-							
+
 			}
-				
+
 		}
-					
+
+	}
+
+	public static void htmlToIndex(String url, String[] words, ThreadSafeInvertedIndex toIndex) {
+
+		int count = 1;
+
+		for (String i : words) {
+			i = i.replaceAll("\\p{Punct}+", "");
+			if (!i.isEmpty()) {
+
+				toIndex.add(i, url, count);
+				count++;
+
+			}
+
+		}
+
 	}
 
 }
