@@ -11,84 +11,64 @@ import java.util.TreeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 /**
- * This class parses the query file that contains all of the query words for searching
+ * This class parses the query file that contains all of the query words for
+ * searching
  * 
  * @author Chezka Sino
  *
  */
 public class QueryParser {
-	
+
 	private final InvertedIndex index;
 	private final TreeMap<String, List<SearchResult>> results;
-	
-	private final WorkQueue minions;	
-	private static final Logger logger = LogManager.getLogger();
+
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * QueryParser constructor
 	 * 
 	 * @param index
-	 * 		InvertedIndex object
+	 *            InvertedIndex object
 	 * 
 	 */
 	public QueryParser(InvertedIndex index) {
-		minions = new WorkQueue();
 		this.index = index;
 		this.results = new TreeMap<>();
 	}
-	
-	public QueryParser(ThreadSafeInvertedIndex index, int threads) {
-		minions = new WorkQueue(threads);
-		this.index = index;
-		this.results = new TreeMap<>();
-	}
-	
+
 	/**
 	 * Goes through the query file line by line for the search words
 	 * 
 	 * @param file
-	 * 		file path containing the query words
+	 *            file path containing the query words
 	 * @param exact
-	 * 		true if conducting an exact search, false otherwise
+	 *            true if conducting an exact search, false otherwise
 	 * 
 	 */
 	public void parseFile(Path file, boolean exact) {
-		
-		class QueryMinion implements Runnable {
 
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			
-			
-		}
-			
 		try (BufferedReader reader = Files.newBufferedReader(file)) {
 
 			String line;
-	
+
 			while ((line = reader.readLine()) != null) {
-	
+
 				List<String> queryList = new ArrayList<>();
 				line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
 				line = line.trim();
 				String[] words = line.split("\\s+");
-				
-				for (String word: words) {
+
+				for (String word : words) {
 					queryList.add(word);
 				}
 				Collections.sort(queryList);
 				line = String.join(" ", queryList);
-				
+
 				if (exact) {
 					results.put(line, index.exactSearch(words));
 				}
-				
+
 				else {
 					results.put(line, index.partialSearch(words));
 				}
@@ -100,58 +80,83 @@ public class QueryParser {
 		catch (IOException e) {
 			System.err.println("Unable to read query file: " + file.toString());
 		}
-			
+
 	}
-	
-//	private class QueryMinion implements Runnable {
-//		
-//		private String line;
-//		
-//		public QueryMinion(String line) {
-//			logger.debug("Minion created for {}", line);
-//			this.line = line;
-//			minions.incrementPending();
-//		}
-//
-//		@Override
-//		public void run() {
-//			// TODO Auto-generated method stub
-//			List<String> queryList = new ArrayList<>();
-//			line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
-//			line = line.trim();
-//			String[] words = line.split("\\s+");
-//			
-//			for (String word: words) {
-//				queryList.add(word);
-//			}
-//			Collections.sort(queryList);
-//			line = String.join(" ", queryList);
-//			
-//			if (exact) {
-//				results.put(line, index.exactSearch(words));
-//			}
-//			
-//			else {
-//				results.put(line, index.partialSearch(words));
-//			}
-//			
-//			
-//		}
-//		
-//	}
-	
+
+	public void parseFile(Path file, boolean exact, int threads) {
+
+		WorkQueue minions = new WorkQueue(threads);
+
+		class QueryMinion implements Runnable {
+
+			private String line;
+
+			public QueryMinion(String line) {
+				LOGGER.debug("Minion created for {}", line);
+				this.line = line;
+				minions.incrementPending();
+			}
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				List<String> queryList = new ArrayList<>();
+				line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
+				line = line.trim();
+				String[] words = line.split("\\s+");
+
+				for (String word : words) {
+					queryList.add(word);
+				}
+				Collections.sort(queryList);
+				line = String.join(" ", queryList);
+
+				if (exact) {
+					results.put(line, index.exactSearch(words));
+				}
+
+				else {
+					results.put(line, index.partialSearch(words));
+				}
+
+				LOGGER.debug("Minion finished search on {}", line);
+				minions.decrementPending();
+			}
+
+		}
+
+		try (BufferedReader reader = Files.newBufferedReader(file)) {
+
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+
+				minions.execute(new QueryMinion(line));
+				minions.finish();
+				LOGGER.debug("Minion finished {}", line);
+
+			}
+
+		}
+
+		catch (IOException e) {
+			System.err.println("Unable to read query file: " + file.toString());
+			LOGGER.warn("Unable to read query file {}", file.toString());
+		}
+
+	}
+
 	/**
 	 * Writes the search results to a "pretty" JSON format
 	 * 
 	 * @param output
-	 * 		the output file name
+	 *            the output file name
 	 * @throws IOException
 	 * 
 	 */
-	public void toJSON (String output) throws IOException {
+	public void toJSON(String output) throws IOException {
 		Path outputFile = Paths.get(output);
 		JSONWriter.searchResultsWriter(outputFile, results);
 	}
-	
 
 }
