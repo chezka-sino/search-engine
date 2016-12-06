@@ -29,7 +29,6 @@ public class Driver {
 		ArrayList<String> textFiles = new ArrayList<>();
 
 		ArgumentParser parser = new ArgumentParser(args);
-		// InvertedIndex index = new InvertedIndex();
 		ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
 
 		if (parser.numFlags() == 0) {
@@ -48,8 +47,6 @@ public class Driver {
 				threads = 5;
 			}
 
-			// WorkQueue workQueue = new WorkQueue(threads);
-
 			if (parser.hasFlag("-dir")) {
 
 				String dirPath = parser.getValue("-dir");
@@ -58,7 +55,7 @@ public class Driver {
 
 					Path dir = Paths.get(dirPath);
 					textFiles.addAll(DirectoryTraverser.traverse(dir));
-					InvertedIndexBuilder.readArray(textFiles, index, threads);
+					MultithreadedInvertedIndexBuilder.readArray(textFiles, index, threads);
 
 				}
 
@@ -69,7 +66,7 @@ public class Driver {
 			}
 
 			if (parser.hasFlag("-url")) {
-				WebCrawler parseURL = new WebCrawler();
+				MultithreadedWebCrawler parseURL = new MultithreadedWebCrawler();
 
 				String seed = parser.getValue("-url");
 				parseURL.addSeed(seed, index, threads);
@@ -85,13 +82,13 @@ public class Driver {
 				String resultsPath = parser.getValue("-results", "results.json");
 
 				if (parser.hasFlag("-query")) {
-					QueryParser partialSearch = new QueryParser(index);
+					MultithreadedQueryParser partialSearch = new MultithreadedQueryParser(index);
 					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false, threads);
 					partialSearch.toJSON(resultsPath);
 				}
 
 				if (parser.hasFlag("-exact")) {
-					QueryParser exactSearch = new QueryParser(index);
+					MultithreadedQueryParser exactSearch = new MultithreadedQueryParser(index);
 					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true, threads);
 					exactSearch.toJSON(resultsPath);
 				}
@@ -100,56 +97,56 @@ public class Driver {
 
 		}
 
-		// else {
-		// if (parser.hasFlag("-dir")) {
-		//
-		// String dirPath = parser.getValue("-dir");
-		//
-		// try {
-		//
-		// Path dir = Paths.get(dirPath);
-		// textFiles.addAll(DirectoryTraverser.traverse(dir));
-		// InvertedIndexBuilder.readArray(textFiles, index);
-		//
-		// }
-		//
-		// catch (NullPointerException e) {
-		// System.err.println("No directory provided.");
-		// }
-		//
-		// }
-		//
-		// if (parser.hasFlag("-url")) {
-		// WebCrawler parseURL = new WebCrawler();
-		//
-		// String seed = parser.getValue("-url");
-		// parseURL.addSeed(seed, index);
-		//
-		// }
-		//
-		// if (parser.hasFlag("-index")) {
-		// String indexPath = parser.getValue("-index", "index.json");
-		// index.toJSON(indexPath);
-		// }
-		//
-		// if (parser.hasFlag("-results")) {
-		// String resultsPath = parser.getValue("-results", "results.json");
-		//
-		// if (parser.hasFlag("-query")) {
-		// QueryParser partialSearch = new QueryParser(index);
-		// partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
-		// partialSearch.toJSON(resultsPath);
-		// }
-		//
-		// if (parser.hasFlag("-exact")) {
-		// QueryParser exactSearch = new QueryParser(index);
-		// exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
-		// exactSearch.toJSON(resultsPath);
-		// }
-		//
-		// }
-		//
-		// }
+		else {
+			if (parser.hasFlag("-dir")) {
+
+				String dirPath = parser.getValue("-dir");
+
+				try {
+
+					Path dir = Paths.get(dirPath);
+					textFiles.addAll(DirectoryTraverser.traverse(dir));
+					InvertedIndexBuilder.readArray(textFiles, index);
+
+				}
+
+				catch (NullPointerException e) {
+					System.err.println("No directory provided.");
+				}
+
+			}
+
+			if (parser.hasFlag("-url")) {
+				WebCrawler parseURL = new WebCrawler();
+
+				String seed = parser.getValue("-url");
+				parseURL.addSeed(seed, index);
+
+			}
+
+			if (parser.hasFlag("-index")) {
+				String indexPath = parser.getValue("-index", "index.json");
+				index.toJSON(indexPath);
+			}
+
+			if (parser.hasFlag("-results")) {
+				String resultsPath = parser.getValue("-results", "results.json");
+
+				if (parser.hasFlag("-query")) {
+					QueryParser partialSearch = new QueryParser(index);
+					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
+					partialSearch.toJSON(resultsPath);
+				}
+
+				if (parser.hasFlag("-exact")) {
+					QueryParser exactSearch = new QueryParser(index);
+					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
+					exactSearch.toJSON(resultsPath);
+				}
+
+			}
+
+		}
 	}
 	/*
 	 * Project 4 Hints:

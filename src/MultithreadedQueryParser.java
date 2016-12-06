@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * This class parses the query file that contains all of the query words for
  * searching
@@ -15,10 +18,12 @@ import java.util.TreeMap;
  * @author Chezka Sino
  *
  */
-public class QueryParser {
+public class MultithreadedQueryParser {
 
-	private final InvertedIndex index;
+	private final ThreadSafeInvertedIndex index;
 	private final TreeMap<String, List<SearchResult>> results;
+
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * QueryParser constructor
@@ -27,7 +32,8 @@ public class QueryParser {
 	 *            InvertedIndex object
 	 * 
 	 */
-	public QueryParser(InvertedIndex index) {
+	public MultithreadedQueryParser(ThreadSafeInvertedIndex index) {
+		LOGGER.debug("New QueryParser ThreadsafeInvertedIndex");
 		this.index = index;
 		this.results = new TreeMap<>();
 	}
@@ -41,14 +47,23 @@ public class QueryParser {
 	 *            true if conducting an exact search, false otherwise
 	 * 
 	 */
-	public void parseFile(Path file, boolean exact) {
+	public void parseFile(Path file, boolean exact, int threads) {
 
-		try (BufferedReader reader = Files.newBufferedReader(file)) {
+		WorkQueue minions = new WorkQueue(threads);
 
-			String line;
+		class QueryMinion implements Runnable {
 
-			while ((line = reader.readLine()) != null) {
+			private String line;
 
+			public QueryMinion(String line) {
+				LOGGER.debug("Minion created for {}", line);
+				this.line = line;
+				minions.incrementPending();
+			}
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
 				List<String> queryList = new ArrayList<>();
 				line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
 				line = line.trim();
@@ -68,12 +83,29 @@ public class QueryParser {
 					results.put(line, index.partialSearch(words));
 				}
 
+				LOGGER.debug("Minion finished search on {}", line);
+				minions.decrementPending();
+			}
+
+		}
+
+		try (BufferedReader reader = Files.newBufferedReader(file)) {
+
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+
+				minions.execute(new QueryMinion(line));
+				minions.finish();
+				LOGGER.debug("Minion finished {}", line);
+
 			}
 
 		}
 
 		catch (IOException e) {
 			System.err.println("Unable to read query file: " + file.toString());
+			LOGGER.warn("Unable to read query file {}", file.toString());
 		}
 
 	}

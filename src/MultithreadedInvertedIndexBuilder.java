@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
  * @author Chezka Sino
  *
  */
-public class InvertedIndexBuilder {
+public class MultithreadedInvertedIndexBuilder {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
@@ -35,11 +35,35 @@ public class InvertedIndexBuilder {
 	 * @throws IOException
 	 * 
 	 */
-	public static void readArray(ArrayList<String> textFiles, InvertedIndex index) throws IOException {
+	public static void readArray(ArrayList<String> textFiles, ThreadSafeInvertedIndex index, int threads)
+			throws IOException {
+
+		WorkQueue minions = new WorkQueue(threads);
+
+		class DirectoryMinion implements Runnable {
+
+			private String file;
+
+			public DirectoryMinion(String file) {
+				LOGGER.debug("Minion created for {}", file);
+				this.file = file;
+				minions.incrementPending();
+			}
+
+			@Override
+			public void run() {
+				Path inputFile = Paths.get(file);
+				openFile(inputFile, index);
+				LOGGER.debug("Minion finished openFile on {}", inputFile);
+				minions.decrementPending();
+			}
+
+		}
 
 		for (String name : textFiles) {
-			Path inputFile = Paths.get(name);
-			openFile(inputFile, index);
+			minions.execute(new DirectoryMinion(name));
+			minions.finish();
+			LOGGER.debug("Minion finished {}", name);
 		}
 
 	}
@@ -55,7 +79,7 @@ public class InvertedIndexBuilder {
 	 * @throws IOException
 	 * 
 	 */
-	public static void openFile(Path inputFile, InvertedIndex toIndex) {
+	public static void openFile(Path inputFile, ThreadSafeInvertedIndex toIndex) {
 
 		int count = 1;
 
