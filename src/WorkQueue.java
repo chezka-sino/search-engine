@@ -30,7 +30,7 @@ public class WorkQueue {
 	public static final int DEFAULT = 5;
 
 	private int pending;
-	
+
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
@@ -94,7 +94,7 @@ public class WorkQueue {
 			e.printStackTrace();
 		}
 
-//		this.notifyAll();
+		// this.notifyAll();
 
 	}
 
@@ -107,7 +107,7 @@ public class WorkQueue {
 		assert pending > 0;
 		pending--;
 		LOGGER.debug("Pending is now {}", pending);
-		
+
 		if (pending == 0) {
 			this.notifyAll();
 		}
@@ -120,7 +120,7 @@ public class WorkQueue {
 	public void shutdown() {
 		// safe to do unsynchronized due to volatile keyword
 		shutdown = true;
-//		finish();
+		// finish();
 		synchronized (queue) {
 			queue.notifyAll();
 		}
