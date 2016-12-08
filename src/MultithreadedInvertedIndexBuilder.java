@@ -10,12 +10,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * This class looks into the .txt files, calls the InvertedIndex class to add
- * the words in a TreeMap then calls the JSONWriter to write the Inverted Index
- * to a "pretty" JSON format
+ * This class looks into the .txt files, calls the ThreadSafeInvertedIndex class
+ * to add the words in a TreeMap then calls the JSONWriter to write the Inverted
+ * Index to a "pretty" JSON format
  * 
  * @see JSONWriter
- * @see InvertedIndex
+ * @see ThreadSafeInvertedIndex
  * 
  * @author Chezka Sino
  *
@@ -75,7 +75,7 @@ public class MultithreadedInvertedIndexBuilder {
 	 * @param inputFile
 	 *            the file to be checked
 	 * @param toIndex
-	 *            InvertedIndex object
+	 *            ThreadSafeInvertedIndex object
 	 * @throws IOException
 	 * 
 	 */

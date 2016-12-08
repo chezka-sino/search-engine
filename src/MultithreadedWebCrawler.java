@@ -40,7 +40,7 @@ public class MultithreadedWebCrawler {
 	 * @param seed
 	 *            URL string
 	 * @param index
-	 *            Inverted Index object
+	 *            ThreadSafeInverted Index object
 	 * 
 	 * @throws UnknownHostException
 	 * @throws MalformedURLException
@@ -68,7 +68,6 @@ public class MultithreadedWebCrawler {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				String htmlFile;
 				try {
 					htmlFile = HTTPFetcher.fetchHTML(url);

@@ -85,7 +85,6 @@ public class WebCrawler {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				String htmlFile;
 				try {
 					htmlFile = HTTPFetcher.fetchHTML(url);
@@ -178,7 +177,7 @@ public class WebCrawler {
 		}
 
 	}
-	
+
 	public static void htmlToIndex(String url, String[] words, ThreadSafeInvertedIndex toIndex) {
 
 		int count = 1;

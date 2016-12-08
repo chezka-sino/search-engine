@@ -29,7 +29,7 @@ public class MultithreadedQueryParser {
 	 * QueryParser constructor
 	 * 
 	 * @param index
-	 *            InvertedIndex object
+	 *            ThreadSafeInvertedIndex object
 	 * 
 	 */
 	public MultithreadedQueryParser(ThreadSafeInvertedIndex index) {
@@ -45,6 +45,8 @@ public class MultithreadedQueryParser {
 	 *            file path containing the query words
 	 * @param exact
 	 *            true if conducting an exact search, false otherwise
+	 * @param threads
+	 *            number of threads in the workqueue
 	 * 
 	 */
 	public void parseFile(Path file, boolean exact, int threads) {
@@ -63,7 +65,6 @@ public class MultithreadedQueryParser {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				List<String> queryList = new ArrayList<>();
 				line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
 				line = line.trim();

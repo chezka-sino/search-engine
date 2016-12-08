@@ -107,7 +107,6 @@ public class HTMLCleaner {
 	 * @return text with HTML entities replaced by an empty string
 	 */
 	public static String stripEntities(String html) {
-		// TODO Fill in and fix return.
 		return html.replaceAll("&\\S{0,}?;", "");
 	}
 

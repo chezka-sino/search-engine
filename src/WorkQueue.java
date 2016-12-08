@@ -82,7 +82,6 @@ public class WorkQueue {
 	 * Waits for all pending work to be finished.
 	 */
 	public synchronized void finish() {
-		// TODO Add pending variable where appropriate and implement this method
 
 		try {
 			while (pending > 0) {
@@ -90,11 +89,8 @@ public class WorkQueue {
 
 			}
 		} catch (InterruptedException e) {
-			// TODO: handle exception
-			e.printStackTrace();
+			LOGGER.warn("InterruptedException {}", e);
 		}
-
-		// this.notifyAll();
 
 	}
 

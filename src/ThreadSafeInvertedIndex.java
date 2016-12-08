@@ -3,6 +3,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Thread-safe version of the InvertedIndex
+ * 
+ * @see InvertedIndex
+ *
+ */
 public class ThreadSafeInvertedIndex extends InvertedIndex {
 
 	public ThreadSafeInvertedIndex() {
