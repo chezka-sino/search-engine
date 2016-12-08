@@ -213,6 +213,7 @@ public class InvertedIndex {
 		
 	}
 	
+	// TODO Make private
 	/**
 	 * Adds the search results as SearchResult objects in a map
 	 * 
@@ -246,5 +247,22 @@ public class InvertedIndex {
 		}
 		
 	}
+	
+	/* TODO
+	public void addAll(InvertedIndex other) {
+		for (String word : other.map.keySet()) {
+			if (this.map.containsKey(word) == false) {
+				this.map.put(word, other.map.get(word));
+			}
+			else {
+				loop through the files in other
+					if the file isn't in this index
+						put
+					else
+						addAll	
+			}
+		}
+	}
+	*/
 
 }

@@ -47,27 +47,37 @@ public class MultithreadedInvertedIndexBuilder {
 			public DirectoryMinion(String file) {
 				LOGGER.debug("Minion created for {}", file);
 				this.file = file;
-				minions.incrementPending();
+				minions.incrementPending(); // TODO Remove
 			}
 
 			@Override
 			public void run() {
 				Path inputFile = Paths.get(file);
+				// TODO InvertedIndexBuikder.openFile
 				openFile(inputFile, index);
 				LOGGER.debug("Minion finished openFile on {}", inputFile);
-				minions.decrementPending();
+				minions.decrementPending(); // TODO Remove
+				
+				/*
+				 * TODO
+				 * 
+				 * InvertedIndex local = new InvertedIndex();
+				 * InvertedIndexBuilder.openFile(file, local);
+				 * index.addAll(local);
+				 */
 			}
 
 		}
 
 		for (String name : textFiles) {
 			minions.execute(new DirectoryMinion(name));
-			minions.finish();
+			minions.finish(); // TODO move outside the for loop
 			LOGGER.debug("Minion finished {}", name);
 		}
 
 	}
 
+	// TODO Remove!
 	/**
 	 * Reads through the files, puts the words in the map then calls the JSON
 	 * class to write it into the file

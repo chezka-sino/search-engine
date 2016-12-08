@@ -10,6 +10,8 @@ import java.util.List;
  *
  */
 public class ThreadSafeInvertedIndex extends InvertedIndex {
+	
+	// TODO Need to use the ReadWriteLock in this class
 
 	public ThreadSafeInvertedIndex() {
 		super();
