@@ -8,6 +8,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
+/*
+ * TODO For query parser and web crawler to make an interface with the common methods
+ * implement that interface in both the single- and multi-threaded classes
+ * 
+ * (Up to you for the builder class... tricky)
+ */
+
 /**
  * This class parses the query file that contains all of the query words for
  * searching
@@ -49,14 +56,18 @@ public class QueryParser {
 
 			while ((line = reader.readLine()) != null) {
 
-				List<String> queryList = new ArrayList<>();
+				List<String> queryList = new ArrayList<>(); // TODO Remove
 				line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
 				line = line.trim();
 				String[] words = line.split("\\s+");
 
+				// TODO Arrays.sort(words);
+				// TODO line = String.join(" ", words);
+				
 				for (String word : words) {
 					queryList.add(word);
 				}
+				
 				Collections.sort(queryList);
 				line = String.join(" ", queryList);
 

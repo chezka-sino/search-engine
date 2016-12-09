@@ -21,7 +21,7 @@ public class MultithreadedWebCrawler {
 	// Set of all the URLs parsed
 	private final HashSet<String> links;
 	// Queue of the URLs to be processed
-	private final Queue<String> queue;
+	private final Queue<String> queue; // TODO Remove, move the work queue to a member of this class
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
@@ -52,7 +52,7 @@ public class MultithreadedWebCrawler {
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		links.add(seed);
-		queue.add(seed);
+		queue.add(seed); // TODO Instead, you add a minion for the first seed
 
 		WorkQueue minions = new WorkQueue(threads);
 
@@ -86,6 +86,7 @@ public class MultithreadedWebCrawler {
 
 		}
 
+		// TODO minions.finish() replaces this entire loop
 		while (!queue.isEmpty()) {
 			String url = queue.remove();
 			minions.execute(new urlMinion(url));
@@ -126,13 +127,14 @@ public class MultithreadedWebCrawler {
 
 			if (!links.contains(urlString)) {
 				links.add(urlString);
-				queue.add(urlString);
+				queue.add(urlString); // TODO Need to add to the work queue instead
 			}
 
 		}
 
 	}
 
+	// TODO Remove
 	/**
 	 * Indexes the words in the HTML
 	 * 

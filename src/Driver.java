@@ -148,5 +148,43 @@ public class Driver {
 
 		}
 	}
+	
+	/*
+	 * TODO
+	 * 
+	 * InvertedIndex index = null;
+	 * QueryParserInterface query = null;
+	 * 
+	 * WorkQueue queue = null;
+	 * 
+	 * if (-multi) {
+	 * 
+	 * 		ThreadSafeInvertedIndex threadSafe = new THreadSafeInvertedIndex();
+	 * 		index = threadSafe;
+	 * 
+	 * 		queue = new WorkQueue(threads);
+	 * 
+	 * 		query = new MultithreadedQueryParser(threadSafe, queue);
+	 * }
+	 * else {
+	 * 		index = new InvertedIndex();
+	 * 		query = new QueryParser(index);
+	 * }
+	 * 
+	 * 
+	 * 
+	 * if (-exact) {
+	 * 		query.parseFile(path, true);
+	 * }
+	 * 
+	 * 
+	 * 
+	 * if (queue != null) {
+	 * 
+	 * 		queue.shutdown();
+	 * }
+	 * 
+	 * 
+	 */
 
 }

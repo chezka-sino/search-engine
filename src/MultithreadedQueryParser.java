@@ -21,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 public class MultithreadedQueryParser {
 
 	private final ThreadSafeInvertedIndex index;
+	
+	// TODO Protect all access to results (synchronized (results))
 	private final TreeMap<String, List<SearchResult>> results;
 
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -60,7 +62,7 @@ public class MultithreadedQueryParser {
 			public QueryMinion(String line) {
 				LOGGER.debug("Minion created for {}", line);
 				this.line = line;
-				minions.incrementPending();
+				minions.incrementPending(); // TODO Remove
 			}
 
 			@Override
@@ -70,6 +72,7 @@ public class MultithreadedQueryParser {
 				line = line.trim();
 				String[] words = line.split("\\s+");
 
+				// TODO FIx (see QueryParser)
 				for (String word : words) {
 					queryList.add(word);
 				}
@@ -83,9 +86,31 @@ public class MultithreadedQueryParser {
 				else {
 					results.put(line, index.partialSearch(words));
 				}
+				
+				/*
+				 * TODO
+				 * 
+				 * synchronized (results) {
+				 * 		if (exact) {
+							results.put(line, index.exactSearch(words));
+						}
+		
+						else {
+							results.put(line, index.partialSearch(words));
+						}
+				 * }
+				 * 
+				 * -versus-
+				 * 
+				 * List<SearchResult> current = (exact) ? index.exactSearch(words) : index.partialSearch(word);
+				 * 
+				 * synchronized (results) {
+				 * 		results.put(line, current);
+				 * }
+				 */
 
 				LOGGER.debug("Minion finished search on {}", line);
-				minions.decrementPending();
+				minions.decrementPending(); // TODO Remove
 			}
 
 		}
@@ -97,7 +122,7 @@ public class MultithreadedQueryParser {
 			while ((line = reader.readLine()) != null) {
 
 				minions.execute(new QueryMinion(line));
-				minions.finish();
+				minions.finish(); // TODO Move outside while loop
 				LOGGER.debug("Minion finished {}", line);
 
 			}
@@ -121,7 +146,7 @@ public class MultithreadedQueryParser {
 	 */
 	public void toJSON(String output) throws IOException {
 		Path outputFile = Paths.get(output);
-		JSONWriter.searchResultsWriter(outputFile, results);
+		JSONWriter.searchResultsWriter(outputFile, results); // TODO Protect results
 	}
 
 }
