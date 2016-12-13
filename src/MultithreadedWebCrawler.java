@@ -22,7 +22,7 @@ public class MultithreadedWebCrawler {
 	private final HashSet<String> links;
 	// Queue of the URLs to be processed
 	private final Queue<String> queue; // TODO Remove, move the work queue to a member of this class
-
+	private final WorkQueue minions; 
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
@@ -31,6 +31,7 @@ public class MultithreadedWebCrawler {
 	public MultithreadedWebCrawler() {
 		links = new HashSet<String>();
 		queue = new LinkedList<>();
+		minions = new WorkQueue();
 	}
 
 	/**
@@ -53,8 +54,8 @@ public class MultithreadedWebCrawler {
 
 		links.add(seed);
 		queue.add(seed); // TODO Instead, you add a minion for the first seed
-
-		WorkQueue minions = new WorkQueue(threads);
+		
+//		WorkQueue minions = new WorkQueue(threads);
 
 		class urlMinion implements Runnable {
 
@@ -63,7 +64,6 @@ public class MultithreadedWebCrawler {
 			public urlMinion(String url) {
 				LOGGER.debug("Minion created for {}", url);
 				this.url = url;
-				minions.incrementPending();
 			}
 
 			@Override
@@ -81,10 +81,11 @@ public class MultithreadedWebCrawler {
 				}
 
 				LOGGER.debug("Minion indexed {}", url);
-				minions.decrementPending();
 			}
 
 		}
+		
+		minions.execute(new urlMinion(seed));
 
 		// TODO minions.finish() replaces this entire loop
 		while (!queue.isEmpty()) {
@@ -94,6 +95,8 @@ public class MultithreadedWebCrawler {
 			LOGGER.debug("Minion finished {}", url);
 
 		}
+//		LOGGER.debug("Minion finished {}", url);
+//		minions.finish();
 
 	}
 

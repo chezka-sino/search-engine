@@ -73,6 +73,7 @@ public class WorkQueue {
 	 */
 	public void execute(Runnable r) {
 		// TODO Move incrementPending here
+		incrementPending();
 		synchronized (queue) {
 			queue.addLast(r);
 			queue.notifyAll();
@@ -98,7 +99,7 @@ public class WorkQueue {
 	/**
 	 * TODO Javadoc make private
 	 */
-	public synchronized void incrementPending() {
+	private synchronized void incrementPending() {
 		pending++;
 		LOGGER.debug("Pending is now {}", pending);
 	}
@@ -106,7 +107,7 @@ public class WorkQueue {
 	/**
 	 * TODO Javadoc and make private
 	 */
-	public synchronized void decrementPending() {
+	private synchronized void decrementPending() {
 		assert pending > 0;
 		pending--;
 		LOGGER.debug("Pending is now {}", pending);
@@ -169,7 +170,7 @@ public class WorkQueue {
 					if (shutdown) {
 						break;
 					} else {
-						incrementPending(); // TODO Remove from here
+//						incrementPending(); // TODO Remove from here
 						r = queue.removeFirst();
 					}
 				}

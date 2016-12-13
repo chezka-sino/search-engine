@@ -62,7 +62,6 @@ public class MultithreadedQueryParser {
 			public QueryMinion(String line) {
 				LOGGER.debug("Minion created for {}", line);
 				this.line = line;
-				minions.incrementPending(); // TODO Remove
 			}
 
 			@Override
@@ -78,14 +77,6 @@ public class MultithreadedQueryParser {
 				}
 				Collections.sort(queryList);
 				line = String.join(" ", queryList);
-
-				if (exact) {
-					results.put(line, index.exactSearch(words));
-				}
-
-				else {
-					results.put(line, index.partialSearch(words));
-				}
 				
 				/*
 				 * TODO
@@ -108,9 +99,18 @@ public class MultithreadedQueryParser {
 				 * 		results.put(line, current);
 				 * }
 				 */
+				
+				synchronized (results) {
+					if (exact) {
+						results.put(line, index.exactSearch(words));
+					}
+					else {
+						results.put(line, index.partialSearch(words));
+					}
+					
+				}
 
 				LOGGER.debug("Minion finished search on {}", line);
-				minions.decrementPending(); // TODO Remove
 			}
 
 		}
@@ -122,8 +122,8 @@ public class MultithreadedQueryParser {
 			while ((line = reader.readLine()) != null) {
 
 				minions.execute(new QueryMinion(line));
-				minions.finish(); // TODO Move outside while loop
 				LOGGER.debug("Minion finished {}", line);
+				minions.finish();
 
 			}
 
@@ -146,7 +146,10 @@ public class MultithreadedQueryParser {
 	 */
 	public void toJSON(String output) throws IOException {
 		Path outputFile = Paths.get(output);
-		JSONWriter.searchResultsWriter(outputFile, results); // TODO Protect results
+		synchronized (results) {
+			JSONWriter.searchResultsWriter(outputFile, results); // TODO Protect results
+		}
+		
 	}
 
 }

@@ -1,11 +1,8 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,17 +43,15 @@ public class MultithreadedInvertedIndexBuilder {
 
 			public DirectoryMinion(String file) {
 				LOGGER.debug("Minion created for {}", file);
-				this.file = file;
-				minions.incrementPending(); // TODO Remove
+				this.file = file; // TODO Remove
+				
 			}
 
 			@Override
 			public void run() {
 				Path inputFile = Paths.get(file);
-				// TODO InvertedIndexBuikder.openFile
-				openFile(inputFile, index);
+				InvertedIndexBuilder.openFile(inputFile, index);
 				LOGGER.debug("Minion finished openFile on {}", inputFile);
-				minions.decrementPending(); // TODO Remove
 				
 				/*
 				 * TODO
@@ -65,60 +60,19 @@ public class MultithreadedInvertedIndexBuilder {
 				 * InvertedIndexBuilder.openFile(file, local);
 				 * index.addAll(local);
 				 */
+//				InvertedIndex local = new InvertedIndex();
+//				InvertedIndexBuilder.openFile(inputFile, local);
+//				index.addAll(local);
 			}
 
 		}
 
 		for (String name : textFiles) {
 			minions.execute(new DirectoryMinion(name));
-			minions.finish(); // TODO move outside the for loop
 			LOGGER.debug("Minion finished {}", name);
 		}
-
-	}
-
-	// TODO Remove!
-	/**
-	 * Reads through the files, puts the words in the map then calls the JSON
-	 * class to write it into the file
-	 * 
-	 * @param inputFile
-	 *            the file to be checked
-	 * @param toIndex
-	 *            ThreadSafeInvertedIndex object
-	 * @throws IOException
-	 * 
-	 */
-	public static void openFile(Path inputFile, ThreadSafeInvertedIndex toIndex) {
-
-		int count = 1;
-
-		try (BufferedReader reader = Files.newBufferedReader(inputFile)) {
-
-			String line;
-
-			while ((line = reader.readLine()) != null) {
-
-				line = line.replaceAll("\\p{Punct}+", "");
-				String[] words = line.toLowerCase().split("\\s+");
-
-				for (String i : words) {
-
-					if (!i.isEmpty()) {
-						toIndex.add(i, inputFile.toString(), count);
-						count++;
-					}
-
-				}
-
-			}
-
-		}
-
-		catch (IOException e) {
-			System.err.println("Unable to read file: " + inputFile.toString());
-			LOGGER.catching(Level.DEBUG, e);
-		}
+		
+		minions.finish();
 
 	}
 

@@ -10,9 +10,6 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class WebCrawler {
 
 	public static final String REGEX = "<a([^>]+)href\\s*=\\s*\"([^\"]*)\"";
@@ -22,8 +19,6 @@ public class WebCrawler {
 	private final HashSet<String> links;
 	// Queue of the URLs to be processed
 	private final Queue<String> queue;
-
-	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Class constructor Initializes the set and queue
@@ -61,54 +56,6 @@ public class WebCrawler {
 			String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
 			htmlToIndex(url, cleanedHTML, index);
 			getURLs(url, htmlFile);
-		}
-
-	}
-
-	public void addSeed(String seed, ThreadSafeInvertedIndex index, int threads)
-			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
-
-		links.add(seed);
-		queue.add(seed);
-
-		WorkQueue minions = new WorkQueue(threads);
-
-		class urlMinion implements Runnable {
-
-			private String url;
-
-			public urlMinion(String url) {
-				LOGGER.debug("Minion created for {}", url);
-				this.url = url;
-				minions.incrementPending();
-			}
-
-			@Override
-			public void run() {
-				String htmlFile;
-				try {
-					htmlFile = HTTPFetcher.fetchHTML(url);
-					String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
-					htmlToIndex(url, cleanedHTML, index);
-					getURLs(url, htmlFile);
-				} catch (IOException e) {
-					LOGGER.warn("IOException on {}", url);
-				} catch (URISyntaxException e) {
-					LOGGER.warn("URISyntaxException on {}", url);
-				}
-
-				LOGGER.debug("Minion indexed {}", url);
-				minions.decrementPending();
-			}
-
-		}
-
-		while (!queue.isEmpty()) {
-			String url = queue.remove();
-			minions.execute(new urlMinion(url));
-			minions.finish();
-			LOGGER.debug("Minion finished {}", url);
-
 		}
 
 	}
@@ -162,29 +109,6 @@ public class WebCrawler {
 	 * 
 	 */
 	public static void htmlToIndex(String url, String[] words, InvertedIndex toIndex) {
-
-		int count = 1;
-
-		for (String i : words) {
-			i = i.replaceAll("\\p{Punct}+", "");
-			if (!i.isEmpty()) {
-
-				toIndex.add(i, url, count);
-				count++;
-
-			}
-
-		}
-
-	}
-
-	/**
-	 * TODO
-	 * @param url
-	 * @param words
-	 * @param toIndex
-	 */
-	public static void htmlToIndex(String url, String[] words, ThreadSafeInvertedIndex toIndex) {
 
 		int count = 1;
 

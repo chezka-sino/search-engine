@@ -221,7 +221,7 @@ public class InvertedIndex {
 	 * 		The word match
 	 * 
 	 */
-	public void addSearchResults(String word, ArrayList<SearchResult> results, HashMap<String, SearchResult> resultMap) {
+	private void addSearchResults(String word, ArrayList<SearchResult> results, HashMap<String, SearchResult> resultMap) {
 		
 		TreeMap<String, TreeSet<Integer>> innerMap = map.get(word);
 		
@@ -264,5 +264,22 @@ public class InvertedIndex {
 		}
 	}
 	*/
+	
+	public void addAll(InvertedIndex other) {
+		for (String word: other.map.keySet()) {
+			if (this.map.containsKey(word) == false) {
+				this.map.put(word, other.map.get(word));
+			}
+			else {
+				for (String file: other.map.get(word).keySet()) {
+					if (this.map.get(word).containsKey(file)) {
+					}
+					else {
+						
+					}
+				}
+			}
+		}
+	}
 
 }

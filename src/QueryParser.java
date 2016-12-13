@@ -3,8 +3,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -56,21 +55,12 @@ public class QueryParser {
 
 			while ((line = reader.readLine()) != null) {
 
-				List<String> queryList = new ArrayList<>(); // TODO Remove
 				line = line.toLowerCase().replaceAll("\\p{Punct}+\\s{0,1}", "");
 				line = line.trim();
 				String[] words = line.split("\\s+");
-
-				// TODO Arrays.sort(words);
-				// TODO line = String.join(" ", words);
+				Arrays.sort(words);
+				line = String.join(" ", words);
 				
-				for (String word : words) {
-					queryList.add(word);
-				}
-				
-				Collections.sort(queryList);
-				line = String.join(" ", queryList);
-
 				if (exact) {
 					results.put(line, index.exactSearch(words));
 				}
