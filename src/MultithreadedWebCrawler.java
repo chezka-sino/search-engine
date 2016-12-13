@@ -46,7 +46,7 @@ public class MultithreadedWebCrawler {
 	 * @throws UnknownHostException
 	 * @throws MalformedURLException
 	 * @throws IOException
-	 * @throws URISyntaxException
+	 * @throws URISyntaxException 
 	 * 
 	 */
 	public void addSeed(String seed, ThreadSafeInvertedIndex index, int threads)
