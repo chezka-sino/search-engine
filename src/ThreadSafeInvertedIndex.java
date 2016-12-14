@@ -130,5 +130,15 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	// lock.unlockReadOnly();
 	// }
 	// }
+	
+	@Override
+	public synchronized void addAll(InvertedIndex other) {
+		lock.lockReadWrite();
+		try {
+			super.addAll(other);
+		} finally {
+			lock.unlockReadWrite();
+		}
+	}
 
 }

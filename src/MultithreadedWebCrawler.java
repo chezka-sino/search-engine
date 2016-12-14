@@ -5,8 +5,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,17 +19,19 @@ public class MultithreadedWebCrawler {
 	// Set of all the URLs parsed
 	private final HashSet<String> links;
 	// Queue of the URLs to be processed
-	private final Queue<String> queue; // TODO Remove, move the work queue to a
-										// member of this class
 
 	private static final Logger LOGGER = LogManager.getLogger();
+	
+	private final WorkQueue minions;
+	private static ThreadSafeInvertedIndex index;
 
 	/**
 	 * Class constructor Initializes the set and queue
 	 */
-	public MultithreadedWebCrawler() {
+	public MultithreadedWebCrawler(int threads, ThreadSafeInvertedIndex index) {
 		links = new HashSet<String>();
-		queue = new LinkedList<>();
+		minions = new WorkQueue(threads);
+		MultithreadedWebCrawler.index = index;
 	}
 
 	/**
@@ -49,54 +49,13 @@ public class MultithreadedWebCrawler {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	public void addSeed(String seed, ThreadSafeInvertedIndex index, WorkQueue minions)
+	public void addSeed(String seed)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
-		links.add(seed);
-		queue.add(seed); // TODO Instead, you add a minion for the first seed
-
 		// WorkQueue minions = new WorkQueue(threads);
-
-		class urlMinion implements Runnable {
-
-			private String url;
-
-			public urlMinion(String url) {
-				LOGGER.debug("Minion created for {}", url);
-				this.url = url;
-			}
-
-			@Override
-			public void run() {
-				String htmlFile;
-				try {
-					htmlFile = HTTPFetcher.fetchHTML(url);
-					String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
-					htmlToIndex(url, cleanedHTML, index);
-					getURLs(url, htmlFile);
-				} catch (IOException e) {
-					LOGGER.warn("IOException on {}", url);
-				} catch (URISyntaxException e) {
-					LOGGER.warn("URISyntaxException on {}", url);
-				}
-
-				LOGGER.debug("Minion indexed {}", url);
-			}
-
-		}
-
-		// minions.execute(new urlMinion(seed));
-
-		// TODO minions.finish() replaces this entire loop
-		while (!queue.isEmpty()) {
-			String url = queue.remove();
-			minions.execute(new urlMinion(url));
-			minions.finish();
-			LOGGER.debug("Minion finished {}", url);
-
-		}
-		// LOGGER.debug("Minion finished {}", url);
-		// minions.finish();
+		links.add(seed);
+		minions.execute(new urlMinion(seed));
+		minions.finish();
 
 	}
 
@@ -130,41 +89,41 @@ public class MultithreadedWebCrawler {
 
 			if (!links.contains(urlString)) {
 				links.add(urlString);
-				queue.add(urlString); // TODO Need to add to the work queue
-										// instead
+				minions.execute(new urlMinion(urlString));
 			}
 
 		}
 
 	}
+	
+	private class urlMinion implements Runnable {
+		
+		private String url;
 
-	// TODO Remove
-	/**
-	 * Indexes the words in the HTML
-	 * 
-	 * @param url
-	 *            URL where the word was found
-	 * @param words
-	 *            array of words to be indexed
-	 * @param toIndex
-	 *            InvertedIndex object
-	 * 
-	 */
-	public static void htmlToIndex(String url, String[] words, ThreadSafeInvertedIndex toIndex) {
-
-		int count = 1;
-
-		for (String i : words) {
-			i = i.replaceAll("\\p{Punct}+", "");
-			if (!i.isEmpty()) {
-
-				toIndex.add(i, url, count);
-				count++;
-
-			}
-
+		public urlMinion(String url) {
+			LOGGER.debug("Minion created for {}", url);
+			this.url = url;
 		}
 
+		@Override
+		public void run() {
+			String htmlFile;
+			try {
+				htmlFile = HTTPFetcher.fetchHTML(url);
+				String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
+				WebCrawler.htmlToIndex(url, cleanedHTML, index);
+				getURLs(url, htmlFile);
+			} catch (IOException e) {
+				LOGGER.warn("IOException on {}", url);
+			} catch (URISyntaxException e) {
+				LOGGER.warn("URISyntaxException on {}", url);
+			}
+
+			LOGGER.debug("Minion indexed {}", url);
+		}
+		
+		
+		
 	}
 
 }

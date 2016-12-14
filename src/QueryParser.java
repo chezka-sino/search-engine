@@ -21,7 +21,7 @@ import java.util.TreeMap;
  * @author Chezka Sino
  *
  */
-public class QueryParser {
+public class QueryParser implements QueryParserInterface {
 
 	private final InvertedIndex index;
 	private final TreeMap<String, List<SearchResult>> results;
@@ -84,12 +84,12 @@ public class QueryParser {
 	 * 
 	 * @param output
 	 *            the output file name
-	 * @throws IOException
+	 * @throws IOException 
 	 * 
 	 */
 	public void toJSON(String output) throws IOException {
 		Path outputFile = Paths.get(output);
 		JSONWriter.searchResultsWriter(outputFile, results);
 	}
-
+	
 }

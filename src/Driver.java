@@ -68,10 +68,10 @@ public class Driver {
 			}
 
 			if (parser.hasFlag("-url")) {
-				MultithreadedWebCrawler parseURL = new MultithreadedWebCrawler();
+				MultithreadedWebCrawler parseURL = new MultithreadedWebCrawler(threads, index);
 
 				String seed = parser.getValue("-url");
-				parseURL.addSeed(seed, index, workQueue);
+				parseURL.addSeed(seed);
 
 			}
 
@@ -84,14 +84,14 @@ public class Driver {
 				String resultsPath = parser.getValue("-results", "results.json");
 
 				if (parser.hasFlag("-query")) {
-					MultithreadedQueryParser partialSearch = new MultithreadedQueryParser(index);
-					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false, workQueue);
+					MultithreadedQueryParser partialSearch = new MultithreadedQueryParser(index, workQueue);
+					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
 					partialSearch.toJSON(resultsPath);
 				}
 
 				if (parser.hasFlag("-exact")) {
-					MultithreadedQueryParser exactSearch = new MultithreadedQueryParser(index);
-					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true, workQueue);
+					MultithreadedQueryParser exactSearch = new MultithreadedQueryParser(index, workQueue);
+					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
 					exactSearch.toJSON(resultsPath);
 				}
 
@@ -149,6 +149,36 @@ public class Driver {
 			}
 
 		}
+		
+		InvertedIndex index2 = null;
+		QueryParserInterface query = null;
+		WorkQueue queue = null;
+		
+		if (parser.hasFlag("-multi")) {
+			ThreadSafeInvertedIndex threadSafe = new ThreadSafeInvertedIndex();
+			index = threadSafe;
+			queue = new WorkQueue(parser.getValue("-multi", 5));
+			
+			query = new MultithreadedQueryParser(threadSafe,queue);
+		}
+		
+		else {
+			index2 = new InvertedIndex();
+			query = new QueryParser(index2);
+		}
+		
+		if (parser.hasFlag("-exact")) {
+			query.parseFile(Paths.get(parser.getValue("-exact")), true);
+		}
+		
+		if (parser.hasFlag("-partial")) {
+			query.parseFile(Paths.get(parser.getValue("-partial")), false);
+		}
+		
+		if (queue != null) {
+			queue.shutdown();
+		}
+		
 	}
 
 	/*
@@ -180,5 +210,7 @@ public class Driver {
 	 * 
 	 * 
 	 */
-
+	
+	
+	
 }
