@@ -10,7 +10,7 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WebCrawler {
+public class WebCrawler implements WebCrawlerInterface {
 
 	public static final String REGEX = "<a([^>]+)href\\s*=\\s*\"([^\"]*)\"";
 	public static final int GROUP = 2;
@@ -43,7 +43,7 @@ public class WebCrawler {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	public void addSeed(String seed, InvertedIndex index)
+	public void addSeed(String seed, ThreadSafeInvertedIndex index)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		links.add(seed);
@@ -73,7 +73,7 @@ public class WebCrawler {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	private void getURLs(String seed, String text)
+	public void getURLs(String seed, String text)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		Pattern p = Pattern.compile(REGEX);
@@ -91,34 +91,6 @@ public class WebCrawler {
 			if (!links.contains(urlString)) {
 				links.add(urlString);
 				queue.add(urlString);
-			}
-
-		}
-
-	}
-
-	/**
-	 * Indexes the words in the HTML
-	 * 
-	 * @param url
-	 *            URL where the word was found
-	 * @param words
-	 *            array of words to be indexed
-	 * @param toIndex
-	 *            InvertedIndex object
-	 * 
-	 */
-	public static void htmlToIndex(String url, String[] words, InvertedIndex toIndex) {
-
-		int count = 1;
-
-		for (String i : words) {
-			i = i.replaceAll("\\p{Punct}+", "");
-			if (!i.isEmpty()) {
-
-				toIndex.add(i, url, count);
-				count++;
-
 			}
 
 		}

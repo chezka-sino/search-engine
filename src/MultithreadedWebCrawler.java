@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class MultithreadedWebCrawler {
+public class MultithreadedWebCrawler implements WebCrawlerInterface {
 
 	public static final String REGEX = "<a([^>]+)href\\s*=\\s*\"([^\"]*)\"";
 	public static final int GROUP = 2;
@@ -49,10 +49,10 @@ public class MultithreadedWebCrawler {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	public void addSeed(String seed)
+
+	public void addSeed(String seed, ThreadSafeInvertedIndex index)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
-		// WorkQueue minions = new WorkQueue(threads);
 		links.add(seed);
 		minions.execute(new urlMinion(seed));
 		minions.finish();
@@ -72,7 +72,7 @@ public class MultithreadedWebCrawler {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	private void getURLs(String seed, String text)
+	public void getURLs(String seed, String text)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		Pattern p = Pattern.compile(REGEX);
@@ -111,7 +111,7 @@ public class MultithreadedWebCrawler {
 			try {
 				htmlFile = HTTPFetcher.fetchHTML(url);
 				String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
-				WebCrawler.htmlToIndex(url, cleanedHTML, index);
+				htmlToIndex(url, cleanedHTML, index);
 				getURLs(url, htmlFile);
 			} catch (IOException e) {
 				LOGGER.warn("IOException on {}", url);

@@ -32,7 +32,7 @@ public class MultithreadedInvertedIndexBuilder {
 	 * @throws IOException
 	 * 
 	 */
-	public static void readArray(ArrayList<String> textFiles, ThreadSafeInvertedIndex index, WorkQueue minions)
+	public static void readArray(ArrayList<String> textFiles, InvertedIndex index, WorkQueue minions)
 			throws IOException {
 
 		// WorkQueue minions = new WorkQueue(threads);

@@ -30,7 +30,7 @@ public class Driver {
 
 		ArgumentParser parser = new ArgumentParser(args);
 		ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
-
+//
 		if (parser.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
@@ -69,9 +69,8 @@ public class Driver {
 
 			if (parser.hasFlag("-url")) {
 				MultithreadedWebCrawler parseURL = new MultithreadedWebCrawler(threads, index);
-
 				String seed = parser.getValue("-url");
-				parseURL.addSeed(seed);
+				parseURL.addSeed(seed, index);
 
 			}
 
@@ -150,34 +149,88 @@ public class Driver {
 
 		}
 		
-		InvertedIndex index2 = null;
-		QueryParserInterface query = null;
-		WorkQueue queue = null;
-		
-		if (parser.hasFlag("-multi")) {
-			ThreadSafeInvertedIndex threadSafe = new ThreadSafeInvertedIndex();
-			index = threadSafe;
-			queue = new WorkQueue(parser.getValue("-multi", 5));
-			
-			query = new MultithreadedQueryParser(threadSafe,queue);
-		}
-		
-		else {
-			index2 = new InvertedIndex();
-			query = new QueryParser(index2);
-		}
-		
-		if (parser.hasFlag("-exact")) {
-			query.parseFile(Paths.get(parser.getValue("-exact")), true);
-		}
-		
-		if (parser.hasFlag("-partial")) {
-			query.parseFile(Paths.get(parser.getValue("-partial")), false);
-		}
-		
-		if (queue != null) {
-			queue.shutdown();
-		}
+//		ThreadSafeInvertedIndex index2 = null;
+//		QueryParserInterface query = null;
+//		WebCrawlerInterface crawler = null;
+//		WorkQueue queue = null;
+//		
+//		if (parser.hasFlag("-multi")) {
+//			
+//			int threads;
+//
+//			try {
+//				threads = Integer.parseInt(parser.getValue("-multi"));
+//				if (threads == 0) {
+//					threads = 5;
+//				}
+//			} catch (NumberFormatException e) {
+//				threads = 5;
+//			}
+//			
+//			ThreadSafeInvertedIndex threadSafe = new ThreadSafeInvertedIndex();
+//			index2 = threadSafe;
+//			queue = new WorkQueue(threads);
+//			query = new MultithreadedQueryParser(threadSafe,queue);
+//			crawler = new MultithreadedWebCrawler(threads, threadSafe);
+//						
+//		}
+//		
+//		else {
+//			index2 = new ThreadSafeInvertedIndex();
+//			query = new QueryParser(index2);
+//			crawler = new WebCrawler();
+//			
+//		}
+//		
+//		if (parser.hasFlag("-dir")) {
+//
+//			String dirPath = parser.getValue("-dir");
+//
+//			try {
+//
+//				Path dir = Paths.get(dirPath);
+//				textFiles.addAll(DirectoryTraverser.traverse(dir));
+//				MultithreadedInvertedIndexBuilder.readArray(textFiles, index2, queue);
+//
+//			}
+//
+//			catch (NullPointerException e) {
+//				System.err.println("No directory provided.");
+//			}
+//
+//		}
+//		
+//		if (parser.hasFlag("-index")) {
+//			String indexPath = parser.getValue("-index", "index.json");
+//			index2.toJSON(indexPath);
+//		}
+//		
+//		if (parser.hasFlag("-url")) {
+//
+//			String seed = parser.getValue("-url");
+//			crawler.addSeed(seed, index2);
+//
+//		}
+//		
+//		if (parser.hasFlag("-results")) {
+//			
+//			String resultsPath = parser.getValue("-results", "results.json");
+//			
+//			if (parser.hasFlag("-query") && parser.getValue("-query") != null) {
+//				query.parseFile(Paths.get(parser.getValue("-query")), true);
+//			}
+//			
+//			if (parser.hasFlag("-partial") && parser.getValue("-partial") != null) {
+//				query.parseFile(Paths.get(parser.getValue("-partial")), false);
+//			}
+//			
+//			query.toJSON(resultsPath);
+//			
+//		}
+//		
+//		if (queue != null) {
+//			queue.shutdown();
+//		}
 		
 	}
 
@@ -210,7 +263,5 @@ public class Driver {
 	 * 
 	 * 
 	 */
-	
-	
 	
 }
