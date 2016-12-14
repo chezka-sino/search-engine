@@ -16,8 +16,10 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		lock = new ReadWriteLock();
 	}
 
+	// TODO When you switch to a lock, need to remove the synchronized keyword
+	
 	@Override
-	public synchronized void add(String word, String path, int position) {
+	public void add(String word, String path, int position) {
 		lock.lockReadWrite();
 
 		try {
@@ -29,7 +31,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public synchronized void toJSON(String index) throws IOException {
+	public void toJSON(String index) throws IOException {
 		lock.lockReadOnly();
 		try {
 			super.toJSON(index);
@@ -39,7 +41,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public synchronized int numWords() {
+	public int numWords() {
 		lock.lockReadOnly();
 		try {
 			return super.numWords();
@@ -49,7 +51,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public synchronized int numLocations(String word) {
+	public int numLocations(String word) {
 		lock.lockReadOnly();
 		try {
 			return super.numLocations(word);
@@ -59,7 +61,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public synchronized int firstIndex(String word, String fileName) {
+	public int firstIndex(String word, String fileName) {
 		lock.lockReadOnly();
 		try {
 			return super.firstIndex(word, fileName);
@@ -69,7 +71,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public synchronized boolean containsWord(String word) {
+	public boolean containsWord(String word) {
 		lock.lockReadOnly();
 		try {
 			return super.containsWord(word);
@@ -79,7 +81,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public synchronized boolean containsLocation(String word, String textFile) {
+	public boolean containsLocation(String word, String textFile) {
 		lock.lockReadOnly();
 		try {
 			return super.containsLocation(word, textFile);
@@ -89,7 +91,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public synchronized List<String> getWords() {
+	public List<String> getWords() {
 		lock.lockReadOnly();
 		try {
 			return super.getWords();
@@ -99,7 +101,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public synchronized List<SearchResult> partialSearch(String[] queryWords) {
+	public List<SearchResult> partialSearch(String[] queryWords) {
 		lock.lockReadOnly();
 		try {
 			return super.partialSearch(queryWords);
@@ -109,7 +111,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public synchronized List<SearchResult> exactSearch(String[] queryWords) {
+	public List<SearchResult> exactSearch(String[] queryWords) {
 		lock.lockReadOnly();
 		try {
 			return super.exactSearch(queryWords);
@@ -119,7 +121,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 	
 	@Override
-	public synchronized void addAll(InvertedIndex other) {
+	public void addAll(InvertedIndex other) {
 		lock.lockReadWrite();
 		try {
 			super.addAll(other);

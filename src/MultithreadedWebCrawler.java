@@ -19,6 +19,8 @@ public class MultithreadedWebCrawler implements WebCrawlerInterface<ThreadSafeIn
 	// Set of all the URLs parsed
 	private final HashSet<String> links;
 	// Queue of the URLs to be processed
+	
+	// TODO All access to links must be synchronized
 
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final WorkQueue minions;
@@ -27,9 +29,9 @@ public class MultithreadedWebCrawler implements WebCrawlerInterface<ThreadSafeIn
 	/**
 	 * Class constructor Initializes the set and queue
 	 */
-	public MultithreadedWebCrawler(int threads, ThreadSafeInvertedIndex index) {
+	public MultithreadedWebCrawler(WorkQueue queue, ThreadSafeInvertedIndex index) {
 		links = new HashSet<String>();
-		minions = new WorkQueue(threads);
+		minions = queue; // TODO Pass in the queue not the number of threads/ new WorkQueue(threads);
 		this.index = index;
 	}
 
@@ -114,7 +116,7 @@ public class MultithreadedWebCrawler implements WebCrawlerInterface<ThreadSafeIn
 			try {
 				htmlFile = HTTPFetcher.fetchHTML(url);
 				String[] cleanedHTML = HTMLCleaner.fetchWords(htmlFile);
-				htmlToIndex(url, cleanedHTML, index);
+				htmlToIndex(url, cleanedHTML, index); // TODO Use a local inverted index here too!
 				getURLs(url, htmlFile);
 			} catch (IOException e) {
 				LOGGER.warn("IOException on {}", url);

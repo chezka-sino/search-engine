@@ -4,6 +4,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+// TODO v4.2 is not passing 100% of tests (testRuntime()) and unable to run the benchmark script
+
 /**
  * This class is a Search Engine project Done: Inverted Index and Partial Search, 
  * Web Crawler, Multithreading
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 
 public class Driver {
 
+	// TODO Do not throw exceptions in main
 	/**
 	 * Main method Initializes the program
 	 * 
@@ -35,7 +38,7 @@ public class Driver {
 		
 		InvertedIndex indexx = null;
 		QueryParserInterface query = null;
-		@SuppressWarnings("rawtypes")
+		@SuppressWarnings("rawtypes") // TODO Shouldn't do this
 		WebCrawlerInterface crawler = null;
 		WorkQueue queue = null;
 		
@@ -56,7 +59,7 @@ public class Driver {
 			}
 			
 			queue = new WorkQueue(threads);
-			crawler = new MultithreadedWebCrawler(threads, threadSafe);
+			crawler = new MultithreadedWebCrawler(queue, threadSafe); // TODO Pass queue instead of # of threads
 			query = new MultithreadedQueryParser(threadSafe, queue);
 			
 			if (parser.hasFlag("-dir")) {

@@ -21,6 +21,7 @@ public class MultithreadedInvertedIndexBuilder {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
+	// TODO pass in a thread-safe inverted index as a parameter
 	/**
 	 * Goes through the list of .txt files
 	 * 
@@ -48,7 +49,7 @@ public class MultithreadedInvertedIndexBuilder {
 			@Override
 			public void run() {
 				Path inputFile = Paths.get(file);
-				InvertedIndexBuilder.openFile(inputFile, index);
+				// TODO InvertedIndexBuilder.openFile(inputFile, index);
 
 				InvertedIndex local = new InvertedIndex();
 				InvertedIndexBuilder.openFile(inputFile, local);

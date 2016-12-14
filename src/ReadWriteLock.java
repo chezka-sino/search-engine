@@ -46,6 +46,11 @@ public class ReadWriteLock {
 	 */
 	public synchronized void unlockReadOnly() {
 		readers--;
+		
+		// TODO Minor efficiency issue (over notifying)
+		// TODO assert writers == 0
+		// TODO readers never wait at this stage, only waking up a writer
+		// TODO writer should only be woken up when readers == 0
 		notifyAll();
 	}
 
