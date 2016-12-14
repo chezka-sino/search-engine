@@ -10,7 +10,7 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WebCrawler implements WebCrawlerInterface {
+public class WebCrawler implements WebCrawlerInterface<InvertedIndex> {
 
 	public static final String REGEX = "<a([^>]+)href\\s*=\\s*\"([^\"]*)\"";
 	public static final int GROUP = 2;
@@ -43,7 +43,7 @@ public class WebCrawler implements WebCrawlerInterface {
 	 * @throws URISyntaxException
 	 * 
 	 */
-	public void addSeed(String seed, ThreadSafeInvertedIndex index)
+	public void addSeed(String seed, InvertedIndex index)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		links.add(seed);

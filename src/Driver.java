@@ -4,11 +4,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-// TODO Check your TODOs
-
 /**
- * This class is a Search Engine project Done: Inverted Index and Partial Search
- * In Progress: Web Crawler
+ * This class is a Search Engine project Done: Inverted Index and Partial Search, 
+ * Web Crawler, Multithreading
  * 
  * @author Chezka Sino
  * 
@@ -24,18 +22,28 @@ public class Driver {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException, URISyntaxException {
 
 		ArrayList<String> textFiles = new ArrayList<>();
 
 		ArgumentParser parser = new ArgumentParser(args);
-		ThreadSafeInvertedIndex index = new ThreadSafeInvertedIndex();
-//
+
 		if (parser.numFlags() == 0) {
 			System.err.println("No arguments");
 		}
-
+		
+		InvertedIndex indexx = null;
+		QueryParserInterface query = null;
+		@SuppressWarnings("rawtypes")
+		WebCrawlerInterface crawler = null;
+		WorkQueue queue = null;
+		
 		if (parser.hasFlag("-multi")) {
+			
+			ThreadSafeInvertedIndex threadSafe = new ThreadSafeInvertedIndex();
+			indexx = threadSafe;
+			
 			int threads;
 
 			try {
@@ -46,9 +54,11 @@ public class Driver {
 			} catch (NumberFormatException e) {
 				threads = 5;
 			}
-
-			WorkQueue workQueue = new WorkQueue(threads);
-
+			
+			queue = new WorkQueue(threads);
+			crawler = new MultithreadedWebCrawler(threads, threadSafe);
+			query = new MultithreadedQueryParser(threadSafe, queue);
+			
 			if (parser.hasFlag("-dir")) {
 
 				String dirPath = parser.getValue("-dir");
@@ -57,7 +67,7 @@ public class Driver {
 
 					Path dir = Paths.get(dirPath);
 					textFiles.addAll(DirectoryTraverser.traverse(dir));
-					MultithreadedInvertedIndexBuilder.readArray(textFiles, index, workQueue);
+					MultithreadedInvertedIndexBuilder.readArray(textFiles, indexx, queue);
 
 				}
 
@@ -66,39 +76,15 @@ public class Driver {
 				}
 
 			}
-
-			if (parser.hasFlag("-url")) {
-				MultithreadedWebCrawler parseURL = new MultithreadedWebCrawler(threads, index);
-				String seed = parser.getValue("-url");
-				parseURL.addSeed(seed, index);
-
-			}
-
-			if (parser.hasFlag("-index")) {
-				String indexPath = parser.getValue("-index", "index.json");
-				index.toJSON(indexPath);
-			}
-
-			if (parser.hasFlag("-results")) {
-				String resultsPath = parser.getValue("-results", "results.json");
-
-				if (parser.hasFlag("-query")) {
-					MultithreadedQueryParser partialSearch = new MultithreadedQueryParser(index, workQueue);
-					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
-					partialSearch.toJSON(resultsPath);
-				}
-
-				if (parser.hasFlag("-exact")) {
-					MultithreadedQueryParser exactSearch = new MultithreadedQueryParser(index, workQueue);
-					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
-					exactSearch.toJSON(resultsPath);
-				}
-
-			}
-
+			
 		}
-
+		
 		else {
+			
+			indexx = new InvertedIndex();
+			query = new QueryParser(indexx); 
+			crawler = new WebCrawler();
+			
 			if (parser.hasFlag("-dir")) {
 
 				String dirPath = parser.getValue("-dir");
@@ -107,161 +93,46 @@ public class Driver {
 
 					Path dir = Paths.get(dirPath);
 					textFiles.addAll(DirectoryTraverser.traverse(dir));
-					InvertedIndexBuilder.readArray(textFiles, index);
+					InvertedIndexBuilder.readArray(textFiles, indexx);
 
 				}
 
 				catch (NullPointerException e) {
 					System.err.println("No directory provided.");
-				}
-
-			}
-
-			if (parser.hasFlag("-url")) {
-				WebCrawler parseURL = new WebCrawler();
-
-				String seed = parser.getValue("-url");
-				parseURL.addSeed(seed, index);
-
-			}
-
-			if (parser.hasFlag("-index")) {
-				String indexPath = parser.getValue("-index", "index.json");
-				index.toJSON(indexPath);
-			}
-
-			if (parser.hasFlag("-results")) {
-				String resultsPath = parser.getValue("-results", "results.json");
-
-				if (parser.hasFlag("-query")) {
-					QueryParser partialSearch = new QueryParser(index);
-					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false);
-					partialSearch.toJSON(resultsPath);
-				}
-
-				if (parser.hasFlag("-exact")) {
-					QueryParser exactSearch = new QueryParser(index);
-					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true);
-					exactSearch.toJSON(resultsPath);
 				}
 
 			}
 
 		}
 		
-//		ThreadSafeInvertedIndex index2 = null;
-//		QueryParserInterface query = null;
-//		WebCrawlerInterface crawler = null;
-//		WorkQueue queue = null;
-//		
-//		if (parser.hasFlag("-multi")) {
-//			
-//			int threads;
-//
-//			try {
-//				threads = Integer.parseInt(parser.getValue("-multi"));
-//				if (threads == 0) {
-//					threads = 5;
-//				}
-//			} catch (NumberFormatException e) {
-//				threads = 5;
-//			}
-//			
-//			ThreadSafeInvertedIndex threadSafe = new ThreadSafeInvertedIndex();
-//			index2 = threadSafe;
-//			queue = new WorkQueue(threads);
-//			query = new MultithreadedQueryParser(threadSafe,queue);
-//			crawler = new MultithreadedWebCrawler(threads, threadSafe);
-//						
-//		}
-//		
-//		else {
-//			index2 = new ThreadSafeInvertedIndex();
-//			query = new QueryParser(index2);
-//			crawler = new WebCrawler();
-//			
-//		}
-//		
-//		if (parser.hasFlag("-dir")) {
-//
-//			String dirPath = parser.getValue("-dir");
-//
-//			try {
-//
-//				Path dir = Paths.get(dirPath);
-//				textFiles.addAll(DirectoryTraverser.traverse(dir));
-//				MultithreadedInvertedIndexBuilder.readArray(textFiles, index2, queue);
-//
-//			}
-//
-//			catch (NullPointerException e) {
-//				System.err.println("No directory provided.");
-//			}
-//
-//		}
-//		
-//		if (parser.hasFlag("-index")) {
-//			String indexPath = parser.getValue("-index", "index.json");
-//			index2.toJSON(indexPath);
-//		}
-//		
-//		if (parser.hasFlag("-url")) {
-//
-//			String seed = parser.getValue("-url");
-//			crawler.addSeed(seed, index2);
-//
-//		}
-//		
-//		if (parser.hasFlag("-results")) {
-//			
-//			String resultsPath = parser.getValue("-results", "results.json");
-//			
-//			if (parser.hasFlag("-query") && parser.getValue("-query") != null) {
-//				query.parseFile(Paths.get(parser.getValue("-query")), true);
-//			}
-//			
-//			if (parser.hasFlag("-partial") && parser.getValue("-partial") != null) {
-//				query.parseFile(Paths.get(parser.getValue("-partial")), false);
-//			}
-//			
-//			query.toJSON(resultsPath);
-//			
-//		}
-//		
-//		if (queue != null) {
-//			queue.shutdown();
-//		}
+		if (parser.hasFlag("-url")) {
+			String seed = parser.getValue("-url");
+			crawler.addSeed(seed, indexx);
+
+		}
+
+		if (parser.hasFlag("-index")) {
+			String indexPath = parser.getValue("-index", "index.json");
+			indexx.toJSON(indexPath);
+		}
+		
+		if (parser.hasFlag("-query") && parser.getValue("-query") != null) {
+			query.parseFile(Paths.get(parser.getValue("-query")), false);
+		}
+
+		if (parser.hasFlag("-exact") && parser.getValue("-exact") != null) {
+			query.parseFile(Paths.get(parser.getValue("-exact")), true);
+		}
+		
+		if (parser.hasFlag("-results")) {
+			String resultsPath = parser.getValue("-results", "results.json");
+			query.toJSON(resultsPath);
+		}
+		
+		if (queue != null) {
+			queue.shutdown();
+		}
 		
 	}
-
-	/*
-	 * TODO
-	 * 
-	 * InvertedIndex index = null; QueryParserInterface query = null;
-	 * 
-	 * WorkQueue queue = null;
-	 * 
-	 * if (-multi) {
-	 * 
-	 * ThreadSafeInvertedIndex threadSafe = new THreadSafeInvertedIndex(); index
-	 * = threadSafe;
-	 * 
-	 * queue = new WorkQueue(threads);
-	 * 
-	 * query = new MultithreadedQueryParser(threadSafe, queue); } else { index =
-	 * new InvertedIndex(); query = new QueryParser(index); }
-	 * 
-	 * 
-	 * 
-	 * if (-exact) { query.parseFile(path, true); }
-	 * 
-	 * 
-	 * 
-	 * if (queue != null) {
-	 * 
-	 * queue.shutdown(); }
-	 * 
-	 * 
-	 */
 	
 }

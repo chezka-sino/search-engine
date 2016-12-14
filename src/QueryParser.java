@@ -7,13 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
-/*
- * TODO For query parser and web crawler to make an interface with the common methods
- * implement that interface in both the single- and multi-threaded classes
- * 
- * (Up to you for the builder class... tricky)
- */
-
 /**
  * This class parses the query file that contains all of the query words for
  * searching

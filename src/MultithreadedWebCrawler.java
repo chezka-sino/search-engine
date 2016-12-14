@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class MultithreadedWebCrawler implements WebCrawlerInterface {
+public class MultithreadedWebCrawler implements WebCrawlerInterface<ThreadSafeInvertedIndex> {
 
 	public static final String REGEX = "<a([^>]+)href\\s*=\\s*\"([^\"]*)\"";
 	public static final int GROUP = 2;
@@ -21,9 +21,8 @@ public class MultithreadedWebCrawler implements WebCrawlerInterface {
 	// Queue of the URLs to be processed
 
 	private static final Logger LOGGER = LogManager.getLogger();
-	
 	private final WorkQueue minions;
-	private static ThreadSafeInvertedIndex index;
+	private final ThreadSafeInvertedIndex index;
 
 	/**
 	 * Class constructor Initializes the set and queue
@@ -31,7 +30,7 @@ public class MultithreadedWebCrawler implements WebCrawlerInterface {
 	public MultithreadedWebCrawler(int threads, ThreadSafeInvertedIndex index) {
 		links = new HashSet<String>();
 		minions = new WorkQueue(threads);
-		MultithreadedWebCrawler.index = index;
+		this.index = index;
 	}
 
 	/**
@@ -96,6 +95,10 @@ public class MultithreadedWebCrawler implements WebCrawlerInterface {
 
 	}
 	
+	/**
+	 * Runnable class that implements the multithreaded web crawler
+	 *
+	 */
 	private class urlMinion implements Runnable {
 		
 		private String url;

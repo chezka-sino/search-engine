@@ -117,19 +117,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 			lock.unlockReadOnly();
 		}
 	}
-
-	// @Override
-	// public void addSearchResults(String word, ArrayList<SearchResult>
-	// results,
-	// HashMap<String, SearchResult> resultMap) {
-	// lock.lockReadOnly();
-	// try {
-	// super.addSearchResults(word, results, resultMap);
-	// }
-	// finally {
-	// lock.unlockReadOnly();
-	// }
-	// }
 	
 	@Override
 	public synchronized void addAll(InvertedIndex other) {

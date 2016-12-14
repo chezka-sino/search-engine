@@ -35,15 +35,13 @@ public class MultithreadedInvertedIndexBuilder {
 	public static void readArray(ArrayList<String> textFiles, InvertedIndex index, WorkQueue minions)
 			throws IOException {
 
-		// WorkQueue minions = new WorkQueue(threads);
-
 		class DirectoryMinion implements Runnable {
 
 			private String file;
 
 			public DirectoryMinion(String file) {
 				LOGGER.debug("Minion created for {}", file);
-				this.file = file; // TODO Remove
+				this.file = file;
 
 			}
 
@@ -51,18 +49,12 @@ public class MultithreadedInvertedIndexBuilder {
 			public void run() {
 				Path inputFile = Paths.get(file);
 				InvertedIndexBuilder.openFile(inputFile, index);
-				LOGGER.debug("Minion finished openFile on {}", inputFile);
 
-				/*
-				 * TODO
-				 * 
-				 * InvertedIndex local = new InvertedIndex();
-				 * InvertedIndexBuilder.openFile(file, local);
-				 * index.addAll(local);
-				 */
 				InvertedIndex local = new InvertedIndex();
 				InvertedIndexBuilder.openFile(inputFile, local);
 				index.addAll(local);
+				
+				LOGGER.debug("Minion finished openFile on {}", inputFile);
 			}
 
 		}

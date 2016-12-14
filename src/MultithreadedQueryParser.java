@@ -20,12 +20,8 @@ import org.apache.logging.log4j.Logger;
 public class MultithreadedQueryParser implements QueryParserInterface {
 
 	private final ThreadSafeInvertedIndex index;
-
-	// TODO Protect all access to results (synchronized (results))
 	private final TreeMap<String, List<SearchResult>> results;
-
-	private static final Logger LOGGER = LogManager.getLogger();
-	
+	private static final Logger LOGGER = LogManager.getLogger();	
 	private final WorkQueue minions;
 
 	/**
@@ -120,8 +116,7 @@ public class MultithreadedQueryParser implements QueryParserInterface {
 	public void toJSON(String output) throws IOException {
 		Path outputFile = Paths.get(output);
 		synchronized (results) {
-			JSONWriter.searchResultsWriter(outputFile, results); // TODO Protect
-																	// results
+			JSONWriter.searchResultsWriter(outputFile, results);
 		}
 
 	}

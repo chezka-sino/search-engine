@@ -3,9 +3,15 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
-public interface WebCrawlerInterface {
+/**
+ * Web Crawler Interface
+ * 
+ *
+ * @param <T>
+ */
+public interface WebCrawlerInterface<T> {
 	
-	public void addSeed(String seed, ThreadSafeInvertedIndex index) 
+	public void addSeed(String seed, T index) 
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException;
 	
 	public void getURLs(String seed, String text) 

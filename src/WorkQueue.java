@@ -72,7 +72,6 @@ public class WorkQueue {
 	 *            work request (in the form of a {@link Runnable} object)
 	 */
 	public void execute(Runnable r) {
-		// TODO Move incrementPending here
 		incrementPending();
 		synchronized (queue) {
 			queue.addLast(r);
@@ -97,7 +96,8 @@ public class WorkQueue {
 	}
 
 	/**
-	 * TODO Javadoc make private
+	 * Adds to the pending variable
+	 * 
 	 */
 	private synchronized void incrementPending() {
 		pending++;
@@ -105,7 +105,8 @@ public class WorkQueue {
 	}
 
 	/**
-	 * TODO Javadoc and make private
+	 * Subtracts to the pending variable
+	 * 
 	 */
 	private synchronized void decrementPending() {
 		assert pending > 0;
@@ -170,14 +171,12 @@ public class WorkQueue {
 					if (shutdown) {
 						break;
 					} else {
-//						incrementPending(); // TODO Remove from here
 						r = queue.removeFirst();
 					}
 				}
 
 				try {
 					r.run();
-					// decrementPending();
 				} catch (RuntimeException ex) {
 					// catch runtime exceptions to avoid leaking threads
 					System.err.println("Warning: Work queue encountered an " + "exception while running.");
