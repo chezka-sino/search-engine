@@ -21,8 +21,9 @@ public class MultithreadedWebCrawler {
 	// Set of all the URLs parsed
 	private final HashSet<String> links;
 	// Queue of the URLs to be processed
-	private final Queue<String> queue; // TODO Remove, move the work queue to a member of this class
-	private final WorkQueue minions; 
+	private final Queue<String> queue; // TODO Remove, move the work queue to a
+										// member of this class
+
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
@@ -31,7 +32,6 @@ public class MultithreadedWebCrawler {
 	public MultithreadedWebCrawler() {
 		links = new HashSet<String>();
 		queue = new LinkedList<>();
-		minions = new WorkQueue();
 	}
 
 	/**
@@ -46,16 +46,16 @@ public class MultithreadedWebCrawler {
 	 * @throws UnknownHostException
 	 * @throws MalformedURLException
 	 * @throws IOException
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 * 
 	 */
-	public void addSeed(String seed, ThreadSafeInvertedIndex index, int threads)
+	public void addSeed(String seed, ThreadSafeInvertedIndex index, WorkQueue minions)
 			throws UnknownHostException, MalformedURLException, IOException, URISyntaxException {
 
 		links.add(seed);
 		queue.add(seed); // TODO Instead, you add a minion for the first seed
-		
-//		WorkQueue minions = new WorkQueue(threads);
+
+		// WorkQueue minions = new WorkQueue(threads);
 
 		class urlMinion implements Runnable {
 
@@ -84,8 +84,8 @@ public class MultithreadedWebCrawler {
 			}
 
 		}
-		
-		minions.execute(new urlMinion(seed));
+
+		// minions.execute(new urlMinion(seed));
 
 		// TODO minions.finish() replaces this entire loop
 		while (!queue.isEmpty()) {
@@ -95,8 +95,8 @@ public class MultithreadedWebCrawler {
 			LOGGER.debug("Minion finished {}", url);
 
 		}
-//		LOGGER.debug("Minion finished {}", url);
-//		minions.finish();
+		// LOGGER.debug("Minion finished {}", url);
+		// minions.finish();
 
 	}
 
@@ -130,7 +130,8 @@ public class MultithreadedWebCrawler {
 
 			if (!links.contains(urlString)) {
 				links.add(urlString);
-				queue.add(urlString); // TODO Need to add to the work queue instead
+				queue.add(urlString); // TODO Need to add to the work queue
+										// instead
 			}
 
 		}

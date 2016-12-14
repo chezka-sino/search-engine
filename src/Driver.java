@@ -47,6 +47,8 @@ public class Driver {
 				threads = 5;
 			}
 
+			WorkQueue workQueue = new WorkQueue(threads);
+
 			if (parser.hasFlag("-dir")) {
 
 				String dirPath = parser.getValue("-dir");
@@ -55,7 +57,7 @@ public class Driver {
 
 					Path dir = Paths.get(dirPath);
 					textFiles.addAll(DirectoryTraverser.traverse(dir));
-					MultithreadedInvertedIndexBuilder.readArray(textFiles, index, threads);
+					MultithreadedInvertedIndexBuilder.readArray(textFiles, index, workQueue);
 
 				}
 
@@ -69,7 +71,7 @@ public class Driver {
 				MultithreadedWebCrawler parseURL = new MultithreadedWebCrawler();
 
 				String seed = parser.getValue("-url");
-				parseURL.addSeed(seed, index, threads);
+				parseURL.addSeed(seed, index, workQueue);
 
 			}
 
@@ -83,13 +85,13 @@ public class Driver {
 
 				if (parser.hasFlag("-query")) {
 					MultithreadedQueryParser partialSearch = new MultithreadedQueryParser(index);
-					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false, threads);
+					partialSearch.parseFile(Paths.get(parser.getValue("-query")), false, workQueue);
 					partialSearch.toJSON(resultsPath);
 				}
 
 				if (parser.hasFlag("-exact")) {
 					MultithreadedQueryParser exactSearch = new MultithreadedQueryParser(index);
-					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true, threads);
+					exactSearch.parseFile(Paths.get(parser.getValue("-exact")), true, workQueue);
 					exactSearch.toJSON(resultsPath);
 				}
 
@@ -148,41 +150,33 @@ public class Driver {
 
 		}
 	}
-	
+
 	/*
 	 * TODO
 	 * 
-	 * InvertedIndex index = null;
-	 * QueryParserInterface query = null;
+	 * InvertedIndex index = null; QueryParserInterface query = null;
 	 * 
 	 * WorkQueue queue = null;
 	 * 
 	 * if (-multi) {
 	 * 
-	 * 		ThreadSafeInvertedIndex threadSafe = new THreadSafeInvertedIndex();
-	 * 		index = threadSafe;
+	 * ThreadSafeInvertedIndex threadSafe = new THreadSafeInvertedIndex(); index
+	 * = threadSafe;
 	 * 
-	 * 		queue = new WorkQueue(threads);
+	 * queue = new WorkQueue(threads);
 	 * 
-	 * 		query = new MultithreadedQueryParser(threadSafe, queue);
-	 * }
-	 * else {
-	 * 		index = new InvertedIndex();
-	 * 		query = new QueryParser(index);
-	 * }
+	 * query = new MultithreadedQueryParser(threadSafe, queue); } else { index =
+	 * new InvertedIndex(); query = new QueryParser(index); }
 	 * 
 	 * 
 	 * 
-	 * if (-exact) {
-	 * 		query.parseFile(path, true);
-	 * }
+	 * if (-exact) { query.parseFile(path, true); }
 	 * 
 	 * 
 	 * 
 	 * if (queue != null) {
 	 * 
-	 * 		queue.shutdown();
-	 * }
+	 * queue.shutdown(); }
 	 * 
 	 * 
 	 */

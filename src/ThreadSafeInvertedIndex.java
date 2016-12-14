@@ -1,6 +1,4 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -10,7 +8,7 @@ import java.util.List;
  *
  */
 public class ThreadSafeInvertedIndex extends InvertedIndex {
-	
+
 	private ReadWriteLock lock;
 
 	public ThreadSafeInvertedIndex() {
@@ -19,127 +17,118 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
-	public void add(String word, String path, int position) {
+	public synchronized void add(String word, String path, int position) {
 		lock.lockReadWrite();
-		
+
 		try {
 			super.add(word, path, position);
-		}
-		finally {
+		} finally {
 			lock.unlockReadWrite();
 		}
 
 	}
 
 	@Override
-	public void toJSON(String index) throws IOException {
+	public synchronized void toJSON(String index) throws IOException {
 		lock.lockReadOnly();
 		try {
 			super.toJSON(index);
-		}
-		finally {
+		} finally {
 			lock.unlockReadWrite();
 		}
 	}
 
 	@Override
-	public int numWords() {
+	public synchronized int numWords() {
 		lock.lockReadOnly();
 		try {
 			return super.numWords();
-		}
-		finally {
+		} finally {
 			lock.lockReadOnly();
 		}
 	}
 
 	@Override
-	public int numLocations(String word) {
+	public synchronized int numLocations(String word) {
 		lock.lockReadOnly();
 		try {
 			return super.numLocations(word);
-		}
-		finally {
+		} finally {
 			lock.lockReadOnly();
 		}
 	}
 
 	@Override
-	public int firstIndex(String word, String fileName) {
+	public synchronized int firstIndex(String word, String fileName) {
 		lock.lockReadOnly();
 		try {
 			return super.firstIndex(word, fileName);
-		}
-		finally {
+		} finally {
 			lock.unlockReadOnly();
 		}
 	}
 
 	@Override
-	public boolean containsWord(String word) {
+	public synchronized boolean containsWord(String word) {
 		lock.lockReadOnly();
 		try {
 			return super.containsWord(word);
-		}
-		finally {
+		} finally {
 			lock.unlockReadOnly();
 		}
 	}
 
 	@Override
-	public boolean containsLocation(String word, String textFile) {
+	public synchronized boolean containsLocation(String word, String textFile) {
 		lock.lockReadOnly();
 		try {
 			return super.containsLocation(word, textFile);
-		}
-		finally {
+		} finally {
 			lock.unlockReadOnly();
 		}
 	}
 
 	@Override
-	public List<String> getWords() {
+	public synchronized List<String> getWords() {
 		lock.lockReadOnly();
 		try {
 			return super.getWords();
-		}
-		finally {
+		} finally {
 			lock.unlockReadOnly();
 		}
 	}
 
 	@Override
-	public List<SearchResult> partialSearch(String[] queryWords) {
+	public synchronized List<SearchResult> partialSearch(String[] queryWords) {
 		lock.lockReadOnly();
 		try {
 			return super.partialSearch(queryWords);
-		}
-		finally {
+		} finally {
 			lock.unlockReadOnly();
 		}
 	}
 
 	@Override
-	public List<SearchResult> exactSearch(String[] queryWords) {
+	public synchronized List<SearchResult> exactSearch(String[] queryWords) {
 		lock.lockReadOnly();
 		try {
 			return super.exactSearch(queryWords);
-		}
-		finally {
+		} finally {
 			lock.unlockReadOnly();
 		}
 	}
 
-//	@Override
-//	public void addSearchResults(String word, ArrayList<SearchResult> results,
-//			HashMap<String, SearchResult> resultMap) {
-//		lock.lockReadOnly();
-//		try {
-//			super.addSearchResults(word, results, resultMap);
-//		}
-//		finally {
-//			lock.unlockReadOnly();
-//		}
-//	}
+	// @Override
+	// public void addSearchResults(String word, ArrayList<SearchResult>
+	// results,
+	// HashMap<String, SearchResult> resultMap) {
+	// lock.lockReadOnly();
+	// try {
+	// super.addSearchResults(word, results, resultMap);
+	// }
+	// finally {
+	// lock.unlockReadOnly();
+	// }
+	// }
 
 }

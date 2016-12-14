@@ -25,7 +25,7 @@ public class InvertedIndex {
 	 * Class constructor
 	 */
 	public InvertedIndex() {
-		map = new TreeMap<>();	
+		map = new TreeMap<>();
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class InvertedIndex {
 	public void toJSON(String index) throws IOException {
 		Path outputFile = Paths.get(index);
 		JSONWriter.indexWriter(outputFile, map);
-		
+
 	}
 
 	/**
@@ -97,12 +97,11 @@ public class InvertedIndex {
 	 * Returns the first position of the word in a file
 	 * 
 	 * @param word
-	 * 			the word to be checked for the first location
+	 *            the word to be checked for the first location
 	 * @param fileName
-	 * 			the filename where the word is checked
-	 * @return
-	 * 			the first position of the word in the filename;
-	 * 			returns 0 if the map doesn't contain the word or filename
+	 *            the filename where the word is checked
+	 * @return the first position of the word in the filename; returns 0 if the
+	 *         map doesn't contain the word or filename
 	 */
 	public int firstIndex(String word, String fileName) {
 
@@ -151,131 +150,120 @@ public class InvertedIndex {
 		wordList.addAll(map.keySet());
 		return wordList;
 	}
-	
+
 	/**
 	 * Searches for words that starts with the query words
 	 * 
 	 * @param queryWords
-	 * 		array of the query words
-	 * @return
-	 * 		the list of the sorted search results of the query words
+	 *            array of the query words
+	 * @return the list of the sorted search results of the query words
 	 * 
 	 */
 	public List<SearchResult> partialSearch(String[] queryWords) {
-		
-		ArrayList<SearchResult >results = new ArrayList<>();
+
+		ArrayList<SearchResult> results = new ArrayList<>();
 		HashMap<String, SearchResult> resultMap = new HashMap<>();
-		
-		for (String word: queryWords) {
-			
-			for (String match: map.tailMap(word).keySet()) {
-				
+
+		for (String word : queryWords) {
+
+			for (String match : map.tailMap(word).keySet()) {
+
 				if (match.startsWith(word)) {
 					addSearchResults(match, results, resultMap);
 				}
-				
+
 				else if (match.compareTo(word) > 0) {
-					break;					
+					break;
 				}
 			}
-			
+
 		}
-		
+
 		Collections.sort(results);
 		return results;
-		
+
 	}
-	
+
 	/**
 	 * Searches for the exact matches of the query words
 	 * 
 	 * @param queryWords
-	 * 		array of the query words
-	 * @return
-	 * 		the list of the sorted search results of the query words
+	 *            array of the query words
+	 * @return the list of the sorted search results of the query words
 	 * 
 	 */
 	public List<SearchResult> exactSearch(String[] queryWords) {
-		
-		ArrayList<SearchResult >results = new ArrayList<>();
+
+		ArrayList<SearchResult> results = new ArrayList<>();
 		HashMap<String, SearchResult> resultMap = new HashMap<>();
-		
-		for (String word: queryWords) {
-			
+
+		for (String word : queryWords) {
+
 			if (map.containsKey(word)) {
-				addSearchResults(word, results, resultMap);				
+				addSearchResults(word, results, resultMap);
 			}
-			
+
 		}
-		
+
 		Collections.sort(results);
 		return results;
-		
+
 	}
-	
+
 	// TODO Make private
 	/**
 	 * Adds the search results as SearchResult objects in a map
 	 * 
 	 * @param word
-	 * 		The word match
+	 *            The word match
 	 * 
 	 */
-	private void addSearchResults(String word, ArrayList<SearchResult> results, HashMap<String, SearchResult> resultMap) {
-		
+	private void addSearchResults(String word, ArrayList<SearchResult> results,
+			HashMap<String, SearchResult> resultMap) {
+
 		TreeMap<String, TreeSet<Integer>> innerMap = map.get(word);
-		
-		for (String fileName: innerMap.keySet()) {
+
+		for (String fileName : innerMap.keySet()) {
 
 			if (resultMap.containsKey(fileName)) {
-				
+
 				int freqAdd = innerMap.get(fileName).size();
 				resultMap.get(fileName).setFrequency(freqAdd);
 				int first = innerMap.get(fileName).first();
-				
+
 				if (Integer.compare(first, resultMap.get(fileName).getPosition()) < 0) {
 					resultMap.get(fileName).setPosition(first);
 				}
-				
+
 			}
-			
+
 			else {
-				SearchResult newResult = new SearchResult(fileName, innerMap.get(fileName).size(), innerMap.get(fileName).first());
+				SearchResult newResult = new SearchResult(fileName, innerMap.get(fileName).size(),
+						innerMap.get(fileName).first());
 				resultMap.put(fileName, newResult);
-				results.add(newResult);												
+				results.add(newResult);
 			}
 		}
-		
+
 	}
-	
-	/* TODO
+
+	/*
+	 * TODO public void addAll(InvertedIndex other) { for (String word :
+	 * other.map.keySet()) { if (this.map.containsKey(word) == false) {
+	 * this.map.put(word, other.map.get(word)); } else { loop through the files
+	 * in other if the file isn't in this index put else addAll } } }
+	 */
+
 	public void addAll(InvertedIndex other) {
 		for (String word : other.map.keySet()) {
 			if (this.map.containsKey(word) == false) {
 				this.map.put(word, other.map.get(word));
-			}
-			else {
-				loop through the files in other
-					if the file isn't in this index
-						put
-					else
-						addAll	
-			}
-		}
-	}
-	*/
-	
-	public void addAll(InvertedIndex other) {
-		for (String word: other.map.keySet()) {
-			if (this.map.containsKey(word) == false) {
-				this.map.put(word, other.map.get(word));
-			}
-			else {
-				for (String file: other.map.get(word).keySet()) {
-					if (this.map.get(word).containsKey(file)) {
-					}
-					else {
-						
+			} else {
+				for (String file : other.map.get(word).keySet()) {
+					if (!this.map.get(word).containsKey(file)) {
+						this.map.get(word).put(file, other.map.get(word).get(file));
+					} else {
+						this.map.get(word).get(file).addAll(other.map.get(word).get(file));
 					}
 				}
 			}

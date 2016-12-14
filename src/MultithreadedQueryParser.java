@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 public class MultithreadedQueryParser {
 
 	private final ThreadSafeInvertedIndex index;
-	
+
 	// TODO Protect all access to results (synchronized (results))
 	private final TreeMap<String, List<SearchResult>> results;
 
@@ -35,7 +35,6 @@ public class MultithreadedQueryParser {
 	 * 
 	 */
 	public MultithreadedQueryParser(ThreadSafeInvertedIndex index) {
-		LOGGER.debug("New QueryParser ThreadsafeInvertedIndex");
 		this.index = index;
 		this.results = new TreeMap<>();
 	}
@@ -51,9 +50,7 @@ public class MultithreadedQueryParser {
 	 *            number of threads in the workqueue
 	 * 
 	 */
-	public void parseFile(Path file, boolean exact, int threads) {
-
-		WorkQueue minions = new WorkQueue(threads);
+	public void parseFile(Path file, boolean exact, WorkQueue minions) {
 
 		class QueryMinion implements Runnable {
 
@@ -77,37 +74,31 @@ public class MultithreadedQueryParser {
 				}
 				Collections.sort(queryList);
 				line = String.join(" ", queryList);
-				
+
 				/*
 				 * TODO
 				 * 
-				 * synchronized (results) {
-				 * 		if (exact) {
-							results.put(line, index.exactSearch(words));
-						}
-		
-						else {
-							results.put(line, index.partialSearch(words));
-						}
-				 * }
+				 * synchronized (results) { if (exact) { results.put(line,
+				 * index.exactSearch(words)); }
+				 * 
+				 * else { results.put(line, index.partialSearch(words)); } }
 				 * 
 				 * -versus-
 				 * 
-				 * List<SearchResult> current = (exact) ? index.exactSearch(words) : index.partialSearch(word);
+				 * List<SearchResult> current = (exact) ?
+				 * index.exactSearch(words) : index.partialSearch(word);
 				 * 
-				 * synchronized (results) {
-				 * 		results.put(line, current);
-				 * }
+				 * synchronized (results) { results.put(line, current); }
 				 */
-				
+
+				List<SearchResult> current;
+				if (exact)
+					current = index.exactSearch(words);
+				else
+					current = index.partialSearch(words);
+
 				synchronized (results) {
-					if (exact) {
-						results.put(line, index.exactSearch(words));
-					}
-					else {
-						results.put(line, index.partialSearch(words));
-					}
-					
+					results.put(line, current);
 				}
 
 				LOGGER.debug("Minion finished search on {}", line);
@@ -123,7 +114,7 @@ public class MultithreadedQueryParser {
 
 				minions.execute(new QueryMinion(line));
 				LOGGER.debug("Minion finished {}", line);
-				minions.finish();
+				// minions.finish();
 
 			}
 
@@ -133,6 +124,8 @@ public class MultithreadedQueryParser {
 			System.err.println("Unable to read query file: " + file.toString());
 			LOGGER.warn("Unable to read query file {}", file.toString());
 		}
+
+		minions.finish();
 
 	}
 
@@ -147,9 +140,10 @@ public class MultithreadedQueryParser {
 	public void toJSON(String output) throws IOException {
 		Path outputFile = Paths.get(output);
 		synchronized (results) {
-			JSONWriter.searchResultsWriter(outputFile, results); // TODO Protect results
+			JSONWriter.searchResultsWriter(outputFile, results); // TODO Protect
+																	// results
 		}
-		
+
 	}
 
 }

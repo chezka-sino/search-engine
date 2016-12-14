@@ -32,10 +32,10 @@ public class MultithreadedInvertedIndexBuilder {
 	 * @throws IOException
 	 * 
 	 */
-	public static void readArray(ArrayList<String> textFiles, ThreadSafeInvertedIndex index, int threads)
+	public static void readArray(ArrayList<String> textFiles, ThreadSafeInvertedIndex index, WorkQueue minions)
 			throws IOException {
 
-		WorkQueue minions = new WorkQueue(threads);
+		// WorkQueue minions = new WorkQueue(threads);
 
 		class DirectoryMinion implements Runnable {
 
@@ -44,7 +44,7 @@ public class MultithreadedInvertedIndexBuilder {
 			public DirectoryMinion(String file) {
 				LOGGER.debug("Minion created for {}", file);
 				this.file = file; // TODO Remove
-				
+
 			}
 
 			@Override
@@ -52,7 +52,7 @@ public class MultithreadedInvertedIndexBuilder {
 				Path inputFile = Paths.get(file);
 				InvertedIndexBuilder.openFile(inputFile, index);
 				LOGGER.debug("Minion finished openFile on {}", inputFile);
-				
+
 				/*
 				 * TODO
 				 * 
@@ -60,9 +60,9 @@ public class MultithreadedInvertedIndexBuilder {
 				 * InvertedIndexBuilder.openFile(file, local);
 				 * index.addAll(local);
 				 */
-//				InvertedIndex local = new InvertedIndex();
-//				InvertedIndexBuilder.openFile(inputFile, local);
-//				index.addAll(local);
+				InvertedIndex local = new InvertedIndex();
+				InvertedIndexBuilder.openFile(inputFile, local);
+				index.addAll(local);
 			}
 
 		}
@@ -71,7 +71,7 @@ public class MultithreadedInvertedIndexBuilder {
 			minions.execute(new DirectoryMinion(name));
 			LOGGER.debug("Minion finished {}", name);
 		}
-		
+
 		minions.finish();
 
 	}
