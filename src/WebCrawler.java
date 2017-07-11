@@ -23,7 +23,7 @@ public class WebCrawler implements WebCrawlerInterface<InvertedIndex> {
 	/**
 	 * Class constructor Initializes the set and queue
 	 */
-	public WebCrawler() {
+	public WebCrawler() { // TODO Specify the index here, not in addSeed()
 		links = new HashSet<String>();
 		queue = new LinkedList<>();
 	}
